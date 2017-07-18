@@ -16,5 +16,6 @@ Simply run `build.sh` and then `sudo ./install.sh` in the project's root directo
 # To compile: against the library
 
 When using GCC, add the options `-lbaselib -lpthread`. Linking to pthread is required as
-the posix threads is used within baselib for the purposes of making the lists thread-access safe
+the posix threads library is used within baselib for the purposes of making the lists 
+thread safe
 
