@@ -23,14 +23,14 @@
 #ifndef __LINKED_LIST_H
 #define __LINKED_LIST_H
 
+#include "any.h"
+#include "list.h"
 
 struct LinkedList;
 typedef struct LinkedList LinkedList;
 
 struct LinkedListTraversal;
 typedef struct LinkedListTraversal LinkedListTraversal;
-
-#include "any.h"
 
 
 
@@ -44,9 +44,15 @@ unsigned int linked_list_size(LinkedList * linked_list);
 Any linked_list_get(LinkedList * linked_list, unsigned int index);
 
 void linked_list_add(LinkedList * linked_list, Any element);
+void linked_list_add_range(LinkedList * linked_list, List * range);
 void linked_list_set(LinkedList * linked_list, unsigned int index, Any element);
 
 Any linked_list_remove(LinkedList * linked_list, unsigned int index);
+void linked_list_clear(LinkedList * linked_list);
+
+Any * linked_list_to_array(LinkedList * linked_list);
+LinkedList * linked_list_sub_list(LinkedList * linked_list, unsigned int start, unsigned int end);
+LinkedList * linked_list_clone(LinkedList * linked_list);
 
 
 

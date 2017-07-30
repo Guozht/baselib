@@ -19,6 +19,9 @@
 \* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 
+#define BASELIB_VERSION "0.2.1"
+
+
 #include "any.h"
 #include "list.h"
 #include "list_type.h"

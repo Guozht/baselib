@@ -24,6 +24,7 @@
 
 
 #include "any.h"
+#include "list.h"
 
 
 struct ArrayList;
@@ -44,10 +45,15 @@ unsigned int array_list_size(ArrayList * array_list);
 Any array_list_get(ArrayList * array_list, unsigned int index);
 
 void array_list_add(ArrayList * array_list, Any element);
+void array_list_add_range(ArrayList * array_list, List * range);
 void array_list_set(ArrayList * array_list, unsigned int index, Any element);
 
 Any array_list_remove(ArrayList * array_list, unsigned int index);
+void array_list_clear(ArrayList * array_list);
 
+Any * array_list_to_array(ArrayList * array_list);
+ArrayList * array_list_sub_list(ArrayList * array_list, unsigned int start, unsigned int end);
+ArrayList * array_list_clone(ArrayList * array_list);
 
 
 ArrayListTraversal * array_list_get_traversal(ArrayList * array_list);

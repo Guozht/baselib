@@ -41,9 +41,15 @@ struct List
   Any (*list_get)(struct List *, unsigned int);
 
   void (*list_add)(struct List *, Any);
+  void (*list_add_range)(struct List *, struct List *);
   void (*list_set)(struct List *, unsigned int, Any);
 
   Any (*list_remove)(struct List *, unsigned int);
+  void (*list_clear)(struct List *);
+
+  Any * (*list_to_array)(struct List *);
+  struct List * (*list_sub_list)(struct List *, unsigned int start, unsigned int end);
+  struct List * (*list_clone)(struct List *);
 
   struct ListTraversal * (*list_get_traversal)(struct List *);
 

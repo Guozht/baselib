@@ -91,6 +91,13 @@ void list_add(List * list, Any element)
   list->list_add(list, element);
 }
 
+void list_add_range(List * list, List * range)
+{
+  assert(list);
+
+  list->list_add_range(list, range);
+}
+
 void list_set(List * list, unsigned int index, Any element)
 {
   assert(list);
@@ -104,6 +111,36 @@ Any list_remove(List * list, unsigned int index)
 
   return list->list_remove(list, index);
 }
+
+void list_clear(List * list)
+{
+  assert(list);
+
+  return list->list_clear(list);
+}
+
+Any * list_to_array(List * list)
+{
+  assert(list);
+
+  return list->list_to_array(list);
+}
+
+List * list_sub_list(List * list, unsigned int start, unsigned int end)
+{
+  assert(list);
+
+  return list->list_sub_list(list, start, end);
+}
+
+List * list_clone(List * list)
+{
+  assert(list);
+
+  return list->list_clone(list);
+}
+
+
 
 
 ListTraversal * list_get_traversal(List * list)

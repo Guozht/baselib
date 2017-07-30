@@ -71,6 +71,25 @@ static struct LinkedListNode * linked_list_node_new(Any value, struct LinkedList
   return ret;
 }
 
+static void linked_list_add_imp(LinkedList * linked_list, Any value)
+{
+  struct LinkedListNode
+    * node = linked_list_node_new(value, NULL);
+
+  if (linked_list->size == 0)
+  {
+    linked_list->start = node;
+    linked_list->end = node;
+  }
+  else
+  {
+    linked_list->end->next = node;
+    linked_list->end = node;
+  }
+
+  linked_list->size++;
+}
+
 /* END OF INTERNAL METHODS */
 
 
@@ -89,8 +108,13 @@ LinkedList * linked_list_new()
   ret->base.list_size = (unsigned int (*)(List *)) linked_list_size;
   ret->base.list_get = (Any (*)(List *, unsigned int)) linked_list_get;
   ret->base.list_add = (void (*)(List *, Any)) linked_list_add;
+  ret->base.list_add_range = (void (*)(List *, List *)) linked_list_add_range;
   ret->base.list_set = (void (*)(List *, unsigned int, Any)) linked_list_set;
   ret->base.list_remove = (Any (*)(List *, unsigned int)) linked_list_remove;
+  ret->base.list_clear = (void (*)(List *)) linked_list_clear;
+  ret->base.list_to_array = (Any * (*)(List *)) linked_list_to_array;
+  ret->base.list_sub_list = (List * (*)(List *, unsigned int, unsigned int)) linked_list_sub_list;
+  ret->base.list_clone = (List * (*)(List *)) linked_list_clone;
   ret->base.list_get_traversal = (ListTraversal * (*)(List *)) linked_list_get_traversal;
 
   ret->start = NULL;
@@ -106,17 +130,9 @@ void linked_list_destroy(LinkedList * linked_list)
   assert(linked_list);
   assert(linked_list->base.open_traversals == 0);
 
+  linked_list_clear(linked_list);
+
   sem_destroy(&linked_list->base.mutex);
-
-  struct LinkedListNode * current = linked_list->start;
-
-  while (current)
-  {
-    struct LinkedListNode * hold = current;
-    current = hold->next;
-    free(hold);
-  }
-
   free(linked_list);
 }
 
@@ -165,22 +181,29 @@ void linked_list_add(LinkedList * linked_list, Any element)
   sem_wait(&linked_list->base.mutex);
   assert(linked_list->base.open_traversals == 0);
 
-  struct LinkedListNode * node = linked_list_node_new(element, NULL);
-
-  if (linked_list->size == 0)
-  {
-    linked_list->start = node;
-    linked_list->end = node;
-  }
-  else
-  {
-    linked_list->end->next = node;
-    linked_list->end = node;
-  }
-
-  linked_list->size++;
+  linked_list_add_imp(linked_list, element);
 
   sem_post(&linked_list->base.mutex);
+}
+
+void linked_list_add_range(LinkedList * linked_list, List * range)
+{
+  assert(linked_list);
+  assert(range);
+
+  sem_wait(&linked_list->base.mutex);
+  assert(linked_list->base.open_traversals == 0);
+
+  ListTraversal * traversal = list_get_traversal(range);
+  while (!list_traversal_completed(traversal))
+  {
+    Any val = list_traversal_next(traversal);
+
+    linked_list_add_imp(linked_list, val);
+  }
+
+  sem_post(&linked_list->base.mutex);
+
 }
 
 void linked_list_set(LinkedList * linked_list, unsigned int index, Any element)
@@ -215,7 +238,7 @@ Any linked_list_remove(LinkedList * linked_list, unsigned int index)
   assert(index < linked_list->size);
 
   Any ret;
-  ret.ptr = NULL;
+  ret = ptr_to_any(NULL);
 
   if (linked_list->size == 1)
   {
@@ -262,6 +285,119 @@ Any linked_list_remove(LinkedList * linked_list, unsigned int index)
 
   return ret;
 }
+
+void linked_list_clear(LinkedList * linked_list)
+{
+
+  assert(linked_list);
+
+  sem_wait(&linked_list->base.mutex);
+
+  struct LinkedListNode * current = linked_list->start;
+
+  while (current)
+  {
+    struct LinkedListNode * hold = current;
+    current = hold->next;
+    free(hold);
+  }
+
+  linked_list->start = NULL;
+  linked_list->end = NULL;
+  linked_list->size = 0;
+
+  sem_post(&linked_list->base.mutex);
+
+}
+
+
+Any * linked_list_to_array(LinkedList * linked_list)
+{
+  assert(linked_list);
+
+  Any * ret;
+
+  sem_wait(&linked_list->base.mutex);
+  ret = (Any *) malloc(sizeof(Any) * linked_list->size);
+  assert(ret);
+
+
+  unsigned int index = 0;
+  struct LinkedListNode * current = linked_list->start;
+  while (current != NULL)
+  {
+    ret[index++] = current->value;
+    current = current->next;
+  }
+
+  sem_post(&linked_list->base.mutex);
+
+  return ret;
+}
+
+LinkedList * linked_list_sub_list(
+  LinkedList * linked_list,
+  unsigned int start,
+  unsigned int end)
+{
+  assert(linked_list);
+
+  sem_wait(&linked_list->base.mutex);
+
+  assert(start <= end);
+  assert(end <= linked_list->size);
+
+  LinkedList * ret = linked_list_new();
+
+  if (start == end)
+  {
+    sem_post(&linked_list->base.mutex);
+    return ret;
+  }
+
+  unsigned int index = 0;
+  struct LinkedListNode * current = linked_list->start;
+  while (index < start)
+  {
+    current = current->next;
+    index++;
+  }
+
+  while (index < end)
+  {
+    linked_list_add(ret, current->value);
+    current = current->next;
+
+    index++;
+  }
+
+  sem_post(&linked_list->base.mutex);
+
+
+  return ret;
+}
+
+LinkedList * linked_list_clone(LinkedList * linked_list)
+{
+  assert(linked_list);
+
+  sem_wait(&linked_list->base.mutex);
+
+  LinkedList * ret = linked_list_new();
+
+  struct LinkedListNode * current = linked_list->start;
+
+  while (current)
+  {
+    linked_list_add(ret, current->value);
+    current = current->next;
+  }
+
+  sem_post(&linked_list->base.mutex);
+
+  return ret;
+}
+
 
 /* end of methods for LinkedList */
 
