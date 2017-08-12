@@ -29,6 +29,6 @@ fi
 
 rm -f bin/*.o
 
-gcc src/*.c -g -c -fPIC
+gcc -std=c11 src/*.c -g -c -fPIC
 mv *.o bin/
 gcc bin/*.o -shared -o bin/libbaselib.so
