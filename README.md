@@ -6,6 +6,7 @@ This library is still growing, but for the moment it implements:
 
 - Linked Lists
 - Array Lists
+- Basic String Manipulation
 
 
 # To compile: the library
