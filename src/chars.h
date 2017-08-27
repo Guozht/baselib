@@ -19,50 +19,33 @@
 \* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 
+#ifndef __CHARS_H
+#define __CHARS_H
 
-#ifndef __LINKED_LIST_H
-#define __LINKED_LIST_H
 
-#include "any.h"
-#include "list.h"
-
-struct LinkedList;
-typedef struct LinkedList LinkedList;
-
-struct LinkedListTraversal;
-typedef struct LinkedListTraversal LinkedListTraversal;
+#include <stdbool.h>
 
 
 
-LinkedList * linked_list_new();
-void linked_list_destroy(LinkedList * linked_list);
-void linked_list_destroy_and_free(LinkedList * linked_list);
-void linked_list_destroy_and(LinkedList * linked_list, void (*function)(Any));
 
+bool chars_equals(char c1, char c2);
+bool chars_equals_ignore_case(char c1, char c2);
 
-unsigned int linked_list_size(LinkedList * linked_list);
+bool chars_is_lower(char c);
+bool chars_is_upper(char c);
 
+bool chars_is_alpha(char c);
+bool chars_is_digit(char c);
+bool chars_is_alpha_or_digit(char c);
+bool chars_is_octal_digit(char c);
+bool chars_is_hex_digit(char c);
+bool chars_is_ascii7(char c);
 
-Any linked_list_get(LinkedList * linked_list, unsigned int index);
+bool chars_is_white_space(char c);
 
-void linked_list_add(LinkedList * linked_list, Any element);
-void linked_list_add_range(LinkedList * linked_list, List * range);
-void linked_list_set(LinkedList * linked_list, unsigned int index, Any element);
+char chars_to_lower(char c);
+char chars_to_upper(char c);
 
-Any linked_list_remove(LinkedList * linked_list, unsigned int index);
-void linked_list_clear(LinkedList * linked_list);
-
-Any * linked_list_to_array(LinkedList * linked_list);
-LinkedList * linked_list_sub_list(LinkedList * linked_list, unsigned int start, unsigned int end);
-LinkedList * linked_list_clone(LinkedList * linked_list);
-
-
-
-LinkedListTraversal * linked_list_get_traversal(LinkedList * linked_list);
-void linked_list_traversal_destroy(LinkedListTraversal * linked_list_traversal);
-
-Any linked_List_traversal_next(LinkedListTraversal * linked_list_traversal);
-bool linked_list_traversal_completed(LinkedListTraversal * linked_list_traversal);
 
 
 

@@ -19,7 +19,7 @@
 \* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 
-#define BASELIB_VERSION "0.2.1"
+#define BASELIB_VERSION "0.3.0"
 
 
 #include "any.h"
@@ -27,3 +27,6 @@
 #include "list_type.h"
 #include "linked_list.h"
 #include "array_list.h"
+#include "strings.h"
+#include "chars.h"
+#include "string_builder.h"

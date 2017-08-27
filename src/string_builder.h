@@ -19,50 +19,36 @@
 \* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 
-
-#ifndef __LINKED_LIST_H
-#define __LINKED_LIST_H
-
-#include "any.h"
-#include "list.h"
-
-struct LinkedList;
-typedef struct LinkedList LinkedList;
-
-struct LinkedListTraversal;
-typedef struct LinkedListTraversal LinkedListTraversal;
+#ifndef __STRING_BUILDER_H
+#define __STRING_BUILDER_H
 
 
 
-LinkedList * linked_list_new();
-void linked_list_destroy(LinkedList * linked_list);
-void linked_list_destroy_and_free(LinkedList * linked_list);
-void linked_list_destroy_and(LinkedList * linked_list, void (*function)(Any));
+
+struct StringBuilder;
+typedef struct StringBuilder StringBuilder;
 
 
-unsigned int linked_list_size(LinkedList * linked_list);
+StringBuilder * string_builder_new();
+StringBuilder * string_builder_new_with(unsigned int size);
+
+void string_builder_destroy(StringBuilder * sb);
+
+void string_builder_clear(StringBuilder * sb);
 
 
-Any linked_list_get(LinkedList * linked_list, unsigned int index);
+unsigned int string_builder_length(StringBuilder * sb);
 
-void linked_list_add(LinkedList * linked_list, Any element);
-void linked_list_add_range(LinkedList * linked_list, List * range);
-void linked_list_set(LinkedList * linked_list, unsigned int index, Any element);
-
-Any linked_list_remove(LinkedList * linked_list, unsigned int index);
-void linked_list_clear(LinkedList * linked_list);
-
-Any * linked_list_to_array(LinkedList * linked_list);
-LinkedList * linked_list_sub_list(LinkedList * linked_list, unsigned int start, unsigned int end);
-LinkedList * linked_list_clone(LinkedList * linked_list);
+void string_builder_append(StringBuilder * sb, char * string);
+void string_builder_append_char(StringBuilder * sb, char c);
+void string_builder_append_int(StringBuilder * sb, long long l);
+void string_builder_append_float(StringBuilder * sb, double d);
 
 
+char * string_builder_to_string(StringBuilder * sb);
+char * string_builder_to_string_destroy(StringBuilder * sb);
 
-LinkedListTraversal * linked_list_get_traversal(LinkedList * linked_list);
-void linked_list_traversal_destroy(LinkedListTraversal * linked_list_traversal);
 
-Any linked_List_traversal_next(LinkedListTraversal * linked_list_traversal);
-bool linked_list_traversal_completed(LinkedListTraversal * linked_list_traversal);
 
 
 

@@ -30,5 +30,11 @@ fi
 rm -f bin/*.o
 
 gcc -std=c11 src/*.c -g -c -fPIC
+if [[ $? != 0 ]] ; then
+  exit $?
+fi
+
 mv *.o bin/
 gcc bin/*.o -shared -o bin/libbaselib.so
+
+exit $?

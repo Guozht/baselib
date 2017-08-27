@@ -36,6 +36,9 @@ struct List
   sem_t mutex;
 
   void (*list_destroy)(struct List *);
+  void (*list_destroy_and_free)(struct List *);
+  void (*list_destroy_and)(struct List *, void (*function)(Any));
+
   unsigned int (*list_size)(struct List *);
 
   Any (*list_get)(struct List *, unsigned int);

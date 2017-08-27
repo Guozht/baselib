@@ -19,51 +19,76 @@
 \* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 
+#include "chars.h"
 
-#ifndef __LINKED_LIST_H
-#define __LINKED_LIST_H
-
-#include "any.h"
-#include "list.h"
-
-struct LinkedList;
-typedef struct LinkedList LinkedList;
-
-struct LinkedListTraversal;
-typedef struct LinkedListTraversal LinkedListTraversal;
+#include <stdbool.h>
 
 
-
-LinkedList * linked_list_new();
-void linked_list_destroy(LinkedList * linked_list);
-void linked_list_destroy_and_free(LinkedList * linked_list);
-void linked_list_destroy_and(LinkedList * linked_list, void (*function)(Any));
-
-
-unsigned int linked_list_size(LinkedList * linked_list);
-
-
-Any linked_list_get(LinkedList * linked_list, unsigned int index);
-
-void linked_list_add(LinkedList * linked_list, Any element);
-void linked_list_add_range(LinkedList * linked_list, List * range);
-void linked_list_set(LinkedList * linked_list, unsigned int index, Any element);
-
-Any linked_list_remove(LinkedList * linked_list, unsigned int index);
-void linked_list_clear(LinkedList * linked_list);
-
-Any * linked_list_to_array(LinkedList * linked_list);
-LinkedList * linked_list_sub_list(LinkedList * linked_list, unsigned int start, unsigned int end);
-LinkedList * linked_list_clone(LinkedList * linked_list);
+bool chars_equals(char c1, char c2)
+{
+  return c1 == c2;
+}
+bool chars_equals_ignore_case(char c1, char c2)
+{
+  return chars_to_lower(c1) == chars_to_lower(c2);
+}
 
 
+bool chars_is_lower(char c)
+{
+  return 'a' <= c && c <= 'z';
+}
+bool chars_is_upper(char c)
+{
+  return 'A' <= c && c <= 'Z';
+}
 
-LinkedListTraversal * linked_list_get_traversal(LinkedList * linked_list);
-void linked_list_traversal_destroy(LinkedListTraversal * linked_list_traversal);
+bool chars_is_alpha(char c)
+{
+  return chars_is_lower(c) || chars_is_upper(c);
+}
+bool chars_is_digit(char c)
+{
+  return '0' <= c && c < '9';
+}
+bool chars_is_alpha_or_digit(char c)
+{
+  return chars_is_alpha(c) || chars_is_digit(c);
+}
+bool chars_is_octal_digit(char c)
+{
+  return '0' <= c && c <= '7';
+}
+bool chars_is_hex_digit(char c)
+{
+  return
+    chars_is_digit(c) ||
+    ('A' <= c && c <= 'F') ||
+    ('a' <= c && c <= 'f')
+    ;
+}
+bool chars_is_ascii7(char c)
+{
+  return c & 0x7F == 0;
+}
 
-Any linked_List_traversal_next(LinkedListTraversal * linked_list_traversal);
-bool linked_list_traversal_completed(LinkedListTraversal * linked_list_traversal);
 
+bool chars_is_white_space(char c)
+{
+  return c <= 0x20;
+}
 
-
-#endif
+char chars_to_lower(char c)
+{
+  if (chars_is_upper(c))
+    return c + ('a' - 'A');
+  else
+    return c;
+}
+char chars_to_upper(char c)
+{
+  if (chars_is_lower(c))
+    return c - ('a' - 'A');
+  else
+    return c;
+}

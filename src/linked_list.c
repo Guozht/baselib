@@ -105,6 +105,8 @@ LinkedList * linked_list_new()
   ret->base.open_traversals = 0;
 
   ret->base.list_destroy = (void (*)(List *)) linked_list_destroy;
+  ret->base.list_destroy_and_free = (void (*)(List *)) linked_list_destroy_and_free;
+  ret->base.list_destroy_and = (void (*)(List *, void (*)(Any))) linked_list_destroy_and;
   ret->base.list_size = (unsigned int (*)(List *)) linked_list_size;
   ret->base.list_get = (Any (*)(List *, unsigned int)) linked_list_get;
   ret->base.list_add = (void (*)(List *, Any)) linked_list_add;
@@ -134,6 +136,35 @@ void linked_list_destroy(LinkedList * linked_list)
 
   sem_destroy(&linked_list->base.mutex);
   free(linked_list);
+}
+void linked_list_destroy_and_free(LinkedList * linked_list)
+{
+  assert(linked_list);
+  assert(linked_list->base.open_traversals == 0);
+
+  struct LinkedListNode * current = linked_list->start;
+  while (current)
+  {
+    free(any_to_ptr(current->value));
+    current = current->next;
+  }
+
+  linked_list_destroy(linked_list);
+}
+void linked_list_destroy_and(LinkedList * linked_list, void (*function)(Any))
+{
+  assert(linked_list);
+  assert(linked_list->base.open_traversals == 0);
+  assert(function);
+
+  struct LinkedListNode * current = linked_list->start;
+  while (current)
+  {
+    function(current->value);
+    current = current->next;
+  }
+
+  linked_list_destroy(linked_list);
 }
 
 

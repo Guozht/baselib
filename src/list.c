@@ -54,6 +54,21 @@ void list_destroy(List * list)
   list->list_destroy(list);
 }
 
+void list_destroy_and_free(List * list)
+{
+  assert(list);
+
+  list->list_destroy_and_free(list);
+}
+
+void list_destroy_and(List * list, void (*function)(Any))
+{
+  assert(list);
+
+  list->list_destroy_and(list, function);
+}
+
+
 
 unsigned int list_size(List * list)
 {

@@ -237,7 +237,7 @@ bool any_to_bool(Any a)
 
 void * any_to_void(Any a)
 {
-  assert(a.type == ANY_TYPE_POINTER);
+  assert(a.type == ANY_TYPE_POINTER || a.type == ANY_TYPE_STRING);
   return a.value._void;
 }
 void * any_to_ptr(Any a)

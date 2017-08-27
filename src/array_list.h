@@ -37,6 +37,8 @@ typedef struct ArrayListTraversal ArrayListTraversal;
 
 ArrayList * array_list_new();
 void array_list_destroy(ArrayList * array_list);
+void array_list_destroy_and_free(ArrayList * array_list);
+void array_list_destroy_and(ArrayList * array_list, void (*function)(Any));
 
 
 unsigned int array_list_size(ArrayList * array_list);
