@@ -69,7 +69,7 @@ bool chars_is_hex_digit(char c)
 }
 bool chars_is_ascii7(char c)
 {
-  return c & 0x7F == 0;
+  return (c & 0x7F) == 0;
 }
 
 
