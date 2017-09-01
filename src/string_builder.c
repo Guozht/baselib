@@ -29,6 +29,8 @@
 
 #define STRING_BUILDER_BLOCK_SIZE 1024
 
+char * _string_builder_temp_string = NULL;
+
 
 struct StringBuilder
 {
@@ -39,7 +41,7 @@ struct StringBuilder
 
 /* internal methods */
 
-static StringBuilder * string_builder_resize(StringBuilder * sb, unsigned int addition_size)
+static void string_builder_resize(StringBuilder * sb, unsigned int addition_size)
 {
   if (sb->length + addition_size > sb->data_length)
   {
@@ -180,6 +182,18 @@ char * string_builder_to_string(StringBuilder * sb)
   ret[sb->length] = '\0';
 
   return ret;
+}
+
+char * string_builder_to_temp_string(StringBuilder * sb)
+{
+  if (_string_builder_temp_string != NULL)
+  {
+    free(_string_builder_temp_string);
+    _string_builder_temp_string = NULL;
+  }
+  
+  _string_builder_temp_string = string_builder_to_string(sb);
+  return _string_builder_temp_string;
 }
 
 char * string_builder_to_string_destroy(StringBuilder * sb)

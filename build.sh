@@ -29,7 +29,7 @@ fi
 
 rm -f bin/*.o
 
-gcc -std=gnu11 src/*.c -g -c -fPIC
+gcc -std=gnu11 src/*.c -g -c -fPIC -Wall
 if [[ $? != 0 ]] ; then
   exit $?
 fi

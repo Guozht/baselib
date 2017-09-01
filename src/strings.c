@@ -109,8 +109,7 @@ static char * strings_replace_string_imp(char * string, char * old_string, char 
 
   unsigned int
     string_length = strings_length(string),
-    old_string_length = strings_length(old_string),
-    new_string_length = strings_length(new_string)
+    old_string_length = strings_length(old_string)
     ;
 
   assert(old_string_length > 0);
@@ -499,19 +498,19 @@ char * strings_trim_back(char * string)
 
 List * strings_split(char * string, char split)
 {
-  strings_split_up_to(string, split, 0);
+  return strings_split_up_to(string, split, 0);
 }
 List * strings_split_ignore_case(char * string, char split)
 {
-  strings_split_ignore_case_up_to(string, split, 0);
+  return strings_split_ignore_case_up_to(string, split, 0);
 }
 List * strings_split_up_to(char * string, char split, unsigned int count)
 {
-  strings_split_up_to_imp(string, split, count, chars_equals);
+  return strings_split_up_to_imp(string, split, count, chars_equals);
 }
 List * strings_split_ignore_case_up_to(char * string, char split, unsigned int count)
 {
-  strings_split_up_to_imp(string, split, count, chars_equals_ignore_case);
+  return strings_split_up_to_imp(string, split, count, chars_equals_ignore_case);
 }
 
 List * strings_split_by_string(char * string, char * split)
