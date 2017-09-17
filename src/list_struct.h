@@ -47,8 +47,11 @@ struct List
   void (*list_add_range)(struct List *, struct List *);
   void (*list_set)(struct List *, unsigned int, Any);
 
-  Any (*list_remove)(struct List *, unsigned int);
+  Any (*list_remove_at)(struct List *, unsigned int);
   void (*list_clear)(struct List *);
+
+  char * (*list_to_string)(struct List *);
+
 
   Any * (*list_to_array)(struct List *);
   struct List * (*list_sub_list)(struct List *, unsigned int start, unsigned int end);

@@ -120,11 +120,11 @@ void list_set(List * list, unsigned int index, Any element)
   list->list_set(list, index, element);
 }
 
-Any list_remove(List * list, unsigned int index)
+Any list_remove_at(List * list, unsigned int index)
 {
   assert(list);
 
-  return list->list_remove(list, index);
+  return list->list_remove_at(list, index);
 }
 
 void list_clear(List * list)
@@ -153,6 +153,14 @@ List * list_clone(List * list)
   assert(list);
 
   return list->list_clone(list);
+}
+
+
+char * list_to_string(List * list)
+{
+  assert(list);
+
+  return list->list_to_string(list);
 }
 
 

@@ -24,6 +24,8 @@
 #include "list_struct.h"
 #include "list_type.h"
 #include "any.h"
+#include "string_builder.h"
+#include "strings.h"
 
 #include <assert.h>
 #include <semaphore.h>
@@ -107,11 +109,12 @@ ArrayList * array_list_new()
   ret->base.list_add = (void (*)(List *, Any)) array_list_add;
   ret->base.list_add_range = (void (*)(List *, List *)) array_list_add_range;
   ret->base.list_set = (void (*)(List *, unsigned int, Any)) array_list_set;
-  ret->base.list_remove = (Any (*)(List *, unsigned int)) array_list_remove;
+  ret->base.list_remove_at = (Any (*)(List *, unsigned int)) array_list_remove_at;
   ret->base.list_clear = (void (*)(List *)) array_list_clear;
   ret->base.list_to_array = (Any * (*)(List *)) array_list_to_array;
   ret->base.list_sub_list = (List * (*)(List *, unsigned int, unsigned int)) array_list_sub_list;
   ret->base.list_clone = (List * (*)(List *)) array_list_clone;
+  ret->base.list_to_string = (char * (*)(List *)) array_list_to_string;
   ret->base.list_get_traversal = (ListTraversal * (*)(List *)) array_list_get_traversal;
 
   sem_init(&ret->base.mutex, 0, 1);
@@ -264,7 +267,7 @@ void array_list_set(ArrayList * array_list, unsigned int index, Any element)
   sem_post(&array_list->base.mutex);
 }
 
-Any array_list_remove(ArrayList * array_list, unsigned int index)
+Any array_list_remove_at(ArrayList * array_list, unsigned int index)
 {
   assert(array_list);
 
@@ -381,6 +384,35 @@ ArrayList * array_list_clone(ArrayList * array_list)
   sem_post(&array_list->base.mutex);
 
   return ret;
+}
+
+char * array_list_to_string(ArrayList * array_list)
+{
+  assert(array_list);
+  
+  if (array_list->size == 0)
+    return strings_clone("[]");
+
+  char * buffer;
+
+  StringBuilder * sb = string_builder_new();
+  string_builder_append(sb, "[ ");
+  
+  buffer = any_get_string_representation(array_list->array[0]);
+  string_builder_append(sb, buffer);
+  free(buffer);
+  
+  for (unsigned int k = 1; k < array_list->size; k++)
+  {
+    buffer = any_get_string_representation(array_list->array[k]);
+    string_builder_append(sb, ", ");
+    string_builder_append(sb, buffer);
+    free(buffer);
+  }
+
+  string_builder_append(sb, " ]");
+
+  return string_builder_to_string_destroy(sb);
 }
 
 

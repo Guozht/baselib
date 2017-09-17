@@ -19,8 +19,10 @@
 \* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 #include "any.h"
+#include "strings.h"
 
 #include <assert.h>
+#include <stdio.h>
 
 
 Any char_to_any(char c)
@@ -315,3 +317,81 @@ bool any_equals(Any a, Any b)
   }
 
 }
+
+
+char * any_get_string_representation(Any a)
+{
+  
+  char buffer [64];
+  
+  switch (a.type)
+  {
+    case ANY_TYPE_CHAR:
+      sprintf(buffer, "%c", a.value._char);
+      break;
+    case ANY_TYPE_SCHAR:
+      sprintf(buffer, "%c", a.value._signed_char);
+      break;
+    case ANY_TYPE_UCHAR:
+      sprintf(buffer, "%c", a.value._unsigned_char);
+      break;
+
+    case ANY_TYPE_SHORT:
+      sprintf(buffer, "%d", a.value._short);
+      break;
+    case ANY_TYPE_USHORT:
+      sprintf(buffer, "%u", a.value._unsigned_short);
+      break;
+
+    case ANY_TYPE_INT:
+      sprintf(buffer, "%d", a.value._int);
+      break;
+    case ANY_TYPE_UINT:
+      sprintf(buffer, "%u", a.value._unsigned_int);
+      break;
+
+    case ANY_TYPE_LONG:
+      sprintf(buffer, "%ld", a.value._long);
+      break;
+    case ANY_TYPE_ULONG:
+      sprintf(buffer, "%lu", a.value._unsigned_long);
+      break;
+
+    case ANY_TYPE_LONGLONG:
+      sprintf(buffer, "%lld", a.value._long_long);
+      break;
+    case ANY_TYPE_ULONGLONG:
+      sprintf(buffer, "%llu", a.value._unsigned_long_long);
+      break;
+
+
+    case ANY_TYPE_FLOAT:
+      sprintf(buffer, "%f", a.value._float);
+      break;
+    case ANY_TYPE_DOUBLE:
+      sprintf(buffer, "%f", a.value._double);
+      break;
+
+    case ANY_TYPE_BOOL:
+      sprintf("%s", buffer, a.value._bool ? "true" : "false");
+      break;
+
+    case ANY_TYPE_POINTER:
+      sprintf(buffer, "%p", a.value._void);
+      break;
+    case ANY_TYPE_STRING:
+      return strings_clone(a.value._string);
+
+    default:
+      assert(0);
+
+  }
+  
+  return strings_clone(buffer);
+  
+}
+
+
+
+
+

@@ -49,12 +49,14 @@ void linked_list_add(LinkedList * linked_list, Any element);
 void linked_list_add_range(LinkedList * linked_list, List * range);
 void linked_list_set(LinkedList * linked_list, unsigned int index, Any element);
 
-Any linked_list_remove(LinkedList * linked_list, unsigned int index);
+Any linked_list_remove_at(LinkedList * linked_list, unsigned int index);
 void linked_list_clear(LinkedList * linked_list);
 
 Any * linked_list_to_array(LinkedList * linked_list);
 LinkedList * linked_list_sub_list(LinkedList * linked_list, unsigned int start, unsigned int end);
 LinkedList * linked_list_clone(LinkedList * linked_list);
+
+char * linked_list_to_string(LinkedList * linked_list);
 
 
 

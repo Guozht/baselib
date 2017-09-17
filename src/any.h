@@ -151,6 +151,7 @@ char * any_to_str(Any a);
 
 
 bool any_equals(Any a, Any b);
+char * any_get_string_representation(Any a);
 
 
 

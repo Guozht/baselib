@@ -25,6 +25,8 @@
 #include "list_type.h"
 #include "list.h"
 #include "any.h"
+#include "strings.h"
+#include "string_builder.h"
 
 #include <assert.h>
 #include <stdlib.h>
@@ -112,11 +114,12 @@ LinkedList * linked_list_new()
   ret->base.list_add = (void (*)(List *, Any)) linked_list_add;
   ret->base.list_add_range = (void (*)(List *, List *)) linked_list_add_range;
   ret->base.list_set = (void (*)(List *, unsigned int, Any)) linked_list_set;
-  ret->base.list_remove = (Any (*)(List *, unsigned int)) linked_list_remove;
+  ret->base.list_remove_at = (Any (*)(List *, unsigned int)) linked_list_remove_at;
   ret->base.list_clear = (void (*)(List *)) linked_list_clear;
   ret->base.list_to_array = (Any * (*)(List *)) linked_list_to_array;
   ret->base.list_sub_list = (List * (*)(List *, unsigned int, unsigned int)) linked_list_sub_list;
   ret->base.list_clone = (List * (*)(List *)) linked_list_clone;
+  ret->base.list_to_string = (char * (*)(List *)) linked_list_to_string;
   ret->base.list_get_traversal = (ListTraversal * (*)(List *)) linked_list_get_traversal;
 
   ret->start = NULL;
@@ -259,7 +262,7 @@ void linked_list_set(LinkedList * linked_list, unsigned int index, Any element)
 }
 
 
-Any linked_list_remove(LinkedList * linked_list, unsigned int index)
+Any linked_list_remove_at(LinkedList * linked_list, unsigned int index)
 {
 
   assert(linked_list);
@@ -429,6 +432,40 @@ LinkedList * linked_list_clone(LinkedList * linked_list)
   return ret;
 }
 
+char * linked_list_to_string(LinkedList * linked_list)
+{
+  assert(linked_list);
+
+  if (linked_list->size == 0)
+    return strings_clone("[]");
+
+  char * buffer;
+  struct LinkedListNode * node = linked_list->start;
+  StringBuilder * sb = string_builder_new();
+
+  string_builder_append(sb, "[ ");
+
+  buffer = any_get_string_representation(node->value);
+  string_builder_append(sb, buffer);
+  free(buffer);
+
+  do
+  {
+    node = node->next;
+    if(!node)
+      continue;
+
+    buffer = any_get_string_representation(node->value);
+    string_builder_append(sb, ", ");
+    string_builder_append(sb, buffer);
+    free(buffer);
+  }
+  while (node);
+
+  string_builder_append(sb, " ]");
+
+  return string_builder_to_string_destroy(sb);
+}
 
 /* end of methods for LinkedList */
 

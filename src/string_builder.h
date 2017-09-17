@@ -46,7 +46,9 @@ void string_builder_append_float(StringBuilder * sb, double d);
 
 
 char * string_builder_to_string(StringBuilder * sb);
+char * string_builder_to_temp_string(StringBuilder * sb);
 char * string_builder_to_string_destroy(StringBuilder * sb);
+
 
 
 

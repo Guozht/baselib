@@ -55,13 +55,14 @@ void list_add(List * list, Any element);
 void list_add_range(List * list, List * range);
 void list_set(List * list, unsigned int index, Any element);
 
-Any list_remove(List * list, unsigned int index);
+Any list_remove_at(List * list, unsigned int index);
 void list_clear(List * list);
 
 Any * list_to_array(List * list);
 List * list_sub_list(List * list, unsigned int start, unsigned int end);
 List * list_clone(List * list);
 
+char * list_to_string(List * list);
 
 
 ListTraversal * list_get_traversal(List * list);
