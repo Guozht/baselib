@@ -105,6 +105,11 @@ void array_list_set(ArrayList * array_list, unsigned int index, Any element);
 Any array_list_remove_at(ArrayList * array_list, unsigned int index);
 
 /**
+ * Removes the element from the array
+ */
+unsigned int array_list_remove(ArrayList * array_list, Any any);
+
+/**
  * Clears all elements fromt the array
  */
 void array_list_clear(ArrayList * array_list);

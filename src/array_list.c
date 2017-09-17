@@ -110,6 +110,7 @@ ArrayList * array_list_new()
   ret->base.list_add_range = (void (*)(List *, List *)) array_list_add_range;
   ret->base.list_set = (void (*)(List *, unsigned int, Any)) array_list_set;
   ret->base.list_remove_at = (Any (*)(List *, unsigned int)) array_list_remove_at;
+  ret->base.list_remove = (unsigned int (*)(List *, Any)) array_list_remove;
   ret->base.list_clear = (void (*)(List *)) array_list_clear;
   ret->base.list_to_array = (Any * (*)(List *)) array_list_to_array;
   ret->base.list_sub_list = (List * (*)(List *, unsigned int, unsigned int)) array_list_sub_list;
@@ -287,6 +288,36 @@ Any array_list_remove_at(ArrayList * array_list, unsigned int index)
 
   sem_post(&array_list->base.mutex);
 
+  return ret;
+}
+
+unsigned int array_list_remove(ArrayList * array_list, Any any)
+{
+  assert(array_list);
+  
+  sem_wait(&array_list->base.mutex);
+  assert(array_list->base.open_traversals == 0);
+  unsigned int ret = 0;
+  
+  for (unsigned int k = 0; k < array_list->size; k++)
+  {
+    if (any_equals(array_list->array[k], any))
+    {
+      
+      for (unsigned int i = k; i < array_list->size - 1; i++)
+      {
+        array_list->array[i] = array_list->array[i + 1];
+      }
+      
+      ret++;
+      array_list->size--;
+      k--;
+    }
+  }
+  
+  array_list_resize(array_list, array_list->size);
+  sem_post(&array_list->base.mutex);
+  
   return ret;
 }
 

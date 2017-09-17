@@ -56,6 +56,7 @@ void list_add_range(List * list, List * range);
 void list_set(List * list, unsigned int index, Any element);
 
 Any list_remove_at(List * list, unsigned int index);
+unsigned int list_remove(List * list, Any any);
 void list_clear(List * list);
 
 Any * list_to_array(List * list);

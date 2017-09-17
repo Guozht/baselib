@@ -50,6 +50,7 @@ void linked_list_add_range(LinkedList * linked_list, List * range);
 void linked_list_set(LinkedList * linked_list, unsigned int index, Any element);
 
 Any linked_list_remove_at(LinkedList * linked_list, unsigned int index);
+unsigned int linked_list_remove(LinkedList * linked_list, Any any);
 void linked_list_clear(LinkedList * linked_list);
 
 Any * linked_list_to_array(LinkedList * linked_list);

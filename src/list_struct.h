@@ -48,6 +48,7 @@ struct List
   void (*list_set)(struct List *, unsigned int, Any);
 
   Any (*list_remove_at)(struct List *, unsigned int);
+  unsigned int (*list_remove)(struct List *, Any);
   void (*list_clear)(struct List *);
 
   char * (*list_to_string)(struct List *);
