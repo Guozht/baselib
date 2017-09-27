@@ -52,6 +52,8 @@ void linked_list_set(LinkedList * linked_list, unsigned int index, Any element);
 Any linked_list_remove_at(LinkedList * linked_list, unsigned int index);
 unsigned int linked_list_remove(LinkedList * linked_list, Any any);
 void linked_list_clear(LinkedList * linked_list);
+void linked_list_clear_and_free(LinkedList * linked_list);
+void linked_list_clear_and(LinkedList * linked_list, void (*function)(Any));
 
 Any * linked_list_to_array(LinkedList * linked_list);
 LinkedList * linked_list_sub_list(LinkedList * linked_list, unsigned int start, unsigned int end);
@@ -59,7 +61,7 @@ LinkedList * linked_list_clone(LinkedList * linked_list);
 
 char * linked_list_to_string(LinkedList * linked_list);
 
-
+void linked_list_foreach(LinkedList * linked_list, void (*function)(Any));
 
 LinkedListTraversal * linked_list_get_traversal(LinkedList * linked_list);
 void linked_list_traversal_destroy(LinkedListTraversal * linked_list_traversal);

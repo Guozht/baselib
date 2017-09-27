@@ -26,16 +26,16 @@
 #include "list.h"
 
 
-
-
 char * strings_empty();
 char * strings_from_char(char c);
 char * strings_clone(char * string);
+char * strings_from_array(char * array, unsigned int length);
 
 char strings_char_at(char * string, unsigned int k);
 unsigned int strings_length(char * string);
 
 char * strings_prefix(char * string, unsigned int length);
+#define strings_suffix(s,l) strings_postfix(s,l)
 char * strings_postfix(char * string, unsigned int length);
 char * strings_substring(char * string, unsigned int start, unsigned int end);
 
@@ -81,8 +81,10 @@ bool strings_equals(char * string1, char * string2);
 bool strings_equals_ignore_case(char * string1, char * string2);
 
 bool strings_is_empty(char * string);
+#define strings_is_whitespace(s) strings_is_white_space(s)
 bool strings_is_white_space(char * string);
 bool strings_is_null_or_empty(char * string);
+#define strings_is_null_or_whitespace(s) strings_is_null_or_white_space(s)
 bool strings_is_null_or_white_space(char * string);
 
 

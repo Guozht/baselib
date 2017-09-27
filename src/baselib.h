@@ -19,7 +19,7 @@
 \* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 
-#define BASELIB_VERSION "0.4.3"
+#define BASELIB_VERSION "0.4.5"
 
 
 #include "any.h"
@@ -30,3 +30,4 @@
 #include "strings.h"
 #include "chars.h"
 #include "string_builder.h"
+#include "files.h"

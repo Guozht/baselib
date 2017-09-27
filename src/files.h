@@ -20,62 +20,34 @@
 
 
 
-#ifndef __LIST_H
-#define __LIST_H
+#ifndef __FILES_H
+#define __FILES_H
 
-
-#include "list_type.h"
-#include "any.h"
 
 #include <stdbool.h>
+#include <stdint.h>
+#include <stdio.h> /* for size_t */
 
 
-struct List;
-typedef struct List List;
 
-struct ListTraversal;
-typedef struct ListTraversal ListTraversal;
-
-
-/* CONSTRUCTOR */
-List * list_new(ListType type);
-
-/* DESTRUCTOR */
-void list_destroy(List * list);
-void list_destroy_and_free(List * list);
-void list_destroy_and(List * list, void (*function)(Any));
-
-unsigned int list_size(List * list);
-bool list_has_open_traversals(List * list);
+#define FILES_CREATE 1
+#define FILES_APPEND 2
+#define FILES_OVERWRITE 4
 
 
-Any list_get(List * list, unsigned int index);
-
-void list_add(List * list, Any element);
-void list_add_range(List * list, List * range);
-void list_set(List * list, unsigned int index, Any element);
-
-Any list_remove_at(List * list, unsigned int index);
-unsigned int list_remove(List * list, Any any);
-void list_clear(List * list);
-void list_clear_and_free(List * list);
-void list_clear_and(List * list, void (*function)(Any));
-
-Any * list_to_array(List * list);
-List * list_sub_list(List * list, unsigned int start, unsigned int end);
-List * list_clone(List * list);
-
-char * list_to_string(List * list);
+char * files_resolve(char * base, char * path);
 
 
-void list_foreach(List * list, void (*function)(Any));
+bool files_exists(char * path);
+long files_size(char * path);
 
+char * files_read_all(char * path, size_t * read_ptr);
+bool files_write_all(char * path, char * data, size_t data_length, int op_type);
 
-ListTraversal * list_get_traversal(List * list);
-void list_traversal_destroy(ListTraversal * list_traversal);
+bool files_delete(char * path);
 
-Any list_traversal_next(ListTraversal * list_traversal);
-bool list_traversal_completed(ListTraversal * list_traversal);
-
+bool files_mkdir(char * path);
+bool files_rmdir(char * path);
 
 #endif
+

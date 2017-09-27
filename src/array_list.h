@@ -114,6 +114,10 @@ unsigned int array_list_remove(ArrayList * array_list, Any any);
  */
 void array_list_clear(ArrayList * array_list);
 
+void array_list_clear_and_free(ArrayList * array_list);
+
+void array_list_clear_and(ArrayList * array, void (*function)(Any));
+
 
 /**
  * Returns an pointer to an standard
@@ -140,6 +144,9 @@ ArrayList * array_list_clone(ArrayList * array_list);
  * Returns a string representation of the array
  */
 char * array_list_to_string(ArrayList * array_list);
+
+
+void array_list_foreach(ArrayList * array_list, void (*function)(Any));
 
 
 /**

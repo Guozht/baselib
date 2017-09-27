@@ -117,10 +117,13 @@ LinkedList * linked_list_new()
   ret->base.list_remove_at = (Any (*)(List *, unsigned int)) linked_list_remove_at;
   ret->base.list_remove = (unsigned int (*)(List *, Any)) linked_list_remove;
   ret->base.list_clear = (void (*)(List *)) linked_list_clear;
+  ret->base.list_clear_and_free = (void (*)(List *)) linked_list_clear_and_free;
+  ret->base.list_clear_and = (void (*)(List *, void (*)(Any))) linked_list_clear_and;
   ret->base.list_to_array = (Any * (*)(List *)) linked_list_to_array;
   ret->base.list_sub_list = (List * (*)(List *, unsigned int, unsigned int)) linked_list_sub_list;
   ret->base.list_clone = (List * (*)(List *)) linked_list_clone;
   ret->base.list_to_string = (char * (*)(List *)) linked_list_to_string;
+  ret->base.list_foreach = (void (*)(List *, void (*)(Any))) linked_list_foreach;
   ret->base.list_get_traversal = (ListTraversal * (*)(List *)) linked_list_get_traversal;
 
   ret->start = NULL;
@@ -367,12 +370,13 @@ void linked_list_clear(LinkedList * linked_list)
   assert(linked_list);
 
   sem_wait(&linked_list->base.mutex);
+  assert(linked_list->base.open_traversals == 0);
 
-  struct LinkedListNode * current = linked_list->start;
+  struct LinkedListNode * current = linked_list->start, * hold;
 
   while (current)
   {
-    struct LinkedListNode * hold = current;
+    hold = current;
     current = hold->next;
     free(hold);
   }
@@ -383,6 +387,57 @@ void linked_list_clear(LinkedList * linked_list)
 
   sem_post(&linked_list->base.mutex);
 
+}
+
+void linked_list_clear_and_free(LinkedList * linked_list)
+{
+  assert(linked_list);
+  
+  sem_wait(&linked_list->base.mutex);
+  assert(linked_list->base.open_traversals == 0);
+  
+  struct LinkedListNode * current = linked_list->start, * hold;
+  void * ptr;
+  
+  while (current)
+  {
+    hold = current;
+    current = hold->next;
+    ptr = any_to_ptr(hold->value);
+    free(ptr);
+    free(hold);
+  }
+  
+  linked_list->start = NULL;
+  linked_list->end = NULL;
+  linked_list->size = 0;
+  
+  sem_post(&linked_list->base.mutex);
+}
+
+void linked_list_clear_and(LinkedList * linked_list, void (*function)(Any))
+{
+  assert(linked_list);
+  assert(function);
+  
+  sem_wait(&linked_list->base.mutex);
+  assert(linked_list->base.open_traversals == 0);
+  
+  struct LinkedListNode * current = linked_list->start, * hold;
+  
+  while (current)
+  {
+    hold = current;
+    current = hold->next;
+    function(hold->value);
+    free(hold);
+  }
+  
+  linked_list->start = NULL;
+  linked_list->end = NULL;
+  linked_list->size = 0;
+  
+  sem_post(&linked_list->base.mutex);
 }
 
 
@@ -506,6 +561,32 @@ char * linked_list_to_string(LinkedList * linked_list)
   string_builder_append(sb, " ]");
 
   return string_builder_to_string_destroy(sb);
+}
+
+void linked_list_foreach(LinkedList * linked_list, void (*function)(Any))
+{
+  assert(linked_list);
+  assert(function);
+  
+  sem_wait(&linked_list->base.mutex);
+  linked_list->base.open_traversals++;
+  sem_post(&linked_list->base.mutex);
+  
+  
+  struct LinkedListNode * current = linked_list->start;
+  
+  while (current)
+  {
+    function(current->value);
+    current = current->next;
+  }
+  
+  sem_wait(&linked_list->base.mutex);
+  linked_list->base.open_traversals--;
+  sem_post(&linked_list->base.mutex);
+  
+  
+  
 }
 
 /* end of methods for LinkedList */

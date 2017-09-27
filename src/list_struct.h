@@ -50,9 +50,12 @@ struct List
   Any (*list_remove_at)(struct List *, unsigned int);
   unsigned int (*list_remove)(struct List *, Any);
   void (*list_clear)(struct List *);
+  void (*list_clear_and_free)(struct List *);
+  void (*list_clear_and)(struct List *, void (*function)(Any));
 
   char * (*list_to_string)(struct List *);
 
+  void (*list_foreach)(struct List *, void (*function)(Any));
 
   Any * (*list_to_array)(struct List *);
   struct List * (*list_sub_list)(struct List *, unsigned int start, unsigned int end);

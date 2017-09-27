@@ -112,10 +112,13 @@ ArrayList * array_list_new()
   ret->base.list_remove_at = (Any (*)(List *, unsigned int)) array_list_remove_at;
   ret->base.list_remove = (unsigned int (*)(List *, Any)) array_list_remove;
   ret->base.list_clear = (void (*)(List *)) array_list_clear;
+  ret->base.list_clear_and_free = (void (*)(List *)) array_list_clear_and_free;
+  ret->base.list_clear_and = (void (*)(List *, void (*)(Any))) array_list_clear_and;
   ret->base.list_to_array = (Any * (*)(List *)) array_list_to_array;
   ret->base.list_sub_list = (List * (*)(List *, unsigned int, unsigned int)) array_list_sub_list;
   ret->base.list_clone = (List * (*)(List *)) array_list_clone;
   ret->base.list_to_string = (char * (*)(List *)) array_list_to_string;
+  ret->base.list_foreach = (void (*)(List *, void (*)(Any))) array_list_foreach;
   ret->base.list_get_traversal = (ListTraversal * (*)(List *)) array_list_get_traversal;
 
   sem_init(&ret->base.mutex, 0, 1);
@@ -334,6 +337,47 @@ void array_list_clear(ArrayList * array_list)
 
 }
 
+void array_list_clear_and_free(ArrayList * array_list)
+{
+  assert(array_list);
+  
+  sem_wait(&array_list->base.mutex);
+  assert(array_list->base.open_traversals == 0);
+  
+  void * ptr;
+  for (unsigned int k = 0; k < array_list->size; k++)
+  {
+    ptr = any_to_ptr(array_list->array[k]);
+    free(ptr);
+  }
+  
+  array_list_resize(array_list, 0);
+  array_list->size = 0;
+  
+  sem_post(&array_list->base.mutex);
+  
+}
+
+void array_list_clear_and(ArrayList * array_list, void (*function)(Any))
+{
+  assert(array_list);
+  assert(function);
+  
+  sem_wait(&array_list->base.mutex);
+  assert(array_list->base.open_traversals == 0);
+  
+  for (unsigned int k = 0; k < array_list->size; k++)
+  {
+    function(array_list->array[k]);
+  }
+  
+  array_list_resize(array_list, 0);
+  array_list->size = 0;
+  
+  sem_post(&array_list->base.mutex);
+}
+
+
 Any * array_list_to_array(ArrayList * array_list)
 {
   assert(array_list);
@@ -447,6 +491,26 @@ char * array_list_to_string(ArrayList * array_list)
 }
 
 
+void array_list_foreach(ArrayList * array_list, void (*function)(Any))
+{
+  assert(array_list);
+  assert(function);
+  
+  sem_wait(&array_list->base.mutex);
+  array_list->base.open_traversals++;
+  sem_post(&array_list->base.mutex);
+  
+  for (unsigned int k = 0; k < array_list->size; k++)
+  {
+    function(array_list->array[k]);
+  }
+  
+  sem_wait(&array_list->base.mutex);
+  array_list->base.open_traversals--;
+  sem_post(&array_list->base.mutex);
+}
+
+
 /* end of methods for ArrayList */
 
 
@@ -470,9 +534,7 @@ ArrayListTraversal * array_list_get_traversal(ArrayList * array_list)
   ret->position = 0;
 
   sem_wait(&array_list->base.mutex);
-
   array_list->base.open_traversals++;
-
   sem_post(&array_list->base.mutex);
 
   return ret;
@@ -483,9 +545,7 @@ void array_list_traversal_destroy(ArrayListTraversal * array_list_traversal)
   assert(array_list_traversal);
 
   sem_wait(&array_list_traversal->base.list->mutex);
-
   array_list_traversal->base.list->open_traversals--;
-
   sem_post(&array_list_traversal->base.list->mutex);
 
 

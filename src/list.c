@@ -141,6 +141,21 @@ void list_clear(List * list)
   return list->list_clear(list);
 }
 
+void list_clear_and_free(List * list)
+{
+  assert(list);
+  
+  return list->list_clear_and_free(list);
+}
+
+void list_clear_and(List * list, void (*function)(Any))
+{
+  assert(list);
+  assert(function);
+  
+  return list->list_clear_and(list, function);
+}
+
 Any * list_to_array(List * list)
 {
   assert(list);
@@ -170,6 +185,14 @@ char * list_to_string(List * list)
   return list->list_to_string(list);
 }
 
+
+void list_foreach(List * list, void (*function)(Any any))
+{
+  assert(list);
+  assert(function);
+  
+  return list->list_foreach(list, function);
+}
 
 
 

@@ -20,62 +20,15 @@
 
 
 
-#ifndef __LIST_H
-#define __LIST_H
+
+#ifndef __BASELIB_UTILITIES_H
+#define __BASELIB_UTILITIES_H
 
 
-#include "list_type.h"
-#include "any.h"
-
-#include <stdbool.h>
-
-
-struct List;
-typedef struct List List;
-
-struct ListTraversal;
-typedef struct ListTraversal ListTraversal;
-
-
-/* CONSTRUCTOR */
-List * list_new(ListType type);
-
-/* DESTRUCTOR */
-void list_destroy(List * list);
-void list_destroy_and_free(List * list);
-void list_destroy_and(List * list, void (*function)(Any));
-
-unsigned int list_size(List * list);
-bool list_has_open_traversals(List * list);
-
-
-Any list_get(List * list, unsigned int index);
-
-void list_add(List * list, Any element);
-void list_add_range(List * list, List * range);
-void list_set(List * list, unsigned int index, Any element);
-
-Any list_remove_at(List * list, unsigned int index);
-unsigned int list_remove(List * list, Any any);
-void list_clear(List * list);
-void list_clear_and_free(List * list);
-void list_clear_and(List * list, void (*function)(Any));
-
-Any * list_to_array(List * list);
-List * list_sub_list(List * list, unsigned int start, unsigned int end);
-List * list_clone(List * list);
-
-char * list_to_string(List * list);
-
-
-void list_foreach(List * list, void (*function)(Any));
-
-
-ListTraversal * list_get_traversal(List * list);
-void list_traversal_destroy(ListTraversal * list_traversal);
-
-Any list_traversal_next(ListTraversal * list_traversal);
-bool list_traversal_completed(ListTraversal * list_traversal);
+long utilities_lmin(long l0, long l1);
+long utilities_lmax(long l0, long l1);
 
 
 #endif
+
+

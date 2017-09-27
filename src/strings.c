@@ -381,6 +381,21 @@ char * strings_clone(char * string)
 
   return ret;
 }
+char * strings_from_array(char * array, unsigned int length)
+{
+  assert(array);
+  char * ret = strings_alloc(length + 1);
+
+  memcpy(
+      ret,
+      array,
+      length * sizeof(char)
+    );
+  ret[length] = '\0';
+
+  return ret;
+}
+
 
 char strings_char_at(char * string, unsigned int index)
 {
