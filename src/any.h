@@ -19,8 +19,8 @@
 \* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 
-#ifndef __ANY_H
-#define __ANY_H
+#ifndef __BASELIB_ANY_H
+#define __BASELIB_ANY_H
 
 #include <stdbool.h>
 

@@ -20,8 +20,8 @@
 
 
 
-#ifndef __FILES_H
-#define __FILES_H
+#ifndef __BASELIB_FILES_H
+#define __BASELIB_FILES_H
 
 
 #include <stdbool.h>

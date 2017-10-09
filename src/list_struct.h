@@ -19,8 +19,8 @@
 \* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 
-#ifndef __LIST_STRUCT_H
-#define __LIST_STRUCT_H
+#ifndef __BASELIB_LIST_STRUCT_H
+#define __BASELIB_LIST_STRUCT_H
 
 #include "list_type.h"
 #include "any.h"

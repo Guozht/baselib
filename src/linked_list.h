@@ -20,8 +20,8 @@
 
 
 
-#ifndef __LINKED_LIST_H
-#define __LINKED_LIST_H
+#ifndef __BASELIB_LINKED_LIST_H
+#define __BASELIB_LINKED_LIST_H
 
 #include "any.h"
 #include "list.h"

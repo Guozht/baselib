@@ -20,8 +20,8 @@
 
 
 
-#ifndef __LIST_H
-#define __LIST_H
+#ifndef __BASELIB_LIST_H
+#define __BASELIB_LIST_H
 
 
 #include "list_type.h"

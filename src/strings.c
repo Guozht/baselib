@@ -464,7 +464,7 @@ char * strings_substring(char * string, unsigned int start, unsigned int end)
       (end - start) * sizeof(char)
     );
 
-  ret[end - start + 1] = '\0';
+  ret[end - start] = '\0';
 
   return ret;
 }

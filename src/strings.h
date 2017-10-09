@@ -18,8 +18,8 @@
  *                                                                         *
 \* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#ifndef __STRINGS_H
-#define __STRINGS_H
+#ifndef __BASELIB_STRINGS_H
+#define __BASELIB_STRINGS_H
 
 #include <stdbool.h>
 

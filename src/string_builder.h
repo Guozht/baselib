@@ -19,8 +19,8 @@
 \* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 
-#ifndef __STRING_BUILDER_H
-#define __STRING_BUILDER_H
+#ifndef __BASELIB_STRING_BUILDER_H
+#define __BASELIB_STRING_BUILDER_H
 
 
 

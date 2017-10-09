@@ -20,8 +20,8 @@
 
 
 
-#ifndef __LIST_TYPE_H
-#define __LIST_TYPE_H
+#ifndef __BASELIB_LIST_TYPE_H
+#define __BASELIB_LIST_TYPE_H
 
 typedef enum ListType
 {

@@ -19,8 +19,8 @@
 \* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 
-#ifndef __ARRAY_LIST
-#define __ARRAY_LIST
+#ifndef __BASELIB_ARRAY_LIST
+#define __BASELIB_ARRAY_LIST
 
 
 #include "any.h"

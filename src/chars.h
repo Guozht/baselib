@@ -19,8 +19,8 @@
 \* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 
-#ifndef __CHARS_H
-#define __CHARS_H
+#ifndef __BASELIB_CHARS_H
+#define __BASELIB_CHARS_H
 
 
 #include <stdbool.h>
