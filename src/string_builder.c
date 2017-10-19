@@ -22,6 +22,8 @@
 #include "strings.h"
 
 #include <assert.h>
+#include <stdarg.h>
+#include <stdbool.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -164,6 +166,12 @@ void string_builder_append_float(StringBuilder * sb, double d)
     );
 
   sb->length += length;
+}
+
+
+void string_builder_appendf(StringBuilder * sb, char * string, ...)
+{
+  assert(0);
 }
 
 

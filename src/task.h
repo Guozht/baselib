@@ -19,40 +19,45 @@
 \* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 
-#ifndef __BASELIB_STRING_BUILDER_H
-#define __BASELIB_STRING_BUILDER_H
+#ifndef __BASELIB_TASK_H
+#define __BASELIB_TASK_H
+
+#include <stdbool.h>
+
+#include "task_arguments.h"
+#include "any.h"
+
+struct Task;
+typedef struct Task Task;
+
+enum TaskState
+{
+  TASK_STATE_NEW = 0,
+  TASK_STATE_RUNNING = 1,
+  TASK_STATE_COMPLETE = 2,
+  TASK_STATE_ABORTED = 6,
+};
+typedef enum TaskState TaskState;
 
 
+Task * task_new(Any (*callback)(TaskArguments *));
+void task_destroy(Task * task);
 
+void task_start(Task * task, TaskArguments * arguments);
 
-struct StringBuilder;
-typedef struct StringBuilder StringBuilder;
+void task_wait_for(Task * task);
+bool task_wait_for_millis(Task * task, unsigned long long millis);
+bool task_wait_for_nanos(Task * task, unsigned long long nanos);
+void task_abort(Task * task);
 
+Any task_get_result(Task * task);
+TaskState task_get_state(Task * task);
+bool task_is_complete(Task * task);
+bool task_is_running(Task * task);
 
-StringBuilder * string_builder_new();
-StringBuilder * string_builder_new_with(unsigned int size);
-
-void string_builder_destroy(StringBuilder * sb);
-
-void string_builder_clear(StringBuilder * sb);
-
-
-unsigned int string_builder_length(StringBuilder * sb);
-
-void string_builder_append(StringBuilder * sb, char * string);
-void string_builder_append_char(StringBuilder * sb, char c);
-void string_builder_append_int(StringBuilder * sb, long long l);
-void string_builder_append_float(StringBuilder * sb, double d);
-
-void string_builder_appendf(StringBuilder * sb, char * string, ...);
-
-char * string_builder_to_string(StringBuilder * sb);
-char * string_builder_to_temp_string(StringBuilder * sb);
-char * string_builder_to_string_destroy(StringBuilder * sb);
-
-
-
-
+/* calls wait for, returns result and destroys task */
+Any task_await(Task * task);
 
 
 #endif
+

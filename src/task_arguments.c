@@ -19,40 +19,55 @@
 \* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 
-#ifndef __BASELIB_STRING_BUILDER_H
-#define __BASELIB_STRING_BUILDER_H
+#include <assert.h>
+#include <stdlib.h>
+
+#include "any.h"
+#include "list.h"
+
+#include "task_arguments.h"
 
 
 
-
-struct StringBuilder;
-typedef struct StringBuilder StringBuilder;
-
-
-StringBuilder * string_builder_new();
-StringBuilder * string_builder_new_with(unsigned int size);
-
-void string_builder_destroy(StringBuilder * sb);
-
-void string_builder_clear(StringBuilder * sb);
+struct TaskArguments
+{
+  Any * arguments;
+  unsigned int length;
+};
 
 
-unsigned int string_builder_length(StringBuilder * sb);
+TaskArguments * task_arguments_new(List * list)
+{
+  assert(list);
+  
+  TaskArguments * ret = (TaskArguments *) malloc(sizeof(TaskArguments));
+  assert(ret);
 
-void string_builder_append(StringBuilder * sb, char * string);
-void string_builder_append_char(StringBuilder * sb, char c);
-void string_builder_append_int(StringBuilder * sb, long long l);
-void string_builder_append_float(StringBuilder * sb, double d);
+  ret->length = list_size(list);
+  ret->arguments = list_to_array(list);
+  
+  return ret;
+}
 
-void string_builder_appendf(StringBuilder * sb, char * string, ...);
-
-char * string_builder_to_string(StringBuilder * sb);
-char * string_builder_to_temp_string(StringBuilder * sb);
-char * string_builder_to_string_destroy(StringBuilder * sb);
-
-
-
-
+void task_arguments_destroy(TaskArguments * task_arguments)
+{
+  assert(task_arguments);
+  
+  free(task_arguments->arguments);
+  free(task_arguments);
+}
 
 
-#endif
+Any task_arguments_get(TaskArguments * task_arguments, unsigned int index)
+{
+  assert(task_arguments);
+  assert(task_arguments->length > index);
+  
+  return task_arguments->arguments[index];
+}
+
+unsigned int task_arguments_length(TaskArguments * task_arguments)
+{
+  return task_arguments->length;  
+}
+
