@@ -9,10 +9,10 @@ This library (at the moment) implements:
 - basic string manipulation
 - string building functions
 - basic file tools
+- task / thread management (still unstable)
 
 This library will implement in the future:
 
-- task / thread management
 - advanced string manipulation
 - hash tables / dictionaries
 - Doubly linked lists
