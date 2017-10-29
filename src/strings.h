@@ -52,6 +52,7 @@ char * strings_trim(char * string);
 char * strings_trim_front(char * string);
 char * strings_trim_back(char * string);
 
+char * strings_concat(char * string1, char * string2);
 
 
 List * strings_split(char * string, char split);

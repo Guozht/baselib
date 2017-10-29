@@ -19,7 +19,7 @@
 \* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 
-#define BASELIB_VERSION "0.4.7"
+#define BASELIB_VERSION "0.4.8"
 
 
 #include "any.h"

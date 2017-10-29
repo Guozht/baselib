@@ -511,6 +511,40 @@ char * strings_trim_back(char * string)
 }
 
 
+char * strings_concat(char * string1, char * string2)
+{
+  assert(string1);
+  assert(string2);
+  
+  unsigned int 
+    string1_length = strings_length(string1),
+    string2_length = strings_length(string2);
+    
+  char * ret = strings_alloc(string1_length + string2_length + 1);
+  
+  if (string1_length != 0)
+  {
+    memcpy(
+      ret,
+      string1,
+      string1_length * sizeof(char)
+      );
+  }
+  if (string2_length != 0)
+  {
+    memcpy(
+      &ret[string1_length],
+      string2,
+      string2_length * sizeof(char)
+      );
+  }
+  
+  ret[string1_length + string2_length] = '\0';
+  
+  return ret;
+}
+
+
 List * strings_split(char * string, char split)
 {
   return strings_split_up_to(string, split, 0);
