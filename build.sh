@@ -19,6 +19,13 @@
 #*                                                                         *#
 #* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *#
 
+
+if [[ $1 == "clean" ]] ; then
+  rm -rf bin
+  exit 0
+fi
+
+
 if [[ !(-d bin) ]] ; then
   mkdir bin
   if [[ $? != 0 ]] ; then

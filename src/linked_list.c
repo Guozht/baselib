@@ -603,7 +603,7 @@ LinkedListTraversal * linked_list_get_traversal(LinkedList * linked_list)
   ret->base.type = LIST_TYPE_LINKED_LIST;
   ret->base.list = (List *) linked_list;
   ret->base.list_traversal_destroy = (void (*)(ListTraversal *)) linked_list_traversal_destroy;
-  ret->base.list_traversal_next = (Any (*)(ListTraversal *)) linked_List_traversal_next;
+  ret->base.list_traversal_next = (Any (*)(ListTraversal *)) linked_list_traversal_next;
   ret->base.list_traversal_completed = (bool (*)(ListTraversal *)) linked_list_traversal_completed;
 
   sem_wait(&linked_list->base.mutex);
@@ -630,7 +630,7 @@ void linked_list_traversal_destroy(LinkedListTraversal * linked_list_traversal)
 }
 
 
-Any linked_List_traversal_next(LinkedListTraversal * linked_list_traversal)
+Any linked_list_traversal_next(LinkedListTraversal * linked_list_traversal)
 {
   assert(linked_list_traversal);
   assert(!linked_list_traversal_completed(linked_list_traversal));

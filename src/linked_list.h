@@ -66,7 +66,7 @@ void linked_list_foreach(LinkedList * linked_list, void (*function)(Any));
 LinkedListTraversal * linked_list_get_traversal(LinkedList * linked_list);
 void linked_list_traversal_destroy(LinkedListTraversal * linked_list_traversal);
 
-Any linked_List_traversal_next(LinkedListTraversal * linked_list_traversal);
+Any linked_list_traversal_next(LinkedListTraversal * linked_list_traversal);
 bool linked_list_traversal_completed(LinkedListTraversal * linked_list_traversal);
 
 
