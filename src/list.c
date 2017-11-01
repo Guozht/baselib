@@ -61,6 +61,13 @@ void list_destroy_and_free(List * list)
   list->list_destroy_and_free(list);
 }
 
+void list_destroy_and_user_free(List * list, void (*callback)(void *))
+{
+  assert(list);
+  
+  list->list_destroy_and_user_free(list, callback);
+}
+
 void list_destroy_and(List * list, void (*function)(Any))
 {
   assert(list);

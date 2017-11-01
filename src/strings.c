@@ -28,6 +28,7 @@
 #include <assert.h>
 #include <string.h>
 #include <stdbool.h>
+#include <stdint.h>
 #include <stdlib.h>
 
 
@@ -409,6 +410,21 @@ char strings_char_at(char * string, unsigned int index)
 unsigned int strings_length(char * string)
 {
   return strlen(string);
+}
+
+int32_t strings_hash(char * string)
+{
+  assert(string);
+
+  int32_t ret = 0;
+  unsigned int length = strings_length(string);
+
+  for (unsigned int k = 0; k < length; k++)
+  {
+    ret ^= ((uint32_t) string[k]) << (k % 24);
+  }
+
+  return ret;
 }
 
 char * strings_prefix(char * string, unsigned int length)

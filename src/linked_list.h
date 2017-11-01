@@ -37,6 +37,7 @@ typedef struct LinkedListTraversal LinkedListTraversal;
 LinkedList * linked_list_new();
 void linked_list_destroy(LinkedList * linked_list);
 void linked_list_destroy_and_free(LinkedList * linked_list);
+void linked_list_destroy_and_user_free(LinkedList * linked_list, void (*callback)(void *));
 void linked_list_destroy_and(LinkedList * linked_list, void (*function)(Any));
 
 

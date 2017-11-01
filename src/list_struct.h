@@ -37,6 +37,7 @@ struct List
 
   void (*list_destroy)(struct List *);
   void (*list_destroy_and_free)(struct List *);
+  void (*list_destroy_and_user_free)(struct List *, void (*callback)(void *));
   void (*list_destroy_and)(struct List *, void (*function)(Any));
 
   unsigned int (*list_size)(struct List *);

@@ -103,6 +103,7 @@ ArrayList * array_list_new()
 
   ret->base.list_destroy = (void (*)(List *)) array_list_destroy;
   ret->base.list_destroy_and_free = (void (*)(List *)) array_list_destroy_and_free;
+  ret->base.list_destroy_and_user_free = (void (*)(List *, void (*)(void *))) array_list_destroy_and_user_free;
   ret->base.list_destroy_and = (void (*)(List *, void (*)(Any))) array_list_destroy_and;
   ret->base.list_size = (unsigned int (*)(List *)) array_list_size;
   ret->base.list_get = (Any (*)(List *, unsigned int)) array_list_get;
@@ -152,10 +153,24 @@ void array_list_destroy_and_free(ArrayList * array_list)
 
   array_list_destroy(array_list);
 }
+void array_list_destroy_and_user_free(ArrayList * array_list, void (*callback)(void *))
+{
+  assert(array_list);
+  assert(array_list->base.open_traversals == 0);
+  assert(callback);
+  
+  for (unsigned int k = 0; k < array_list->size; k++)
+  {
+    callback(any_to_ptr(array_list->array[k]));
+  }
+
+  array_list_destroy(array_list);
+}
 void array_list_destroy_and(ArrayList * array_list, void (*function)(Any))
 {
   assert(array_list);
   assert(array_list->base.open_traversals == 0);
+  assert(function);
 
   for (unsigned int k = 0; k < array_list->size; k++)
   {

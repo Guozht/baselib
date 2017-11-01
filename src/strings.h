@@ -22,6 +22,7 @@
 #define __BASELIB_STRINGS_H
 
 #include <stdbool.h>
+#include <stdint.h>
 
 #include "list.h"
 
@@ -33,6 +34,8 @@ char * strings_from_array(char * array, unsigned int length);
 
 char strings_char_at(char * string, unsigned int k);
 unsigned int strings_length(char * string);
+
+int32_t strings_hash(char * string);
 
 char * strings_prefix(char * string, unsigned int length);
 #define strings_suffix(s,l) strings_postfix(s,l)

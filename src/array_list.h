@@ -56,6 +56,8 @@ void array_list_destroy(ArrayList * array_list);
  */
 void array_list_destroy_and_free(ArrayList * array_list);
 
+void array_list_destroy_and_user_free(ArrayList * array_list, void (*callback)(void *));
+
 /**
  * Destroys the array list and 
  * frees the memory allocated 
