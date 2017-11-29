@@ -309,7 +309,12 @@ bool any_equals(Any a, Any b)
     case ANY_TYPE_POINTER:
       return a.value._void == b.value._void;
     case ANY_TYPE_STRING:
-      return a.value._string == b.value._string;
+      if (a.value._string && b.value._string)
+        return true;
+      else if (a.value._string || b.value._string)
+        return false;
+      else
+        return strings_equals(a.value._string, b.value._string);
 
     default:
       assert(0);

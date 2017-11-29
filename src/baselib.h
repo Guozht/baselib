@@ -19,13 +19,17 @@
 \* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 
-#define BASELIB_VERSION "0.4.10"
+#define BASELIB_VERSION "0.5.0"
 
 
 #include "any.h"
 #include "array_list.h"
+#include "base64.h"
 #include "chars.h"
+#include "dictionary.h"
+#include "dictionary_type.h"
 #include "files.h"
+#include "hash_table.h"
 #include "linked_list.h"
 #include "list.h"
 #include "list_type.h"
@@ -33,3 +37,5 @@
 #include "string_builder.h"
 #include "task.h"
 #include "task_arguments.h"
+#include "unicode.h"
+#include "unicode_encoding_type.h"

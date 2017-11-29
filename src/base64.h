@@ -19,80 +19,17 @@
 \* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 
-
-/* WARNING:
- *
- * The methods and/or types defined and/or declared  within this file
- * are not guaranteed to remain consistent in later versions
- *
- */
-
-
+#ifndef __BASELIB_BASE64_H
+#define __BASELIB_BASE64_H
 
 #include <stdbool.h>
 #include <stdint.h>
+#include <stdio.h>
+
+char * base64_encode(uint8_t * data, size_t data_size);
+uint8_t * base64_decode(char * data, size_t * decoded_size_ptr);
+
+bool base64_is_well_formed(char * data);
 
 
-#include "utilities.h"
-
-
-
-long utilities_lmin(long l0, long l1)
-{
-  if (l0 < l1)
-    return l0;
-  else
-    return l1;
-}
-
-long utilities_lmax(long l0, long l1)
-{
-  if (l0 > l1)
-    return l0;
-  else 
-    return l1;
-}
-
-
-Endianness utilities_get_endianness()
-{
-  uint16_t a = 0xFF;
-  if((*(uint8_t *) &a) == 0x0)
-    return ENDIANNESS_BIG;
-  else
-    return ENDIANNESS_LITTLE;
-}
-
-
-unsigned int utilities_null_terminated_length(void * array, size_t element_size)
-{
-  unsigned int ret = 0;
-  
-  uint8_t comparrison [element_size];
-  memset(comparrison, 0, element_size);
-  
-  /* cast purely to make the compiler shut up */
-  while (memcmp(&((uint8_t *) array)[ret * element_size], comparrison, element_size))
-    ret++;
-  
-  return ret;
-}
-
-size_t utilities_round_size_upward(size_t s, size_t mod)
-{
-  size_t v = s % mod;
-  if (v == 0)
-    return s;
-  else
-    return s + mod - v;
-}
-
-size_t utilities_multiply_round_up(size_t s, double ratio)
-{
-  double d = s * ratio;
-  if (d != (int) d)
-    return (int) d + 1;
-  else
-    return (int) d;
-}
-
+#endif

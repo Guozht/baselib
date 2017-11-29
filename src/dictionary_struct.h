@@ -18,81 +18,50 @@
  *                                                                         *
 \* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
+#ifndef __BASELIB_DICTIONARY_STRUCT_H
+#define __BASELIB_DICTIONARY_STRUCT_H
 
-
-/* WARNING:
- *
- * The methods and/or types defined and/or declared  within this file
- * are not guaranteed to remain consistent in later versions
- *
- */
-
-
-
+#include <semaphore.h>
 #include <stdbool.h>
-#include <stdint.h>
+
+#include "any.h"
+#include "dictionary_type.h"
+#include "list.h"
 
 
-#include "utilities.h"
-
-
-
-long utilities_lmin(long l0, long l1)
+struct Dictionary
 {
-  if (l0 < l1)
-    return l0;
-  else
-    return l1;
-}
+  DictionaryType type;
+  sem_t mutex;
+  List * keys;
 
-long utilities_lmax(long l0, long l1)
-{
-  if (l0 > l1)
-    return l0;
-  else 
-    return l1;
-}
+  void (*dictionary_destroy)(struct Dictionary *);
+  void (*dictionary_destroy_and_free)(struct Dictionary *);
+  void (*dictionary_destroy_and_user_free)(struct Dictionary *, void (*)(void *));
+  void (*dictionary_destroy_and)(struct Dictionary *, void (*)(Any));
 
-
-Endianness utilities_get_endianness()
-{
-  uint16_t a = 0xFF;
-  if((*(uint8_t *) &a) == 0x0)
-    return ENDIANNESS_BIG;
-  else
-    return ENDIANNESS_LITTLE;
-}
-
-
-unsigned int utilities_null_terminated_length(void * array, size_t element_size)
-{
-  unsigned int ret = 0;
+  void (*dictionary_clear)(struct Dictionary *);
+  void (*dictionary_clear_and_free)(struct Dictionary *);
+  void (*dictionary_clear_and_user_free)(struct Dictionary *, void (*)(void *));
+  void (*dictionary_clear_and)(struct Dictionary *, void (*)(Any));
   
-  uint8_t comparrison [element_size];
-  memset(comparrison, 0, element_size);
-  
-  /* cast purely to make the compiler shut up */
-  while (memcmp(&((uint8_t *) array)[ret * element_size], comparrison, element_size))
-    ret++;
-  
-  return ret;
-}
+  bool (*dictionary_has)(struct Dictionary *, char *);
+  Any (*dictionary_get)(struct Dictionary *, char *);
+  bool (*dictionary_try_get)(struct Dictionary *, char *, Any *);
 
-size_t utilities_round_size_upward(size_t s, size_t mod)
-{
-  size_t v = s % mod;
-  if (v == 0)
-    return s;
-  else
-    return s + mod - v;
-}
+  void (*dictionary_put)(struct Dictionary *, char *, Any);
+  bool (*dictionary_try_put)(struct Dictionary *, char *, Any);
 
-size_t utilities_multiply_round_up(size_t s, double ratio)
-{
-  double d = s * ratio;
-  if (d != (int) d)
-    return (int) d + 1;
-  else
-    return (int) d;
-}
+  void (*dictionary_set)(struct Dictionary *, char *, Any);
+  void (*dictionary_set_and_free)(struct Dictionary *, char *, Any);
+  void (*dictionary_set_and_user_free)(struct Dictionary *, char *, Any, void (*)(void *));
+  void (*dictionary_set_and)(struct Dictionary *, char *, Any, void (*)(Any));
+
+  Any (*dictionary_remove)(struct Dictionary *, char *); 
+};
+
+
+
+#endif
+
 

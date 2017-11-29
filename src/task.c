@@ -95,15 +95,16 @@ void task_destroy(Task * task)
   sem_wait(&task->mutex);
   
   if (task->state == TASK_STATE_RUNNING)
-    task_abort(task);
+    pthread_cancel(task->thread);
     
   if (task->arguments != NULL)
     task_arguments_destroy(task->arguments);
 
   sem_post(&task->mutex);
   sem_destroy(&task->mutex);
+  sem_destroy(&task->join_mutex);
   free(task);
-
+  
 }
 
 void task_start(Task * task, TaskArguments * arguments)
@@ -213,7 +214,8 @@ TaskState task_get_state(Task * task)
 }
 bool task_is_complete(Task * task)
 {
-  return task_get_state(task) == TASK_STATE_COMPLETE || task_get_state(task) == TASK_STATE_ABORTED;
+  TaskState state = task_get_state(task);
+  return state == TASK_STATE_COMPLETE || state == TASK_STATE_ABORTED;
 }
 bool task_is_running(Task * task)
 {

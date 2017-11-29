@@ -1,12 +1,3 @@
-
-
-#include "list.h"
-#include "list_struct.h"
-#include "linked_list.h"
-#include "array_list.h"
-#include "any.h"
-
-#include <assert.h>
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *\
  *                                                                         *
  *  baselib: a library implementing several simple utilities for C         *
@@ -28,6 +19,14 @@
 \* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 
+
+#include "list.h"
+#include "list_struct.h"
+#include "linked_list.h"
+#include "array_list.h"
+#include "any.h"
+
+#include <assert.h>
 
 List * list_new(ListType type)
 {
@@ -64,7 +63,7 @@ void list_destroy_and_free(List * list)
 void list_destroy_and_user_free(List * list, void (*callback)(void *))
 {
   assert(list);
-  
+
   list->list_destroy_and_user_free(list, callback);
 }
 

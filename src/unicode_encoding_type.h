@@ -19,80 +19,34 @@
 \* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 
+#ifndef __BASELIB_UNICODE_ENCODING_TYPE_H
+#define __BASELIB_UNICODE_ENCODING_TYPE_H
 
-/* WARNING:
- *
- * The methods and/or types defined and/or declared  within this file
- * are not guaranteed to remain consistent in later versions
- *
- */
-
-
-
-#include <stdbool.h>
-#include <stdint.h>
-
-
-#include "utilities.h"
-
-
-
-long utilities_lmin(long l0, long l1)
+enum UnicodeEncodingType
 {
-  if (l0 < l1)
-    return l0;
-  else
-    return l1;
-}
-
-long utilities_lmax(long l0, long l1)
-{
-  if (l0 > l1)
-    return l0;
-  else 
-    return l1;
-}
-
-
-Endianness utilities_get_endianness()
-{
-  uint16_t a = 0xFF;
-  if((*(uint8_t *) &a) == 0x0)
-    return ENDIANNESS_BIG;
-  else
-    return ENDIANNESS_LITTLE;
-}
-
-
-unsigned int utilities_null_terminated_length(void * array, size_t element_size)
-{
-  unsigned int ret = 0;
+  UNICODE_ENCODING_TYPE_NONE = 0x0,
   
-  uint8_t comparrison [element_size];
-  memset(comparrison, 0, element_size);
+  UNICODE_ENCODING_TYPE_UTF1 = 0x1,
+  UNICODE_ENCODING_TYPE_UTF7 = 0x7,
+  UNICODE_ENCODING_TYPE_UTF8 = 0x8,
+  UNICODE_ENCODING_TYPE_UTF16 = 0x16,
+  UNICODE_ENCODING_TYPE_UTF16BE = 0x16A,
+  UNICODE_ENCODING_TYPE_UTF16LE = 0x16B,
+  UNICODE_ENCODING_TYPE_UTF32 = 0x32,
+  UNICODE_ENCODING_TYPE_UTF32BE = 0x32A,
+  UNICODE_ENCODING_TYPE_UTF32LE = 0x32B,
   
-  /* cast purely to make the compiler shut up */
-  while (memcmp(&((uint8_t *) array)[ret * element_size], comparrison, element_size))
-    ret++;
+  /* yes, I'm aware these were meant as april fool's day jokes */
+  UNICODE_ENCODING_TYPE_UTF9 = 0x9,
+  UNICODE_ENCODING_TYPE_UTF18 = 0x18,
+  UNICODE_ENCODING_TYPE_UTF18BE = 0x18A,
+  UNICODE_ENCODING_TYPE_UTF18LE = 0x18B,
   
-  return ret;
-}
+};
+typedef enum UnicodeEncodingType UnicodeEncodingType;
 
-size_t utilities_round_size_upward(size_t s, size_t mod)
-{
-  size_t v = s % mod;
-  if (v == 0)
-    return s;
-  else
-    return s + mod - v;
-}
 
-size_t utilities_multiply_round_up(size_t s, double ratio)
-{
-  double d = s * ratio;
-  if (d != (int) d)
-    return (int) d + 1;
-  else
-    return (int) d;
-}
+UnicodeEncodingType unicode_parse_encoding_type(char * string);
 
+
+#endif

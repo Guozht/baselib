@@ -19,14 +19,33 @@
 \* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 
+/* WARNING:
+ *
+ * The methods and/or types defined and/or declared  within this file
+ * are not guaranteed to remain consistent in later versions
+ *
+ */
+
 
 
 #ifndef __BASELIB_UTILITIES_H
 #define __BASELIB_UTILITIES_H
 
+#include <stdbool.h>
+#include <string.h>
+
+#include "endianness.h"
 
 long utilities_lmin(long l0, long l1);
 long utilities_lmax(long l0, long l1);
+
+Endianness utilities_get_endianness();
+
+unsigned int utilities_null_terminated_length(void * array, size_t element_size);
+
+
+size_t utilities_round_size_upward(size_t s, size_t mod);
+size_t utilities_multiply_round_up(size_t s, double ratio);
 
 
 #endif

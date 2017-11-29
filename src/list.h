@@ -43,6 +43,7 @@ List * list_new(ListType type);
 /* DESTRUCTOR */
 void list_destroy(List * list);
 void list_destroy_and_free(List * list);
+void list_destroy_and_user_free(List * list, void (*callback)(void *));
 void list_destroy_and(List * list, void (*function)(Any));
 
 unsigned int list_size(List * list);
