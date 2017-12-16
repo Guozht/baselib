@@ -27,7 +27,7 @@
 UnicodeEncodingType unicode_parse_encoding_type(char * string)
 {
   assert(string);
-  
+
   if (
     strings_equals_ignore_case(string, "UTF-1") ||
     strings_equals_ignore_case(string, "UTF1")
@@ -93,8 +93,47 @@ UnicodeEncodingType unicode_parse_encoding_type(char * string)
     strings_equals_ignore_case(string, "UTF18LE")
     )
     return UNICODE_ENCODING_TYPE_UTF18LE;
-  
+
   else
     return UNICODE_ENCODING_TYPE_NONE;
-  
+
+}
+
+char * unicode_encoding_type_to_string(UnicodeEncodingType type)
+{
+
+  switch (type)
+  {
+    case UNICODE_ENCODING_TYPE_UTF1:
+      return "UTF-1";
+    case UNICODE_ENCODING_TYPE_UTF7:
+      return "UTF-7";
+    case UNICODE_ENCODING_TYPE_UTF8:
+      return "UTF-8";
+    case UNICODE_ENCODING_TYPE_UTF16:
+      return "UTF-16";
+    case UNICODE_ENCODING_TYPE_UTF16BE:
+      return "UTF-16BE";
+    case UNICODE_ENCODING_TYPE_UTF16LE:
+      return "UTF-16LE";
+    case UNICODE_ENCODING_TYPE_UTF32:
+      return "UTF-32";
+    case UNICODE_ENCODING_TYPE_UTF32BE:
+      return "UTF-32BE";
+    case UNICODE_ENCODING_TYPE_UTF32LE:
+      return "UTF-32LE";
+    case UNICODE_ENCODING_TYPE_UTF9:
+      return "UTF-9";
+    case UNICODE_ENCODING_TYPE_UTF18:
+      return "UTF-18";
+    case UNICODE_ENCODING_TYPE_UTF18BE:
+      return "UTF-18BE";
+    case UNICODE_ENCODING_TYPE_UTF18LE:
+      return "UTF-18LE";
+
+    default:
+      return UNICODE_ENCODING_TYPE_NONE;
+
+  }
+
 }

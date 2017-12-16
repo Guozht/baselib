@@ -43,6 +43,7 @@ void linked_list_destroy_and(LinkedList * linked_list, void (*function)(Any));
 
 unsigned int linked_list_size(LinkedList * linked_list);
 
+bool linked_list_contains(LinkedList * linked_list, Any any);
 
 Any linked_list_get(LinkedList * linked_list, unsigned int index);
 

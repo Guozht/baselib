@@ -28,7 +28,7 @@
 #include <unistd.h>
 #include <sys/stat.h>
 #include <sys/types.h>
-#include <fcntl.h>  
+#include <fcntl.h>
 
 #define BUFFER_SIZE 0x3FF
 
@@ -69,7 +69,7 @@ long files_size(char * path)
 char * files_read_all(char * path, size_t * read_ptr)
 {
   assert(path);
-  assert(read);
+  assert(read_ptr);
 
   size_t file_size, read_size, read;
   FILE * file;
@@ -102,9 +102,9 @@ char * files_read_all(char * path, size_t * read_ptr)
   do
   {
     read = fread(
-        &data[read_size], 
-        sizeof(char), 
-        utilities_lmin(BUFFER_SIZE, file_size - read_size), 
+        &data[read_size],
+        sizeof(char),
+        utilities_lmin(BUFFER_SIZE, file_size - read_size),
         file
       );
 
@@ -119,10 +119,10 @@ char * files_read_all(char * path, size_t * read_ptr)
     read_size += read;
   }
   while (read_size < file_size);
-  
+
 
   *read_ptr = file_size;
-  return data;  
+  return data;
 }
 
 bool files_write_all(char * path, char * data, size_t data_length, int op_type)
@@ -158,8 +158,8 @@ bool files_write_all(char * path, char * data, size_t data_length, int op_type)
   while (write_size < data_length)
   {
     write = fwrite(
-        data, 
-        sizeof(char), 
+        data,
+        sizeof(char),
         utilities_lmin(data_length - write_size, BUFFER_SIZE),
         file
       );
@@ -170,7 +170,7 @@ bool files_write_all(char * path, char * data, size_t data_length, int op_type)
       return false;
     }
 
-    write_size += write; 
+    write_size += write;
   }
 
   fclose(file);
@@ -181,7 +181,7 @@ bool files_write_all(char * path, char * data, size_t data_length, int op_type)
 bool files_delete(char * path)
 {
   assert(path);
-  
+
   return remove(path) == 0;
 }
 
@@ -189,14 +189,13 @@ bool files_delete(char * path)
 bool files_mkdir(char * path)
 {
   assert(path);
-  
+
   return mkdir(path, 0) == 0;
 }
 
 bool files_rmdir(char * path)
 {
   assert(path);
-  
+
   return rmdir(path) == 0;
 }
-

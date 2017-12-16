@@ -38,11 +38,11 @@ static struct HashTableNode * hash_table_node_new(char * key, Any value)
 {
   struct HashTableNode * ret = (struct HashTableNode *) malloc(sizeof(struct HashTableNode));
   assert(ret);
-  
+
   ret->key = strings_clone(key);
   ret->value = value;
   ret->next = NULL;
-  
+
   return ret;
 }
 
@@ -60,7 +60,7 @@ static struct HashTableNode ** hash_table_node_get(HashTable * table, char * key
     index = ((uint32_t) strings_hash(key)) % HASH_TABLE_TABLE_SIZE;
   else
     index = 0;
-  
+
   return &table->data[index];
 }
 
@@ -73,10 +73,10 @@ static bool hash_table_node_find(struct HashTableNode * node, char * key, Any **
       *any = &node->value;
       return true;
     }
-    
+
     node = node->next;
   }
-  
+
   if (last_node)
     *last_node = node;
   return false;
@@ -145,7 +145,7 @@ static void hash_table_clear_tree(struct HashTableNode * node, void * callback, 
       ((void (*)(void *)) callback)(any_to_ptr(node->value));
     else
       ((void (*)(Any)) callback)(node->value);
-    
+
   }
 
   struct HashTableNode * next = node->next;
@@ -174,7 +174,7 @@ static void hash_table_destroy_imp(HashTable * hash_table, void * callback, bool
 
   sem_destroy(&hash_table->base.mutex);
 
-  linked_list_destroy_and_free((LinkedList *) hash_table->base.keys); 
+  linked_list_destroy_and_free((LinkedList *) hash_table->base.keys);
   free(hash_table->data);
   free(hash_table);
 }
@@ -186,21 +186,21 @@ HashTable * hash_table_new()
 {
   HashTable * ret = (HashTable *) malloc(sizeof(HashTable));
   assert(ret);
-  
+
   ret->base.type = DICTIONARY_TYPE_HASH_TABLE;
   sem_init(&ret->base.mutex, 0, 1);
   ret->base.keys = (List *) linked_list_new();
-  
+
   ret->base.dictionary_destroy = (void (*)(Dictionary *)) hash_table_destroy;
   ret->base.dictionary_destroy_and_free = (void (*)(Dictionary *)) hash_table_destroy_and_free;
   ret->base.dictionary_destroy_and_user_free = (void (*)(Dictionary *, void (*)(void *))) hash_table_destroy_and_user_free;
   ret->base.dictionary_destroy_and = (void (*)(Dictionary *, void (*)(Any))) hash_table_destroy_and;
-  
+
   ret->base.dictionary_clear = (void (*)(Dictionary *)) hash_table_clear;
   ret->base.dictionary_clear_and_free = (void (*)(Dictionary *)) hash_table_clear_and_free;
   ret->base.dictionary_clear_and_user_free = (void (*)(Dictionary *, void (*)(void *))) hash_table_clear_and_user_free;
   ret->base.dictionary_clear_and = (void (*)(Dictionary *, void (*)(Any))) hash_table_clear_and;
-  
+
   ret->base.dictionary_has = (bool (*)(Dictionary *, char *)) hash_table_has;
   ret->base.dictionary_get = (Any (*)(Dictionary *, char *)) hash_table_get;
   ret->base.dictionary_try_get = (bool (*)(Dictionary *, char *, Any *)) hash_table_try_get;
@@ -212,12 +212,12 @@ HashTable * hash_table_new()
   ret->base.dictionary_set_and_free = (void (*)(Dictionary *, char *, Any)) hash_table_set_and_free;
   ret->base.dictionary_set_and_user_free = (void (*)(Dictionary *, char *, Any, void (*)(void *))) hash_table_set_and_user_free;
   ret->base.dictionary_set_and = (void (*)(Dictionary *, char *, Any, void (*)(Any))) hash_table_set_and;
-  
+
   ret->base.dictionary_remove = (Any (*)(Dictionary *, char *)) hash_table_remove;
 
   ret->data = (struct HashTableNode **) calloc(sizeof(struct HashTableNode *), HASH_TABLE_TABLE_SIZE);
   assert(ret->data);
-  
+
   return ret;
 }
 
@@ -249,7 +249,7 @@ void hash_table_destroy_and(HashTable * hash_table, void (*callback)(Any))
 }
 
 
-List * hash_table_get_keys(HashTable * hash_table) 
+List * hash_table_get_keys(HashTable * hash_table)
 {
   return dictionary_get_keys((Dictionary *) hash_table);
 }
@@ -285,42 +285,42 @@ void hash_table_clear_and(HashTable * hash_table, void (*callback)(Any))
 bool hash_table_has(HashTable * hash_table, char * key)
 {
   assert(hash_table);
-  
+
   bool ret;
-  
+
   sem_wait(&hash_table->base.mutex);
-  
+
   struct HashTableNode ** node = hash_table_node_get(hash_table, key);
   if (*node)
   {
     Any * value_ptr;
-    ret = hash_table_node_find(*node, key, &value_ptr, NULL);   
+    ret = hash_table_node_find(*node, key, &value_ptr, NULL);
   }
   else
     ret = false;
-  
+
   sem_post(&hash_table->base.mutex);
-  
+
   return ret;
 }
 
 Any hash_table_get(HashTable * hash_table, char * key)
 {
   assert(hash_table);
-  
+
   Any * ret;
   bool find_ret;
-  
+
   sem_wait(&hash_table->base.mutex);
-  
+
   struct HashTableNode ** node = hash_table_node_get(hash_table, key);
   assert(*node);
-  
+
   find_ret = hash_table_node_find(*node, key, &ret, NULL);
   assert(find_ret);
-  
+
   sem_post(&hash_table->base.mutex);
-  
+
   return *ret;
 }
 
@@ -328,12 +328,12 @@ bool hash_table_try_get(HashTable * hash_table, char * key, Any * value)
 {
   assert(hash_table);
   assert(value);
-  
+
   bool ret;
   Any * temp_ptr;
-  
+
   sem_wait(&hash_table->base.mutex);
-  
+
   struct HashTableNode ** node = hash_table_node_get(hash_table, key);
   if (*node)
   {
@@ -343,9 +343,9 @@ bool hash_table_try_get(HashTable * hash_table, char * key, Any * value)
   }
   else
     ret = false;
-  
+
   sem_post(&hash_table->base.mutex);
-  
+
   return ret;
 }
 
@@ -427,11 +427,11 @@ void hash_table_set_and(HashTable * hash_table, char * key, Any value, void (*ca
 Any hash_table_remove(HashTable * hash_table, char * key)
 {
   assert(hash_table);
-  
+
   Any ret = ptr_to_any(NULL);
 
   sem_wait(&hash_table->base.mutex);
-  
+
   struct HashTableNode ** node = hash_table_node_get(hash_table, key);
   if (*node)
   {
@@ -442,8 +442,3 @@ Any hash_table_remove(HashTable * hash_table, char * key)
 
   return ret;
 }
-
-
-
-
-

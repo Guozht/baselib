@@ -20,15 +20,19 @@
 
 #include <assert.h>
 
+#include "any.h"
 #include "dictionary.h"
 #include "dictionary_struct.h"
 #include "hash_table.h"
+#include "linked_list.h"
+#include "list.h"
+#include "strings.h"
 
 Dictionary * dictionary_new(DictionaryType type)
 {
   switch (type)
   {
-   
+
     case DICTIONARY_TYPE_HASH_TABLE:
       return (Dictionary *) hash_table_new();
 
@@ -77,7 +81,16 @@ List * dictionary_get_keys(Dictionary * dictionary)
 {
   assert(dictionary);
 
-  return list_clone(dictionary->keys);
+  List * list = (List *) linked_list_new();
+  ListTraversal * trav = list_get_traversal(dictionary->keys);
+
+  while (!list_traversal_completed(trav))
+  {
+    char * value = any_to_str(list_traversal_next(trav));
+    list_add(list, str_to_any(strings_clone(value)));
+  }
+
+  return list;
 }
 
 
@@ -178,5 +191,3 @@ Any dictionary_remove(Dictionary * dictionary, char * key)
 
   return dictionary->dictionary_remove(dictionary, key);
 }
-
-

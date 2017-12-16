@@ -41,7 +41,7 @@ typedef struct ArrayListTraversal ArrayListTraversal;
 ArrayList * array_list_new();
 
 /**
- * Destroys the array list and 
+ * Destroys the array list and
  * frees the memory allocated
  * to it
  */
@@ -59,10 +59,10 @@ void array_list_destroy_and_free(ArrayList * array_list);
 void array_list_destroy_and_user_free(ArrayList * array_list, void (*callback)(void *));
 
 /**
- * Destroys the array list and 
- * frees the memory allocated 
- * to it. Will invoke the 
- * callback for each remaining 
+ * Destroys the array list and
+ * frees the memory allocated
+ * to it. Will invoke the
+ * callback for each remaining
  * element of the list
  */
 void array_list_destroy_and(ArrayList * array_list, void (*function)(Any));
@@ -72,6 +72,9 @@ void array_list_destroy_and(ArrayList * array_list, void (*function)(Any));
  * Returns the size of the array
  */
 unsigned int array_list_size(ArrayList * array_list);
+
+
+bool array_list_contains(ArrayList * array_list, Any any);
 
 
 /**
@@ -87,7 +90,7 @@ Any array_list_get(ArrayList * array_list, unsigned int index);
 void array_list_add(ArrayList * array_list, Any element);
 
 /**
- * Adds the elements of the specified list to end 
+ * Adds the elements of the specified list to end
  * of the array
  */
 void array_list_add_range(ArrayList * array_list, List * range);

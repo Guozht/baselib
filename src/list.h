@@ -49,6 +49,7 @@ void list_destroy_and(List * list, void (*function)(Any));
 unsigned int list_size(List * list);
 bool list_has_open_traversals(List * list);
 
+bool list_contains(List * list, Any any);
 
 Any list_get(List * list, unsigned int index);
 

@@ -106,6 +106,7 @@ ArrayList * array_list_new()
   ret->base.list_destroy_and_user_free = (void (*)(List *, void (*)(void *))) array_list_destroy_and_user_free;
   ret->base.list_destroy_and = (void (*)(List *, void (*)(Any))) array_list_destroy_and;
   ret->base.list_size = (unsigned int (*)(List *)) array_list_size;
+  ret->base.list_contains = (bool (*)(List *, Any)) array_list_contains;
   ret->base.list_get = (Any (*)(List *, unsigned int)) array_list_get;
   ret->base.list_add = (void (*)(List *, Any)) array_list_add;
   ret->base.list_add_range = (void (*)(List *, List *)) array_list_add_range;
@@ -158,7 +159,7 @@ void array_list_destroy_and_user_free(ArrayList * array_list, void (*callback)(v
   assert(array_list);
   assert(array_list->base.open_traversals == 0);
   assert(callback);
-  
+
   for (unsigned int k = 0; k < array_list->size; k++)
   {
     callback(any_to_ptr(array_list->array[k]));
@@ -196,6 +197,23 @@ unsigned int array_list_size(ArrayList * array_list)
   return ret;
 }
 
+bool array_list_contains(ArrayList * array_list, Any any)
+{
+  assert(array_list);
+
+  sem_wait(&array_list->base.mutex);
+
+  bool ret = false;
+  for (unsigned int k = 0; k < array_list->size && !ret; k++)
+  {
+    if (any_equals(array_list->array[k], any))
+      ret = true;
+  }
+
+  sem_post(&array_list->base.mutex);
+
+  return ret;
+}
 
 Any array_list_get(ArrayList * array_list, unsigned int index)
 {
@@ -312,30 +330,30 @@ Any array_list_remove_at(ArrayList * array_list, unsigned int index)
 unsigned int array_list_remove(ArrayList * array_list, Any any)
 {
   assert(array_list);
-  
+
   sem_wait(&array_list->base.mutex);
   assert(array_list->base.open_traversals == 0);
   unsigned int ret = 0;
-  
+
   for (unsigned int k = 0; k < array_list->size; k++)
   {
     if (any_equals(array_list->array[k], any))
     {
-      
+
       for (unsigned int i = k; i < array_list->size - 1; i++)
       {
         array_list->array[i] = array_list->array[i + 1];
       }
-      
+
       ret++;
       array_list->size--;
       k--;
     }
   }
-  
+
   array_list_resize(array_list, array_list->size);
   sem_post(&array_list->base.mutex);
-  
+
   return ret;
 }
 
@@ -355,40 +373,40 @@ void array_list_clear(ArrayList * array_list)
 void array_list_clear_and_free(ArrayList * array_list)
 {
   assert(array_list);
-  
+
   sem_wait(&array_list->base.mutex);
   assert(array_list->base.open_traversals == 0);
-  
+
   void * ptr;
   for (unsigned int k = 0; k < array_list->size; k++)
   {
     ptr = any_to_ptr(array_list->array[k]);
     free(ptr);
   }
-  
+
   array_list_resize(array_list, 0);
   array_list->size = 0;
-  
+
   sem_post(&array_list->base.mutex);
-  
+
 }
 
 void array_list_clear_and(ArrayList * array_list, void (*function)(Any))
 {
   assert(array_list);
   assert(function);
-  
+
   sem_wait(&array_list->base.mutex);
   assert(array_list->base.open_traversals == 0);
-  
+
   for (unsigned int k = 0; k < array_list->size; k++)
   {
     function(array_list->array[k]);
   }
-  
+
   array_list_resize(array_list, 0);
   array_list->size = 0;
-  
+
   sem_post(&array_list->base.mutex);
 }
 
@@ -479,7 +497,7 @@ ArrayList * array_list_clone(ArrayList * array_list)
 char * array_list_to_string(ArrayList * array_list)
 {
   assert(array_list);
-  
+
   if (array_list->size == 0)
     return strings_clone("[]");
 
@@ -487,11 +505,11 @@ char * array_list_to_string(ArrayList * array_list)
 
   StringBuilder * sb = string_builder_new();
   string_builder_append(sb, "[ ");
-  
+
   buffer = any_get_string_representation(array_list->array[0]);
   string_builder_append(sb, buffer);
   free(buffer);
-  
+
   for (unsigned int k = 1; k < array_list->size; k++)
   {
     buffer = any_get_string_representation(array_list->array[k]);
@@ -510,16 +528,16 @@ void array_list_foreach(ArrayList * array_list, void (*function)(Any))
 {
   assert(array_list);
   assert(function);
-  
+
   sem_wait(&array_list->base.mutex);
   array_list->base.open_traversals++;
   sem_post(&array_list->base.mutex);
-  
+
   for (unsigned int k = 0; k < array_list->size; k++)
   {
     function(array_list->array[k]);
   }
-  
+
   sem_wait(&array_list->base.mutex);
   array_list->base.open_traversals--;
   sem_post(&array_list->base.mutex);

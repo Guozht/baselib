@@ -25,7 +25,7 @@
 enum UnicodeEncodingType
 {
   UNICODE_ENCODING_TYPE_NONE = 0x0,
-  
+
   UNICODE_ENCODING_TYPE_UTF1 = 0x1,
   UNICODE_ENCODING_TYPE_UTF7 = 0x7,
   UNICODE_ENCODING_TYPE_UTF8 = 0x8,
@@ -35,18 +35,18 @@ enum UnicodeEncodingType
   UNICODE_ENCODING_TYPE_UTF32 = 0x32,
   UNICODE_ENCODING_TYPE_UTF32BE = 0x32A,
   UNICODE_ENCODING_TYPE_UTF32LE = 0x32B,
-  
+
   /* yes, I'm aware these were meant as april fool's day jokes */
   UNICODE_ENCODING_TYPE_UTF9 = 0x9,
   UNICODE_ENCODING_TYPE_UTF18 = 0x18,
   UNICODE_ENCODING_TYPE_UTF18BE = 0x18A,
   UNICODE_ENCODING_TYPE_UTF18LE = 0x18B,
-  
+
 };
 typedef enum UnicodeEncodingType UnicodeEncodingType;
 
 
 UnicodeEncodingType unicode_parse_encoding_type(char * string);
-
+char * unicode_encoding_type_to_string(UnicodeEncodingType type);
 
 #endif

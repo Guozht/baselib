@@ -42,6 +42,8 @@ struct List
 
   unsigned int (*list_size)(struct List *);
 
+  bool (*list_contains)(struct List * list, Any any);
+
   Any (*list_get)(struct List *, unsigned int);
 
   void (*list_add)(struct List *, Any);
