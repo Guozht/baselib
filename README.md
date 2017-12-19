@@ -9,15 +9,12 @@ This library (at the moment) implements:
 - basic string manipulation
 - string building functions
 - basic file tools
-- unicode encoding
--- UTF-8
--- UTF-16 (BE/LE)
--- UTF-32 (BE/LE)
--- UTF-7 (to come)
+- unicode encoding (UTF-8, UTF16 (BE/LE), AND UTF-32 (BE/LE))
 - task / thread management (still unstable)
 
 This library will implement in the future:
 
+- UTF-7 unicode encoding
 - advanced string manipulation
 - hash tables / dictionaries
 - Doubly linked lists
