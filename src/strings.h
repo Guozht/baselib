@@ -45,10 +45,10 @@ char * strings_substring(char * string, unsigned int start, unsigned int end);
 char * strings_to_lower(char * string);
 char * strings_to_upper(char * string);
 
-char * strings_replace(char * string, char oldChar, char newChar);
-char * strings_replace_ignore_case(char * string, char oldChar, char newChar);
-char * strings_replace_string(char * string, char * oldString, char * newString);
-char * strings_replace_string_ignore_case(char * string, char * oldString, char * newString);
+char * strings_replace(char * string, char old_char, char new_char);
+char * strings_replace_ignore_case(char * string, char old_char, char new_char);
+char * strings_replace_string(char * string, char * old_string, char * new_string);
+char * strings_replace_string_ignore_case(char * string, char * old_string, char * new_string);
 
 
 char * strings_trim(char * string);

@@ -68,6 +68,8 @@ StringBuilder * string_builder_new()
 
 StringBuilder * string_builder_new_with(unsigned int size)
 {
+  assert(size > 0);
+
   StringBuilder * sb = (StringBuilder *) malloc(sizeof(StringBuilder));
   assert(sb);
 

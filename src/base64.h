@@ -27,6 +27,8 @@
 #include <stdio.h>
 
 char * base64_encode(uint8_t * data, size_t data_size);
+char * base64_encode_non_padded(uint8_t * data, size_t data_size);
+
 uint8_t * base64_decode(char * data, size_t * decoded_size_ptr);
 
 bool base64_is_well_formed(char * data);

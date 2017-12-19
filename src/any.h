@@ -80,12 +80,12 @@ union _Any
 
 };
 
-typedef struct Any
+struct Any
 {
   enum AnyType type;
   union _Any value;
-}
-Any;
+};
+typedef struct Any Any;
 
 
 
@@ -102,8 +102,8 @@ Any uint_to_any(unsigned int i);
 Any long_to_any(long l);
 Any ulong_to_any(unsigned int l);
 
-Any long_long_to_any(long l);
-Any ulong_long_to_any(long l);
+Any long_long_to_any(long long l);
+Any ulong_long_to_any(unsigned long long l);
 
 Any float_to_any(float f);
 Any double_to_any(double d);

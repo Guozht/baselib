@@ -92,14 +92,14 @@ Any ulong_to_any(unsigned int l)
   };
 }
 
-Any long_long_to_any(long l)
+Any long_long_to_any(long long l)
 {
   return (Any) {
     ANY_TYPE_LONGLONG,
     (union _Any) l
   };
 }
-Any ulong_long_to_any(long l)
+Any ulong_long_to_any(unsigned long long l)
 {
   return (Any) {
     ANY_TYPE_ULONGLONG,

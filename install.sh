@@ -22,6 +22,8 @@
 LIBRARY_FILE_NAME=libbaselib.so
 HEADER_DIRECTORY_NAME=baselib
 
+MAN_DIRECTORY_PATH=/usr/share/man/man3
+
 if [[ $EUID != 0 ]] ; then
   echo "Must run as root"
   exit 8
@@ -39,4 +41,14 @@ else
 fi
 
 cp "bin/$LIBRARY_FILE_NAME" "/usr/lib/$LIBRARY_PATH_NAME"
-cp src/*.h /usr/include/$HEADER_DIRECTORY_NAME/
+
+for f in `ls src/*.h`
+do
+
+if [[ $f != *_struct.h ]] ; then
+  sudo cp $f /usr/include/$HEADER_DIRECTORY_NAME/
+fi
+
+sudo cp man/*.3.gz "$MAN_DIRECTORY_PATH"
+
+done
