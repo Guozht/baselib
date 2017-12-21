@@ -148,6 +148,14 @@ unsigned int list_remove(List * list, Any any)
   return list->list_remove(list, any);
 }
 
+unsigned int list_remove_and_free(List * list, Any any)
+{
+  assert(list);
+
+  return list->list_remove_and_free(list, any);
+}
+
+
 void list_clear(List * list)
 {
   assert(list);

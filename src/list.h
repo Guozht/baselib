@@ -59,6 +59,8 @@ void list_set(List * list, unsigned int index, Any element);
 
 Any list_remove_at(List * list, unsigned int index);
 unsigned int list_remove(List * list, Any any);
+unsigned int list_remove_and_free(List * list, Any any);
+
 void list_clear(List * list);
 void list_clear_and_free(List * list);
 void list_clear_and_user_free(List * list, void (*callback)(void *));

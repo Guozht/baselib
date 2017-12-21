@@ -92,6 +92,52 @@ static void linked_list_add_imp(LinkedList * linked_list, Any value)
   linked_list->size++;
 }
 
+static unsigned int linked_list_remove_imp(LinkedList * linked_list, Any any, bool free_on_remove)
+{
+  assert(linked_list);
+
+  sem_wait(&linked_list->base.mutex);
+  assert(linked_list->base.open_traversals == 0);
+
+  unsigned int ret = 0;
+
+  struct LinkedListNode * current = linked_list->start;
+  struct LinkedListNode * last = NULL;
+  struct LinkedListNode ** last_ptr = &linked_list->start;
+
+  while (current)
+  {
+
+    if (any_equals(current->value, any))
+    {
+
+      if (free_on_remove)
+        free(any_to_ptr(current->value));
+
+      ret++;
+      *last_ptr = current->next;
+      struct LinkedListNode * hold = current;
+      current = current->next;
+
+      free(hold);
+    }
+    else
+    {
+      last = current;
+      last_ptr = &last->next;
+      current = current->next;
+    }
+
+  }
+
+  linked_list->end = last;
+  linked_list->size -= ret;
+
+  sem_post(&linked_list->base.mutex);
+  return ret;
+}
+
+
 /* END OF INTERNAL METHODS */
 
 
@@ -118,6 +164,7 @@ LinkedList * linked_list_new()
   ret->base.list_set = (void (*)(List *, unsigned int, Any)) linked_list_set;
   ret->base.list_remove_at = (Any (*)(List *, unsigned int)) linked_list_remove_at;
   ret->base.list_remove = (unsigned int (*)(List *, Any)) linked_list_remove;
+  ret->base.list_remove_and_free = (unsigned int (*)(List *, Any)) linked_list_remove_and_free;
   ret->base.list_clear = (void (*)(List *)) linked_list_clear;
   ret->base.list_clear_and_free = (void (*)(List *)) linked_list_clear_and_free;
   ret->base.list_clear_and = (void (*)(List *, void (*)(Any))) linked_list_clear_and;
@@ -372,44 +419,14 @@ Any linked_list_remove_at(LinkedList * linked_list, unsigned int index)
 
 unsigned int linked_list_remove(LinkedList * linked_list, Any any)
 {
-  assert(linked_list);
-
-  sem_wait(&linked_list->base.mutex);
-  assert(linked_list->base.open_traversals == 0);
-
-  unsigned int ret = 0;
-
-  struct LinkedListNode * current = linked_list->start;
-  struct LinkedListNode * last = NULL;
-  struct LinkedListNode ** last_ptr = &linked_list->start;
-
-  while (current)
-  {
-
-    if (any_equals(current->value, any))
-    {
-      ret++;
-      *last_ptr = current->next;
-      struct LinkedListNode * hold = current;
-      current = current->next;
-
-      free(hold);
-    }
-    else
-    {
-      last = current;
-      last_ptr = &last->next;
-      current = current->next;
-    }
-
-  }
-
-  linked_list->end = last;
-  linked_list->size -= ret;
-
-  sem_post(&linked_list->base.mutex);
-  return ret;
+  return linked_list_remove_imp(linked_list, any, false);
 }
+
+unsigned int linked_list_remove_and_free(LinkedList * linked_list, Any any)
+{
+  return linked_list_remove_imp(linked_list, any, true);
+}
+
 
 void linked_list_clear(LinkedList * linked_list)
 {

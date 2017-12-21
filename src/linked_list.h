@@ -53,6 +53,8 @@ void linked_list_set(LinkedList * linked_list, unsigned int index, Any element);
 
 Any linked_list_remove_at(LinkedList * linked_list, unsigned int index);
 unsigned int linked_list_remove(LinkedList * linked_list, Any any);
+unsigned int linked_list_remove_and_free(LinkedList * linked_list, Any any);
+
 void linked_list_clear(LinkedList * linked_list);
 void linked_list_clear_and_free(LinkedList * linked_list);
 void linked_list_clear_and(LinkedList * linked_list, void (*function)(Any));

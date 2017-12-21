@@ -84,6 +84,37 @@ static void array_list_resize(ArrayList * array_list, unsigned int requested_siz
 
 }
 
+static unsigned int array_list_remove_imp(ArrayList * array_list, Any any, bool free_on_remove)
+{
+  assert(array_list);
+
+  sem_wait(&array_list->base.mutex);
+  assert(array_list->base.open_traversals == 0);
+  unsigned int ret = 0;
+
+  for (unsigned int k = 0; k < array_list->size; k++)
+  {
+    if (any_equals(array_list->array[k], any))
+    {
+      if (free_on_remove)
+        free(any_to_ptr(array_list->array[k]));
+
+      for (unsigned int i = k; i < array_list->size - 1; i++)
+      {
+        array_list->array[i] = array_list->array[i + 1];
+      }
+
+      ret++;
+      array_list->size--;
+      k--;
+    }
+  }
+
+  array_list_resize(array_list, array_list->size);
+  sem_post(&array_list->base.mutex);
+
+  return ret;
+}
 
 
 /* END OF INTERNAL METHODS */
@@ -113,6 +144,7 @@ ArrayList * array_list_new()
   ret->base.list_set = (void (*)(List *, unsigned int, Any)) array_list_set;
   ret->base.list_remove_at = (Any (*)(List *, unsigned int)) array_list_remove_at;
   ret->base.list_remove = (unsigned int (*)(List *, Any)) array_list_remove;
+  ret->base.list_remove_and_free = (unsigned int (*)(List *, Any)) array_list_remove_and_free;
   ret->base.list_clear = (void (*)(List *)) array_list_clear;
   ret->base.list_clear_and_free = (void (*)(List *)) array_list_clear_and_free;
   ret->base.list_clear_and = (void (*)(List *, void (*)(Any))) array_list_clear_and;
@@ -329,33 +361,15 @@ Any array_list_remove_at(ArrayList * array_list, unsigned int index)
 
 unsigned int array_list_remove(ArrayList * array_list, Any any)
 {
-  assert(array_list);
-
-  sem_wait(&array_list->base.mutex);
-  assert(array_list->base.open_traversals == 0);
-  unsigned int ret = 0;
-
-  for (unsigned int k = 0; k < array_list->size; k++)
-  {
-    if (any_equals(array_list->array[k], any))
-    {
-
-      for (unsigned int i = k; i < array_list->size - 1; i++)
-      {
-        array_list->array[i] = array_list->array[i + 1];
-      }
-
-      ret++;
-      array_list->size--;
-      k--;
-    }
-  }
-
-  array_list_resize(array_list, array_list->size);
-  sem_post(&array_list->base.mutex);
-
-  return ret;
+  return array_list_remove_imp(array_list, any, false);
 }
+
+unsigned int array_list_remove_and_free(ArrayList * array_list, Any any)
+{
+  return array_list_remove_imp(array_list, any, true);
+}
+
+
 
 void array_list_clear(ArrayList * array_list)
 {

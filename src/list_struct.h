@@ -52,6 +52,8 @@ struct List
 
   Any (*list_remove_at)(struct List *, unsigned int);
   unsigned int (*list_remove)(struct List *, Any);
+  unsigned int (*list_remove_and_free)(struct List *, Any);
+
   void (*list_clear)(struct List *);
   void (*list_clear_and_free)(struct List *);
   void (*list_clear_and)(struct List *, void (*function)(Any));

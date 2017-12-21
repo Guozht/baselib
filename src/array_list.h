@@ -114,8 +114,11 @@ Any array_list_remove_at(ArrayList * array_list, unsigned int index);
  */
 unsigned int array_list_remove(ArrayList * array_list, Any any);
 
+unsigned int array_list_remove_and_free(ArrayList * array_list, Any any);
+
+
 /**
- * Clears all elements fromt the array
+ * Clears all elements from the array
  */
 void array_list_clear(ArrayList * array_list);
 
