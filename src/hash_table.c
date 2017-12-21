@@ -1,6 +1,7 @@
 
 #include <assert.h>
 #include <semaphore.h>
+#include <string.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdlib.h>
@@ -92,7 +93,7 @@ static void hash_table_node_remove(LinkedList * keys, struct HashTableNode ** ro
       *last_next = current->next;
       *value = current->value;
       hash_table_node_destroy(current);
-      linked_list_remove(keys, str_to_any(key));
+      linked_list_remove_and_free(keys, str_to_any(key));
       return;
     }
 
@@ -166,6 +167,10 @@ static void hash_table_clear_imp(HashTable * hash_table, void * callback, bool c
       hash_table_clear_tree(node, callback, callback_for_pointer);
     }
   }
+
+  memset(hash_table->data, 0, sizeof(struct HashTableNode *) * HASH_TABLE_TABLE_SIZE);
+
+  linked_list_clear_and_free((LinkedList *) hash_table->base.keys);
 }
 
 static void hash_table_destroy_imp(HashTable * hash_table, void * callback, bool callback_for_pointer)
