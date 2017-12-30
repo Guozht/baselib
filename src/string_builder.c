@@ -19,6 +19,7 @@
 \* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 #include "string_builder.h"
+#include "unicode.h"
 #include "strings.h"
 
 #include <assert.h>
@@ -122,6 +123,12 @@ void string_builder_append(StringBuilder * sb, char * string)
 
   sb->length += string_length;
 }
+
+void string_builder_append_line(StringBuilder * sb)
+{
+  string_builder_append_char(sb, '\n');
+}
+
 void string_builder_append_char(StringBuilder * sb, char c)
 {
   assert(sb);
@@ -136,7 +143,7 @@ void string_builder_append_int(StringBuilder * sb, long long l)
 {
   assert(sb);
 
-  char buffer [64];
+  char buffer [0xFF];
   sprintf(buffer, "%lld", l);
   unsigned int length = strings_length(buffer);
 
@@ -155,7 +162,7 @@ void string_builder_append_float(StringBuilder * sb, double d)
 {
   assert(sb);
 
-  char buffer [64];
+  char buffer [0xFF];
   sprintf(buffer, "%f", d);
   unsigned int length = strings_length(buffer);
 
@@ -171,9 +178,52 @@ void string_builder_append_float(StringBuilder * sb, double d)
 }
 
 
-void string_builder_appendf(StringBuilder * sb, char * string, ...)
+void string_builder_appendf(StringBuilder * sb, char * format, ...)
 {
-  assert(0);
+  assert(sb);
+  assert(format);
+
+  va_list args;
+  unsigned int length;
+  char * string;
+
+  va_start(args, format);
+  string = strings_vformat(format, args);
+  va_end(args);
+
+  length = strings_length(string);
+  string_builder_resize(sb, length);
+
+  memcpy(
+    &sb->data[sb->length],
+    string,
+    length * sizeof(char)
+    );
+
+  sb->length += length;
+
+  free(string);
+}
+
+void string_builder_append_code_point(StringBuilder * sb, uint32_t code_point)
+{
+  assert(sb);
+  assert(code_point != 0);
+  assert(unicode_is_valid_code_point(code_point));
+
+  char buffer [0x8];
+  int length;
+
+  length = unicode_write_utf8(code_point, buffer);
+  string_builder_resize(sb, length);
+
+  memcpy(
+    &sb->data[sb->length],
+    buffer,
+    length * sizeof(char)
+    );
+
+  sb->length += length;
 }
 
 
@@ -201,7 +251,7 @@ char * string_builder_to_temp_string(StringBuilder * sb)
     free(_string_builder_temp_string);
     _string_builder_temp_string = NULL;
   }
-  
+
   _string_builder_temp_string = string_builder_to_string(sb);
   return _string_builder_temp_string;
 }

@@ -21,6 +21,7 @@
 #ifndef __BASELIB_STRINGS_H
 #define __BASELIB_STRINGS_H
 
+#include <stdarg.h>
 #include <stdbool.h>
 #include <stdint.h>
 
@@ -36,6 +37,7 @@ char strings_char_at(char * string, unsigned int k);
 unsigned int strings_length(char * string);
 
 char * strings_format(char * format, ...);
+char * strings_vformat(char * format, va_list args);
 
 int32_t strings_hash(char * string);
 

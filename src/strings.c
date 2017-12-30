@@ -434,21 +434,31 @@ int32_t strings_hash(char * string)
 
 char * strings_format(char * format, ...)
 {
+  va_list args;
+  char * ret;
+
+  va_start(args, format);
+  ret = strings_vformat(format, args);
+  va_end(args);
+
+  return ret;
+}
+
+char * strings_vformat(char * format, va_list args0)
+{
   int allocation_size;
   char * ret;
-  va_list list;
+  va_list args1;
+  va_copy(args1, args0);
 
-  va_start(list, format);
-  allocation_size = vsnprintf(NULL, 0, format, list);
-  va_end(list);
-
+  allocation_size = vsnprintf(NULL, 0, format, args0);
   assert(allocation_size >= 0);
 
   ret = strings_alloc(allocation_size + 1);
 
-  va_start(list, format);
-  allocation_size = vsnprintf(ret, allocation_size + 1, format, list);
-  va_end(list);
+  allocation_size = vsnprintf(ret, allocation_size + 1, format, args1);
+  va_end(args1);
+
   assert(allocation_size >= 0);
 
   return ret;

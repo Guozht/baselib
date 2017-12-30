@@ -20,14 +20,15 @@ This library will implement in the future:
 - Doubly linked lists
 
 
-# To compile: the library
+# To compile the library
 
 Simply run `build.sh` and then `sudo ./install.sh` in the project's root directory
 
 
-# To compile: against the library
+# To compile against the library
 
-When using GCC, add the options `-lpthread -lbaselib`. Linking to pthread is required as
+When using GCC, add the options `-lbaselib -lpthread`. Linking to pthread is required as
 the posix threads library is used within baselib for the purposes of making the lists 
-thread safe
+thread safe. The header file containing all the non-encapsulated declarations for the library
+should be included via `#include <baselib/baselib.h>`
 

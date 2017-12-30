@@ -21,6 +21,7 @@
 #ifndef __BASELIB_UNICODE_H
 #define __BASELIB_UNICODE_H
 
+#include <sys/types.h>
 #include <stdint.h>
 #include <stdbool.h>
 
@@ -53,7 +54,7 @@ int unicode_read(
   uint32_t * code_point);
 int unicode_write(
   UnicodeEncodingType encoding,
-  uint32_t code_point, 
+  uint32_t code_point,
   char * string);
 
 uint32_t * unicode_read_string(

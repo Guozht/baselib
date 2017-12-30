@@ -23,6 +23,7 @@
 #define __BASELIB_STRING_BUILDER_H
 
 
+#include <stdint.h>
 
 
 struct StringBuilder;
@@ -40,11 +41,14 @@ void string_builder_clear(StringBuilder * sb);
 unsigned int string_builder_length(StringBuilder * sb);
 
 void string_builder_append(StringBuilder * sb, char * string);
+void string_builder_append_line(StringBuilder * sb);
 void string_builder_append_char(StringBuilder * sb, char c);
 void string_builder_append_int(StringBuilder * sb, long long l);
 void string_builder_append_float(StringBuilder * sb, double d);
 
-void string_builder_appendf(StringBuilder * sb, char * string, ...);
+void string_builder_appendf(StringBuilder * sb, char * format, ...);
+
+void string_builder_append_code_point(StringBuilder * sb, uint32_t code_point);
 
 char * string_builder_to_string(StringBuilder * sb);
 char * string_builder_to_temp_string(StringBuilder * sb);
