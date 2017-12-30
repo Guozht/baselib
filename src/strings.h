@@ -35,6 +35,8 @@ char * strings_from_array(char * array, unsigned int length);
 char strings_char_at(char * string, unsigned int k);
 unsigned int strings_length(char * string);
 
+char * strings_format(char * format, ...);
+
 int32_t strings_hash(char * string);
 
 char * strings_prefix(char * string, unsigned int length);

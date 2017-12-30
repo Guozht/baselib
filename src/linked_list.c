@@ -45,7 +45,9 @@ struct LinkedList
   List base;
   struct LinkedListNode
     * start,
-    * end;
+    * end,
+    * cache;
+  unsigned int cache_index;
   unsigned int size;
 };
 
@@ -133,6 +135,9 @@ static unsigned int linked_list_remove_imp(LinkedList * linked_list, Any any, bo
   linked_list->end = last;
   linked_list->size -= ret;
 
+  linked_list->cache = NULL;
+  linked_list->cache_index = 0;
+
   sem_post(&linked_list->base.mutex);
   return ret;
 }
@@ -178,6 +183,9 @@ LinkedList * linked_list_new()
   ret->start = NULL;
   ret->end = NULL;
   ret->size = 0;
+
+  ret->cache = NULL;
+  ret->cache_index = 0;
 
   sem_init(&ret->base.mutex, 0, 1);
 
@@ -291,12 +299,26 @@ Any linked_list_get(LinkedList * linked_list, unsigned int index)
     return ret;
   }
 
-  struct LinkedListNode * current = linked_list->start;
+  unsigned int start_index;
+  struct LinkedListNode * current;
+  if (linked_list->cache && linked_list->cache_index <= index)
+  {
+    current = linked_list->cache;
+    start_index = linked_list->cache_index;
+  }
+  else
+  {
+    current = linked_list->start;
+    start_index = 0;
+  }
 
-  for (unsigned int k = 0; k < index; k++)
+  for (unsigned int k = start_index; k < index; k++)
   {
     current = current->next;
   }
+
+  linked_list->cache = current;
+  linked_list->cache_index = index;
 
   Any ret = current->value;
 
@@ -356,6 +378,9 @@ void linked_list_set(LinkedList * linked_list, unsigned int index, Any element)
 
   current->value = element;
 
+  linked_list->cache = NULL;
+  linked_list->cache_index = 0;
+
   sem_post(&linked_list->base.mutex);
 }
 
@@ -411,6 +436,9 @@ Any linked_list_remove_at(LinkedList * linked_list, unsigned int index)
     }
   }
 
+  linked_list->cache = NULL;
+  linked_list->cache_index = 0;
+
   linked_list->size--;
   sem_post(&linked_list->base.mutex);
 
@@ -449,6 +477,9 @@ void linked_list_clear(LinkedList * linked_list)
   linked_list->end = NULL;
   linked_list->size = 0;
 
+  linked_list->cache = NULL;
+  linked_list->cache_index = 0;
+
   sem_post(&linked_list->base.mutex);
 
 }
@@ -476,6 +507,9 @@ void linked_list_clear_and_free(LinkedList * linked_list)
   linked_list->end = NULL;
   linked_list->size = 0;
 
+  linked_list->cache = NULL;
+  linked_list->cache_index = 0;
+
   sem_post(&linked_list->base.mutex);
 }
 
@@ -500,6 +534,9 @@ void linked_list_clear_and(LinkedList * linked_list, void (*function)(Any))
   linked_list->start = NULL;
   linked_list->end = NULL;
   linked_list->size = 0;
+
+  linked_list->cache = NULL;
+  linked_list->cache_index = 0;
 
   sem_post(&linked_list->base.mutex);
 }

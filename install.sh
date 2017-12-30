@@ -43,12 +43,13 @@ fi
 cp "bin/$LIBRARY_FILE_NAME" "/usr/lib/$LIBRARY_PATH_NAME"
 
 for f in `ls src/*.h`
-do
+  do
 
-if [[ $f != *_struct.h ]] ; then
-  sudo cp $f /usr/include/$HEADER_DIRECTORY_NAME/
-fi
+  if [[ $f != *_struct.h ]] ; then
+    sudo cp $f /usr/include/$HEADER_DIRECTORY_NAME/
+  fi
+
+done
 
 sudo cp man/*.3.gz "$MAN_DIRECTORY_PATH"
 
-done

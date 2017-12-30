@@ -26,10 +26,12 @@
 #include "linked_list.h"
 
 #include <assert.h>
-#include <string.h>
+#include <stdarg.h>
 #include <stdbool.h>
 #include <stdint.h>
+#include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 
 #define STRINGS_TRIM_FRONT_SIDE 1
@@ -191,7 +193,7 @@ static List * strings_split_by_string_up_to_imp(char * string, char * split, uns
     linked_list_add(ret, string_to_any(strings_clone(string)));
     return (List *) ret;
   }
-  
+
   unsigned int
     current_count = 0,
     string_length = strings_length(string),
@@ -206,10 +208,10 @@ static List * strings_split_by_string_up_to_imp(char * string, char * split, uns
 
     return (List *) ret;
   }
-  
+
 
   StringBuilder * sb = string_builder_new();
-  
+
   for (unsigned int k = 0; k < string_length - split_length + 1; k++)
   {
     if (equals_function(&string[k], split, split_length))
@@ -232,7 +234,7 @@ static List * strings_split_by_string_up_to_imp(char * string, char * split, uns
 
   if (current_count + 1 != count)
       string_builder_append(sb, &string[string_length - split_length + 1]);
-  
+
   linked_list_add(ret, string_to_any(string_builder_to_string(sb)));
 
 
@@ -427,6 +429,34 @@ int32_t strings_hash(char * string)
   return ret;
 }
 
+
+
+
+char * strings_format(char * format, ...)
+{
+  int allocation_size;
+  char * ret;
+  va_list list;
+
+  va_start(list, format);
+  allocation_size = vsnprintf(NULL, 0, format, list);
+  va_end(list);
+
+  assert(allocation_size >= 0);
+
+  ret = strings_alloc(allocation_size + 1);
+
+  va_start(list, format);
+  allocation_size = vsnprintf(ret, allocation_size + 1, format, list);
+  va_end(list);
+  assert(allocation_size >= 0);
+
+  return ret;
+}
+
+
+
+
 char * strings_prefix(char * string, unsigned int length)
 {
   assert(string);
@@ -531,13 +561,13 @@ char * strings_concat(char * string1, char * string2)
 {
   assert(string1);
   assert(string2);
-  
-  unsigned int 
+
+  unsigned int
     string1_length = strings_length(string1),
     string2_length = strings_length(string2);
-    
+
   char * ret = strings_alloc(string1_length + string2_length + 1);
-  
+
   if (string1_length != 0)
   {
     memcpy(
@@ -554,9 +584,9 @@ char * strings_concat(char * string1, char * string2)
       string2_length * sizeof(char)
       );
   }
-  
+
   ret[string1_length + string2_length] = '\0';
-  
+
   return ret;
 }
 
