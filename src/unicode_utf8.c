@@ -91,7 +91,6 @@ unsigned int unicode_code_point_byte_requirement_utf8(uint32_t code_point)
     return 0;
 }
 
-#include <signal.h>
 bool unicode_is_well_formed_utf8(char * string, size_t string_length)
 {
   assert(string);
