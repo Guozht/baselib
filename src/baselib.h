@@ -19,7 +19,7 @@
 \* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 
-#define BASELIB_VERSION "0.5.7"
+#define BASELIB_VERSION "0.5.8"
 
 
 #include "any.h"
@@ -29,6 +29,7 @@
 #include "dictionary.h"
 #include "dictionary_type.h"
 #include "files.h"
+#include "file_op.h"
 #include "hash_table.h"
 #include "linked_list.h"
 #include "list.h"
