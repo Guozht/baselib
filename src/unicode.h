@@ -125,7 +125,6 @@ uint32_t * unicode_read_string_utf16(char * string, size_t string_length, size_t
 uint32_t * unicode_read_string_utf16be(char * string, size_t string_length, size_t * code_point_length_ptr);
 uint32_t * unicode_read_string_utf16le(char * string, size_t string_length, size_t * code_point_length_ptr);
 
-/* expects null terminlated code point list */
 char * unicode_write_string_utf16(uint32_t * code_points, size_t code_points_length, size_t * string_length_ptr);
 char * unicode_write_string_utf16be(uint32_t * code_points, size_t code_points_length, size_t * string_length_ptr);
 char * unicode_write_string_utf16le(uint32_t * code_points, size_t code_points_length, size_t * string_length_ptr);
@@ -159,7 +158,6 @@ uint32_t * unicode_read_string_utf32(char * string, size_t string_length, size_t
 uint32_t * unicode_read_string_utf32be(char * string, size_t string_length, size_t * code_points_length_ptr);
 uint32_t * unicode_read_string_utf32le(char * string, size_t string_length, size_t * code_points_length_ptr);
 
-/* expects null terminlated code point list */
 char * unicode_write_string_utf32(uint32_t * code_points, size_t code_points_length, size_t * string_length_ptr);
 char * unicode_write_string_utf32be(uint32_t * code_points, size_t code_points_length, size_t * string_length_ptr);
 char * unicode_write_string_utf32le(uint32_t * code_points, size_t code_points_length, size_t * string_length_ptr);

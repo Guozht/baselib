@@ -181,7 +181,6 @@ static List * strings_split_up_to_imp(char * string, char split, unsigned int co
   return (List *) ret;
 }
 
-
 static List * strings_split_by_string_up_to_imp(char * string, char * split, unsigned int count, bool (*equals_function)(char *, char *, unsigned int))
 {
   assert(string);
@@ -236,7 +235,6 @@ static List * strings_split_by_string_up_to_imp(char * string, char * split, uns
       string_builder_append(sb, &string[string_length - split_length + 1]);
 
   linked_list_add(ret, string_to_any(string_builder_to_string(sb)));
-
 
   string_builder_destroy(sb);
 
@@ -411,6 +409,7 @@ char strings_char_at(char * string, unsigned int index)
 }
 unsigned int strings_length(char * string)
 {
+  assert(string);
   return strlen(string);
 }
 

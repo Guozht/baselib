@@ -424,6 +424,7 @@ Any linked_list_remove_at(LinkedList * linked_list, unsigned int index)
     }
     else if (current->next == NULL) /* ergo, is last */
     {
+      ret = current->value;
       free(current);
       linked_list->end = last;
       last->next = NULL;

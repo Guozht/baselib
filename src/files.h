@@ -26,23 +26,49 @@
 
 #include <stdbool.h>
 #include <stdint.h>
-#include <stdio.h> /* for size_t */
+#include <sys/types.h>
 
-
-
-#define FILES_CREATE 1
-#define FILES_APPEND 2
-#define FILES_OVERWRITE 4
+#include "file_op.h"
+#include "list.h"
+#include "unicode_encoding_type.h"
 
 
 char * files_resolve(char * base, char * path);
 
 
 bool files_exists(char * path);
-long files_size(char * path);
+ssize_t files_size(char * path);
 
-char * files_read_all(char * path, size_t * read_ptr);
-bool files_write_all(char * path, char * data, size_t data_length, int op_type);
+char * files_read_all(char * path, ssize_t * read_ptr);
+List * files_read_all_lines(
+    char * path,
+    UnicodeEncodingType type
+  );
+List * files_read_all_lines_with_lf(
+    char * path,
+    UnicodeEncodingType type,
+    char * line_feed_sequence
+  );
+
+bool files_write_all(
+    char * path,
+    char * data,
+    size_t data_length,
+    FileOp op_type
+  );
+bool files_write_all_lines(
+    char * path,
+    List * lines,
+    UnicodeEncodingType type,
+    FileOp op_type
+  );
+bool files_write_all_lines_with_lf(
+    char * path,
+    List * lines,
+    UnicodeEncodingType type,
+    FileOp op_type,
+    char * line_feed_sequence
+  );
 
 bool files_delete(char * path);
 
@@ -50,4 +76,3 @@ bool files_mkdir(char * path);
 bool files_rmdir(char * path);
 
 #endif
-

@@ -223,7 +223,6 @@ uint32_t * unicode_read_string_utf8(char * string, size_t string_length, size_t 
   return ret;
 }
 
-/* expects null terminlated code point list */
 char * unicode_write_string_utf8(uint32_t * code_points, size_t code_points_length, size_t * string_length_ptr)
 {
   assert(code_points);
@@ -243,9 +242,7 @@ char * unicode_write_string_utf8(uint32_t * code_points, size_t code_points_leng
   }
 
   ret[string_size] = '\0';
-  
+
   *string_length_ptr = string_size;
   return ret;
 }
-
-
