@@ -21,12 +21,14 @@
 #include <assert.h>
 
 #include "any.h"
-#include "dictionary.h"
-#include "dictionary_struct.h"
 #include "hash_table.h"
+#include "mtest.h"
 #include "linked_list.h"
 #include "list.h"
 #include "strings.h"
+
+#include "dictionary.h"
+#include "dictionary_struct.h"
 
 Dictionary * dictionary_new(DictionaryType type)
 {

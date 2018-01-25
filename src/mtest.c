@@ -18,25 +18,78 @@
  *                                                                         *
 \* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
+#include <assert.h>
+#include <stdlib.h>
+#include <semaphore.h>
 
-#define BASELIB_VERSION "0.6.2"
+
+#include "mtest.h"
 
 
-#include "any.h"
-#include "array_list.h"
-#include "base64.h"
-#include "chars.h"
-#include "dictionary.h"
-#include "dictionary_type.h"
-#include "files.h"
-#include "file_op.h"
-#include "hash_table.h"
-#include "linked_list.h"
-#include "list.h"
-#include "list_type.h"
-#include "strings.h"
-#include "string_builder.h"
-#include "task.h"
-#include "task_arguments.h"
-#include "unicode.h"
-#include "unicode_encoding_type.h"
+static int _mtest_allocations;
+static sem_t _mtest_mutex;
+
+
+static void mtest_aug_allocations(int value)
+{
+
+  sem_wait(&_mtest_mutex);
+
+  _mtest_allocations += value;
+  assert(_mtest_allocations >= 0);
+
+  sem_post(&_mtest_mutex);
+
+}
+
+
+void mtest_init()
+{
+  _mtest_allocations = 0;
+  sem_init(&_mtest_mutex, 0, 1);
+}
+
+void mtest_deinit()
+{
+  sem_destroy(&_mtest_mutex);
+}
+
+
+void * mtest_malloc(size_t allocation_size)
+{
+  mtest_aug_allocations(1);
+  return malloc(allocation_size);
+}
+
+void * mtest_calloc(size_t size, size_t count)
+{
+  mtest_aug_allocations(1);
+  return calloc(size, count);
+}
+
+
+void * mtest_realloc(void * pointer, size_t reallocation_size)
+{
+  return realloc(pointer, reallocation_size);
+}
+
+
+void mtest_free(void * pointer)
+{
+  mtest_aug_allocations(-1);
+  free(pointer);
+}
+
+
+
+
+int mtest_allocations()
+{
+  int ret;
+
+  sem_wait(&_mtest_mutex);
+  ret = _mtest_allocations;
+  sem_post(&_mtest_mutex);
+
+  return ret;
+}

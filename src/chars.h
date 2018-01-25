@@ -47,6 +47,10 @@ char chars_to_lower(char c);
 char chars_to_upper(char c);
 
 
+int chars_order(char c1, char c2);
+int chars_order_ignore_case(char c1, char c2);
+
+
 
 
 #endif

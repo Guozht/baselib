@@ -18,9 +18,6 @@
  *                                                                         *
 \* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#include "string_builder.h"
-#include "unicode.h"
-#include "strings.h"
 
 #include <assert.h>
 #include <stdarg.h>
@@ -29,6 +26,11 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "mtest.h"
+#include "strings.h"
+#include "unicode.h"
+
+#include "string_builder.h"
 
 #define STRING_BUILDER_BLOCK_SIZE 1024
 
@@ -55,7 +57,7 @@ static void string_builder_resize(StringBuilder * sb, unsigned int addition_size
     }
 
     sb->data_length += new_block_count * STRING_BUILDER_BLOCK_SIZE;
-    sb->data = (char *) realloc(sb->data, sb->data_length);
+    sb->data = (char *) _realloc(sb->data, sb->data_length);
     assert(sb->data);
   }
 }
@@ -71,10 +73,10 @@ StringBuilder * string_builder_new_with(unsigned int size)
 {
   assert(size > 0);
 
-  StringBuilder * sb = (StringBuilder *) malloc(sizeof(StringBuilder));
+  StringBuilder * sb = (StringBuilder *) _malloc(sizeof(StringBuilder));
   assert(sb);
 
-  sb->data = (char *) malloc(size * sizeof(char));
+  sb->data = (char *) _malloc(size * sizeof(char));
   assert(sb->data);
 
   sb->length = 0;
@@ -87,8 +89,8 @@ void string_builder_destroy(StringBuilder * sb)
 {
   assert(sb);
 
-  free(sb->data);
-  free(sb);
+  _free(sb->data);
+  _free(sb);
 }
 
 void string_builder_clear(StringBuilder * sb)
@@ -202,7 +204,7 @@ void string_builder_appendf(StringBuilder * sb, char * format, ...)
 
   sb->length += length;
 
-  free(string);
+  _free(string);
 }
 
 void string_builder_append_code_point(StringBuilder * sb, uint32_t code_point)
@@ -231,7 +233,7 @@ char * string_builder_to_string(StringBuilder * sb)
 {
   assert(sb);
 
-  char * ret = (char *) malloc((sb->length + 1) * sizeof(char));
+  char * ret = (char *) _malloc((sb->length + 1) * sizeof(char));
   assert(ret);
 
   memcpy(
@@ -248,7 +250,7 @@ char * string_builder_to_temp_string(StringBuilder * sb)
 {
   if (_string_builder_temp_string != NULL)
   {
-    free(_string_builder_temp_string);
+    _free(_string_builder_temp_string);
     _string_builder_temp_string = NULL;
   }
 

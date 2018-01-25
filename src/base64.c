@@ -26,6 +26,7 @@
 #include <stdint.h>
 #include <unistd.h>
 
+#include "mtest.h"
 #include "strings.h"
 #include "utilities.h"
 
@@ -73,7 +74,7 @@ static uint8_t base64_char_to_value(char c)
 
 static bool base64_is_valid_char(char c)
 {
-  return 
+  return
     (c >= 'A' && c <= 'Z') ||
     (c >= 'a' && c <= 'z') ||
     (c >= '0' && c <= '9') ||
@@ -84,7 +85,7 @@ static bool base64_is_valid_char(char c)
 
 static void base64_encode_tuple(uint8_t * from, char * to, size_t remaining_size, bool padding)
 {
-  
+
   uint8_t buffer [4];
   bool set_2 = false, set_3 = false;
 
@@ -105,12 +106,12 @@ static void base64_encode_tuple(uint8_t * from, char * to, size_t remaining_size
       buffer[1] |= (from[1] >> 4) & 0x0F;
       buffer[2] |= from[1] << 2;
       set_2 = true;
-      
+
     case 1:
       break;
-      
+
   }
-  
+
   to[0] = base64_value_to_char(buffer[0]);
   to[1] = base64_value_to_char(buffer[1]);
 
@@ -123,7 +124,7 @@ static void base64_encode_tuple(uint8_t * from, char * to, size_t remaining_size
     to[3] = base64_value_to_char(buffer[3]);
   else if (padding)
     to[3] = __BASE64_PADDING_CHAR;
-  
+
 }
 
 static void base64_decode_tuple(char * from, uint8_t * to, size_t remaining_size)
@@ -136,7 +137,7 @@ static void base64_decode_tuple(char * from, uint8_t * to, size_t remaining_size
   }
 
   to[0] = (buffer[0] << 2) | ((buffer[1] >> 4) & 0x03);
-  
+
   if (remaining_size >= 3)
     to[1] = (buffer[1] << 4) | ((buffer[2] >> 2) & 0x0F);
   if (remaining_size >= 4)
@@ -146,8 +147,8 @@ static void base64_decode_tuple(char * from, uint8_t * to, size_t remaining_size
 static unsigned int base64_is_well_formed_imp(char * string)
 {
 
-  unsigned int 
-    string_length = strings_length(string), 
+  unsigned int
+    string_length = strings_length(string),
     string_length_mod,
     scan_length;
 
@@ -162,7 +163,7 @@ static unsigned int base64_is_well_formed_imp(char * string)
       if (string[string_length - 2] == __BASE64_PADDING_CHAR)
         scan_length = string_length - 2;
       else
-        scan_length = string_length - 1; 
+        scan_length = string_length - 1;
     }
     else
       scan_length = string_length;
@@ -185,8 +186,8 @@ static char * base64_encode_imp(uint8_t * data, size_t data_size, bool padding)
 {
   assert(data);
   assert(data_size > 0);
-  
-  size_t 
+
+  size_t
     ret_size,
     data_top;
   char
@@ -195,9 +196,9 @@ static char * base64_encode_imp(uint8_t * data, size_t data_size, bool padding)
   if (padding)
     ret_size = 4 * (utilities_round_size_upward(data_size, 3) / 3);
   else
-    ret_size = utilities_multiply_round_up(data_size, 4.0 / 3.0); 
+    ret_size = utilities_multiply_round_up(data_size, 4.0 / 3.0);
 
-  ret = (char *) malloc(sizeof(char) * (ret_size + 1));
+  ret = (char *) _malloc(sizeof(char) * (ret_size + 1));
   assert(ret);
 
   data_top = 0;
@@ -236,14 +237,14 @@ char * base64_encode_non_padded(uint8_t * data, size_t data_size)
 
 uint8_t * base64_decode(char * string, size_t * decoded_size_ptr)
 {
-  unsigned int 
+  unsigned int
     normalized_string_length = base64_is_well_formed_imp(string);
   assert(normalized_string_length > 0);
 
-  size_t 
+  size_t
     ret_size = base64_find_decoded_data_size(normalized_string_length),
     ret_top;
-  uint8_t * ret = (uint8_t *) malloc(sizeof(uint8_t) * ret_size);
+  uint8_t * ret = (uint8_t *) _malloc(sizeof(uint8_t) * ret_size);
   assert(ret);
 
   ret_top = 0;
@@ -263,4 +264,3 @@ bool base64_is_well_formed(char * data)
 
   return base64_is_well_formed_imp(data) > 0;
 }
-

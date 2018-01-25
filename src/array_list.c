@@ -19,21 +19,22 @@
 \* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 
-#include "array_list.h"
-#include "list.h"
-#include "list_struct.h"
-#include "list_type.h"
-#include "any.h"
-#include "string_builder.h"
-#include "strings.h"
-
 #include <assert.h>
 #include <semaphore.h>
 #include <stdbool.h>
 #include <string.h>
 #include <stdlib.h>
 
+#include "list.h"
+#include "list_struct.h"
+#include "list_type.h"
+#include "mtest.h"
+#include "any.h"
+#include "string_builder.h"
+#include "strings.h"
 
+
+#include "array_list.h"
 
 #define ARRAY_LIST_MINIMUM_SIZE 0x10
 
@@ -76,7 +77,7 @@ static void array_list_resize(ArrayList * array_list, unsigned int requested_siz
 
   if (new_size != array_list->array_size)
   {
-    array_list->array = (Any *) realloc(array_list->array, sizeof(Any) * new_size);
+    array_list->array = (Any *) _realloc(array_list->array, sizeof(Any) * new_size);
 
     assert(array_list->array);
     array_list->array_size = new_size;
@@ -97,7 +98,7 @@ static unsigned int array_list_remove_imp(ArrayList * array_list, Any any, bool 
     if (any_equals(array_list->array[k], any))
     {
       if (free_on_remove)
-        free(any_to_ptr(array_list->array[k]));
+        _free(any_to_ptr(array_list->array[k]));
 
       for (unsigned int i = k; i < array_list->size - 1; i++)
       {
@@ -126,7 +127,7 @@ static unsigned int array_list_remove_imp(ArrayList * array_list, Any any, bool 
 ArrayList * array_list_new()
 {
 
-  ArrayList * ret = (ArrayList *) malloc(sizeof(ArrayList));
+  ArrayList * ret = (ArrayList *) _malloc(sizeof(ArrayList));
   assert(ret);
 
   ret->base.type = LIST_TYPE_ARRAY_LIST;
@@ -157,7 +158,7 @@ ArrayList * array_list_new()
 
   sem_init(&ret->base.mutex, 0, 1);
 
-  ret->array = (Any *) malloc(sizeof(Any) * ARRAY_LIST_MINIMUM_SIZE);
+  ret->array = (Any *) _malloc(sizeof(Any) * ARRAY_LIST_MINIMUM_SIZE);
   assert(ret->array);
   ret->size = 0;
   ret->array_size = ARRAY_LIST_MINIMUM_SIZE;
@@ -171,8 +172,8 @@ void array_list_destroy(ArrayList * array_list)
 
   sem_destroy(&array_list->base.mutex);
 
-  free(array_list->array);
-  free(array_list);
+  _free(array_list->array);
+  _free(array_list);
 }
 void array_list_destroy_and_free(ArrayList * array_list)
 {
@@ -181,7 +182,7 @@ void array_list_destroy_and_free(ArrayList * array_list)
 
   for (unsigned int k = 0; k < array_list->size; k++)
   {
-    free(any_to_ptr(array_list->array[k]));
+    _free(any_to_ptr(array_list->array[k]));
   }
 
   array_list_destroy(array_list);
@@ -207,7 +208,7 @@ void array_list_destroy_and(ArrayList * array_list, void (*function)(Any))
 
   for (unsigned int k = 0; k < array_list->size; k++)
   {
-    free(any_to_ptr(array_list->array[k]));
+    _free(any_to_ptr(array_list->array[k]));
   }
 
   array_list_destroy(array_list);
@@ -395,7 +396,7 @@ void array_list_clear_and_free(ArrayList * array_list)
   for (unsigned int k = 0; k < array_list->size; k++)
   {
     ptr = any_to_ptr(array_list->array[k]);
-    free(ptr);
+    _free(ptr);
   }
 
   array_list_resize(array_list, 0);
@@ -437,7 +438,7 @@ Any * array_list_to_array(ArrayList * array_list)
     return NULL;
   }
 
-  Any * ret = (Any *) malloc(sizeof(Any) * array_list->size);
+  Any * ret = (Any *) _malloc(sizeof(Any) * array_list->size);
   assert(ret);
 
   memcpy(ret, array_list->array, sizeof(Any) * array_list->size);
@@ -522,14 +523,14 @@ char * array_list_to_string(ArrayList * array_list)
 
   buffer = any_get_string_representation(array_list->array[0]);
   string_builder_append(sb, buffer);
-  free(buffer);
+  _free(buffer);
 
   for (unsigned int k = 1; k < array_list->size; k++)
   {
     buffer = any_get_string_representation(array_list->array[k]);
     string_builder_append(sb, ", ");
     string_builder_append(sb, buffer);
-    free(buffer);
+    _free(buffer);
   }
 
   string_builder_append(sb, " ]");
@@ -569,7 +570,7 @@ ArrayListTraversal * array_list_get_traversal(ArrayList * array_list)
 {
   assert(array_list);
 
-  ArrayListTraversal * ret = (ArrayListTraversal *) malloc(sizeof(ArrayListTraversal));
+  ArrayListTraversal * ret = (ArrayListTraversal *) _malloc(sizeof(ArrayListTraversal));
   assert(ret);
 
   ret->base.type = LIST_TYPE_ARRAY_LIST;
@@ -596,7 +597,7 @@ void array_list_traversal_destroy(ArrayListTraversal * array_list_traversal)
   sem_post(&array_list_traversal->base.list->mutex);
 
 
-  free(array_list_traversal);
+  _free(array_list_traversal);
 }
 
 Any array_list_traversal_next(ArrayListTraversal * array_list_traversal)

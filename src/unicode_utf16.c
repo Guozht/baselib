@@ -23,8 +23,9 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-#include "strings.h"
 #include "endianness.h"
+#include "mtest.h"
+#include "strings.h"
 #include "unicode_encoding_type.h"
 #include "utilities.h"
 
@@ -149,23 +150,23 @@ static unsigned int unicode_string_length_utf16_imp(char * string, size_t string
     endian_reverse = endianness != utilities_get_endianness();
 
   string_length /= 2;
-  
+
   if (point_removable)
   {
     data = &data[1];
     string_length -= 1;
   }
-  
+
 
   ret = 0;
   for (unsigned int k = 0; k < string_length; k++)
   {
     if (unicode_is_high_surrogate_utf16(unicode_reverse_byte_order_utf16(data[k], endian_reverse)))
       k++;
-    
+
     ret++;
   }
-  
+
   return ret;
 }
 
@@ -238,7 +239,7 @@ static bool unicode_is_well_formed_utf16_with_endianness(char * string, unsigned
     value2;
   bool endian_reverse = utilities_get_endianness() != endianness;
 
-  
+
   for (unsigned int k = 0; k < data_length; k++)
   {
     value = unicode_reverse_byte_order_utf16(data[k], endian_reverse);
@@ -251,16 +252,16 @@ static bool unicode_is_well_formed_utf16_with_endianness(char * string, unsigned
       value2 = unicode_reverse_byte_order_utf16(data[k], endian_reverse);
       if (!unicode_is_low_surrogate_utf16(value2))
         return false;
-    
+
       code_point = (((uint32_t) value & 0x03FF) << 10) | ((uint32_t) value2 & 0x03FF);
       code_point += 0x10000;
     }
     else
       code_point = value;
-    
+
     if (!unicode_is_valid_code_point(code_point))
       return false;
-    
+
   }
   return true;
 }
@@ -306,9 +307,9 @@ static uint32_t * unicode_read_string_utf16_imp(char * string, size_t string_len
     string_length -= 2;
   }
 
-  ret = (uint32_t *) malloc(sizeof(uint32_t) * (utf16_length + 1));
+  ret = (uint32_t *) _malloc(sizeof(uint32_t) * (utf16_length + 1));
   string_top = 0;
-  
+
   for (unsigned int k = 0; k < utf16_length; k++)
   {
     string_top += unicode_read_utf16_with_endianness(&string[string_top], &ret[k], !reverse);
@@ -349,7 +350,7 @@ static char * unicode_write_string_utf16_imp(uint32_t * code_points, size_t code
     string_top = 0;
 
   char
-    * ret = (char *) malloc(sizeof(char) * (string_length + 1));
+    * ret = (char *) _malloc(sizeof(char) * (string_length + 1));
 
   if (include_bom)
     *((uint64_t *) ret) = unicode_reverse_byte_order_utf16(0xFEFF, reverse);
@@ -513,5 +514,3 @@ char * unicode_write_string_utf16le_without_bom(uint32_t * code_points, size_t c
 {
   return unicode_write_string_utf16_imp(code_points, code_points_length, string_length_ptr, utilities_get_endianness() != ENDIANNESS_LITTLE, false);
 }
-
-

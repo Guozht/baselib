@@ -36,6 +36,9 @@ char * strings_from_array(char * array, unsigned int length);
 char strings_char_at(char * string, unsigned int k);
 unsigned int strings_length(char * string);
 
+int strings_order(char * s1, char * s2);
+int strings_order_ignore_case(char * s1, char * s2);
+
 char * strings_format(char * format, ...);
 char * strings_vformat(char * format, va_list args);
 

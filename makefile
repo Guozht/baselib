@@ -1,4 +1,3 @@
-#!/bin/bash
 #* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *#
 #*                                                                         *#
 #*  baselib: a library implementing several simple utilities for C         *#
@@ -19,29 +18,29 @@
 #*                                                                         *#
 #* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *#
 
+bin_dir=./bin
+src_dir=./src
+file_names=$(notdir $(wildcard $(src_dir)/*.c))
+src_files=$(addprefix $(src_dir)/,$(file_names))
+object_files=$(addprefix $(bin_dir)/,$(file_names:.c=.o))
+CFLAGS=-std=gnu11 -Wall -g -lpthread -fPIC
+DEBUG_FLAGS=
+CC=gcc
 
-if [[ $1 == "clean" ]] ; then
-  rm -rf bin
-  exit 0
-fi
+.PHONY : all
+all : $(object_files)
+	$(CC) $(CFLAGS) -shared $^ -o $(bin_dir)/libbaselib.so
+
+debug : DEBUG_FLAGS=-DMTEST_DEBUG
+debug : all
 
 
-if [[ !(-d bin) ]] ; then
-  mkdir bin
-  if [[ $? != 0 ]] ; then
-    echo "Failed to create directory 'bin' build.sh terminated"
-    exit 1
-  fi
-fi
+$(bin_dir)/%.o : $(src_dir)/%.c bin
+	$(CC) $(CFLAGS) $(DEBUG_FLAGS) -c $< -o $@
 
-rm -f bin/*.o
+bin :
+	mkdir bin
 
-gcc -std=gnu11 src/*.c -g -c -fPIC -Wall
-if [[ $? != 0 ]] ; then
-  exit $?
-fi
-
-mv *.o bin/
-gcc bin/*.o -shared -o bin/libbaselib.so
-
-exit $?
+.PHONY: clean
+clean :
+	rm -rf bin

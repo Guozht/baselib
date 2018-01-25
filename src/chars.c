@@ -19,9 +19,9 @@
 \* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 
-#include "chars.h"
-
 #include <stdbool.h>
+
+#include "chars.h"
 
 
 bool chars_equals(char c1, char c2)
@@ -91,4 +91,28 @@ char chars_to_upper(char c)
     return c - ('a' - 'A');
   else
     return c;
+}
+
+
+
+int chars_order(char c1, char c2)
+{
+  if (c1 > c2)
+    return -1;
+  else if (c1 < c2)
+    return 1;
+  else
+    return 0;
+}
+
+int chars_order_ignore_case(char c1, char c2)
+{
+  c1 = chars_to_upper(c1);
+  c2 = chars_to_upper(c2);
+  if (c1 > c2)
+    return -1;
+  else if (c1 < c2)
+    return 1;
+  else
+    return 0;
 }

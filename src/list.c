@@ -19,14 +19,15 @@
 \* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 
+#include <assert.h>
+
+#include "any.h"
+#include "array_list.h"
+#include "linked_list.h"
 
 #include "list.h"
 #include "list_struct.h"
-#include "linked_list.h"
-#include "array_list.h"
-#include "any.h"
 
-#include <assert.h>
 
 List * list_new(ListType type)
 {

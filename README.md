@@ -22,7 +22,7 @@ This library will implement in the future:
 
 # To compile the library
 
-Simply run `build.sh` and then `sudo ./install.sh` in the project's root directory
+Simply run `make` and then `sudo ./install.sh` in the project's root directory to compile and install, respectively
 
 
 # To compile against the library

@@ -18,13 +18,6 @@
  *                                                                         *
 \* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#include "strings.h"
-#include "any.h"
-#include "string_builder.h"
-#include "chars.h"
-#include "list.h"
-#include "linked_list.h"
-
 #include <assert.h>
 #include <stdarg.h>
 #include <stdbool.h>
@@ -32,6 +25,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+#include "any.h"
+#include "chars.h"
+#include "list.h"
+#include "linked_list.h"
+#include "mtest.h"
+#include "string_builder.h"
+
+#include "strings.h"
 
 
 #define STRINGS_TRIM_FRONT_SIDE 1
@@ -44,7 +46,7 @@
 
 static char * strings_alloc(unsigned int size)
 {
-  char * ret = malloc(size * sizeof(char));
+  char * ret = _malloc(size * sizeof(char));
   assert(ret);
 
   return ret;
@@ -67,6 +69,33 @@ static bool strings_bounded_equals_ignore_case(char * a, char * b, unsigned int 
   }
 
   return true;
+}
+
+static int strings_order_imp(char * a, char * b, int (*callback)(char, char))
+{
+  assert(a);
+  assert(b);
+  assert(callback);
+
+  unsigned int
+    a_length = strings_length(a),
+    b_length = strings_length(b);
+  int
+    callback_ret;
+
+  for (unsigned int k = 0 ; k < a_length && k < b_length; k++)
+  {
+    callback_ret = callback(a[k], b[k]);
+    if (callback_ret != 0)
+      return callback_ret;
+  }
+
+  if (b_length > a_length)
+    return -1;
+  else if (a_length > b_length)
+    return 1;
+  else
+    return 0;
 }
 
 static char * strings_to_something(char * string, char (*mapping_function)(char))
@@ -412,6 +441,19 @@ unsigned int strings_length(char * string)
   assert(string);
   return strlen(string);
 }
+
+
+int strings_order(char * s1, char * s2)
+{
+  return strings_order_imp(s1, s2, chars_order);
+}
+
+int strings_order_ignore_case(char * s1, char * s2)
+{
+  return strings_order_imp(s1, s2, chars_order_ignore_case);
+}
+
+
 
 int32_t strings_hash(char * string)
 {

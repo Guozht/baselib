@@ -24,6 +24,7 @@
 
 #include "any.h"
 #include "list.h"
+#include "mtest.h"
 
 #include "task_arguments.h"
 
@@ -39,22 +40,22 @@ struct TaskArguments
 TaskArguments * task_arguments_new(List * list)
 {
   assert(list);
-  
-  TaskArguments * ret = (TaskArguments *) malloc(sizeof(TaskArguments));
+
+  TaskArguments * ret = (TaskArguments *) _malloc(sizeof(TaskArguments));
   assert(ret);
 
   ret->length = list_size(list);
   ret->arguments = list_to_array(list);
-  
+
   return ret;
 }
 
 void task_arguments_destroy(TaskArguments * task_arguments)
 {
   assert(task_arguments);
-  
-  free(task_arguments->arguments);
-  free(task_arguments);
+
+  _free(task_arguments->arguments);
+  _free(task_arguments);
 }
 
 
@@ -62,12 +63,11 @@ Any task_arguments_get(TaskArguments * task_arguments, unsigned int index)
 {
   assert(task_arguments);
   assert(task_arguments->length > index);
-  
+
   return task_arguments->arguments[index];
 }
 
 unsigned int task_arguments_length(TaskArguments * task_arguments)
 {
-  return task_arguments->length;  
+  return task_arguments->length;
 }
-

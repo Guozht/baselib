@@ -19,13 +19,6 @@
 \* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 
-#include "files.h"
-#include "file_op.h"
-#include "strings.h"
-#include "string_builder.h"
-#include "unicode.h"
-#include "utilities.h"
-
 #include <assert.h>
 #include <fcntl.h>
 #include <stdbool.h>
@@ -35,6 +28,16 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
+
+#include "file_op.h"
+#include "mtest.h"
+#include "strings.h"
+#include "string_builder.h"
+#include "unicode.h"
+#include "utilities.h"
+
+
+#include "files.h"
 
 #define BUFFER_SIZE 0x3FF
 
@@ -90,7 +93,7 @@ static List * files_path_to_list(char * path, bool * rooted_ptr)
     *rooted_ptr = starts_with_slash;
 
   List * list = strings_split(path, '/');
-  free(path);
+  _free(path);
 
 
   if (list_contains(list, str_to_any("")))
@@ -117,8 +120,8 @@ static void files_normalize_path_list(List * list)
       {
         list_remove_at(list, k);
         list_remove_at(list, k - 1);
-        free(current);
-        free(last);
+        _free(current);
+        _free(last);
         k -= 2;
       }
     }
@@ -240,7 +243,7 @@ char * files_read_all(char * path, ssize_t * read_ptr)
     return NULL;
   }
 
-  data = (char *) malloc(sizeof(char) * file_size);
+  data = (char *) _malloc(sizeof(char) * file_size);
   read_size = 0;
   do
   {
@@ -255,7 +258,7 @@ char * files_read_all(char * path, ssize_t * read_ptr)
     {
       /* read failed before end of file */
       *read_ptr = -1;
-      free(data);
+      _free(data);
       return NULL;
     }
 
@@ -302,18 +305,18 @@ List * files_read_all_lines_with_lf(
 
   if (!unicode_is_well_formed(type, data, (size_t) read_length))
   {
-    free(data);
+    _free(data);
     return NULL;
   }
 
   code_points = unicode_read_string(type, data, (size_t) read_length, &code_points_length);
-  free(data);
+  _free(data);
   data = unicode_write_string_utf8(code_points, code_points_length, &data_length);
-  free(code_points);
+  _free(code_points);
 
   if (data_length != strings_length(data)) /* must contain null terminator */
   {
-    free(data);
+    _free(data);
     return NULL;
   }
 
@@ -327,12 +330,12 @@ List * files_read_all_lines_with_lf(
   {
     Any removed = list_remove_at(ret, ret_length - 1);
 
-    free(any_to_str(
+    _free(any_to_str(
       removed
       ));
   }
 
-  free(data);
+  _free(data);
   return ret;
 }
 
@@ -430,17 +433,17 @@ bool files_write_all_lines_with_lf(
       &code_points_length
     );
 
-  free(data);
+  _free(data);
   data = unicode_write_string(
       type,
       code_points,
       code_points_length,
       &data_length
     );
-  free(code_points);
+  _free(code_points);
 
   ret = files_write_all(path, data, data_length, op_type);
-  free(data);
+  _free(data);
 
   return ret;
 }

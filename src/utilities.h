@@ -36,6 +36,7 @@
 
 #include "endianness.h"
 
+
 long utilities_lmin(long l0, long l1);
 long utilities_lmax(long l0, long l1);
 

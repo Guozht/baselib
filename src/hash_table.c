@@ -1,3 +1,22 @@
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *\
+ *                                                                         *
+ *  baselib: a library implementing several simple utilities for C         *
+ *  Copyright (C) 2017  LeqxLeqx                                           *
+ *                                                                         *
+ *  This program is free software: you can redistribute it and/or modify   *
+ *  it under the terms of the GNU General Public License as published by   *
+ *  the Free Software Foundation, either version 3 of the License, or      *
+ *  (at your option) any later version.                                    *
+ *                                                                         *
+ *  This program is distributed in the hope that it will be useful,        *
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of         *
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the          *
+ *  GNU General Public License for more details.                           *
+ *                                                                         *
+ *  You should have received a copy of the GNU General Public License      *
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.  *
+ *                                                                         *
+\* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 #include <assert.h>
 #include <semaphore.h>
@@ -11,6 +30,7 @@
 #include "dictionary_type.h"
 #include "linked_list.h"
 #include "list.h"
+#include "mtest.h"
 #include "strings.h"
 
 #include "hash_table.h"
@@ -37,7 +57,7 @@ struct HashTable
 
 static struct HashTableNode * hash_table_node_new(char * key, Any value)
 {
-  struct HashTableNode * ret = (struct HashTableNode *) malloc(sizeof(struct HashTableNode));
+  struct HashTableNode * ret = (struct HashTableNode *) _malloc(sizeof(struct HashTableNode));
   assert(ret);
 
   ret->key = strings_clone(key);
@@ -50,8 +70,8 @@ static struct HashTableNode * hash_table_node_new(char * key, Any value)
 static void hash_table_node_destroy(struct HashTableNode * node)
 {
   if (node->key)
-    free(node->key);
-  free(node);
+    _free(node->key);
+  _free(node);
 }
 
 static struct HashTableNode ** hash_table_node_get(HashTable * table, char * key)
@@ -180,8 +200,8 @@ static void hash_table_destroy_imp(HashTable * hash_table, void * callback, bool
   sem_destroy(&hash_table->base.mutex);
 
   linked_list_destroy_and_free((LinkedList *) hash_table->base.keys);
-  free(hash_table->data);
-  free(hash_table);
+  _free(hash_table->data);
+  _free(hash_table);
 }
 
 
@@ -189,7 +209,7 @@ static void hash_table_destroy_imp(HashTable * hash_table, void * callback, bool
 
 HashTable * hash_table_new()
 {
-  HashTable * ret = (HashTable *) malloc(sizeof(HashTable));
+  HashTable * ret = (HashTable *) _malloc(sizeof(HashTable));
   assert(ret);
 
   ret->base.type = DICTIONARY_TYPE_HASH_TABLE;
@@ -220,7 +240,7 @@ HashTable * hash_table_new()
 
   ret->base.dictionary_remove = (Any (*)(Dictionary *, char *)) hash_table_remove;
 
-  ret->data = (struct HashTableNode **) calloc(sizeof(struct HashTableNode *), HASH_TABLE_TABLE_SIZE);
+  ret->data = (struct HashTableNode **) _calloc(sizeof(struct HashTableNode *), HASH_TABLE_TABLE_SIZE);
   assert(ret->data);
 
   return ret;

@@ -18,25 +18,38 @@
  *                                                                         *
 \* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
+#ifndef __BASELIB_MTEST_H
+#define __BASELIB_MTEST_H
 
-#define BASELIB_VERSION "0.6.2"
+#include <sys/types.h>
 
 
-#include "any.h"
-#include "array_list.h"
-#include "base64.h"
-#include "chars.h"
-#include "dictionary.h"
-#include "dictionary_type.h"
-#include "files.h"
-#include "file_op.h"
-#include "hash_table.h"
-#include "linked_list.h"
-#include "list.h"
-#include "list_type.h"
-#include "strings.h"
-#include "string_builder.h"
-#include "task.h"
-#include "task_arguments.h"
-#include "unicode.h"
-#include "unicode_encoding_type.h"
+#ifdef MTEST_DEBUG
+
+#define _malloc(s) mtest_malloc(s)
+#define _calloc(s, c) mtest_calloc(s, c)
+#define _realloc(p, s) mtest_realloc(p, s)
+#define _free(p) mtest_free(p)
+
+#else
+
+#define _malloc(s) malloc(s)
+#define _calloc(s, c) calloc(s, c)
+#define _realloc(p, s) realloc(p, s)
+#define _free(p) free(p)
+
+#endif
+
+
+void mtest_init();
+void mtest_deinit();
+
+void * mtest_malloc(size_t allocation_size);
+void * mtest_calloc(size_t size, size_t count);
+void * mtest_realloc(void * pointer, size_t reallocation_size);
+void mtest_free(void * pointer);
+
+int mtest_allocations();
+
+
+#endif

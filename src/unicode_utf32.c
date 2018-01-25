@@ -24,8 +24,9 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-#include "strings.h"
 #include "endianness.h"
+#include "mtest.h"
+#include "strings.h"
 #include "unicode_encoding_type.h"
 #include "utilities.h"
 
@@ -35,14 +36,14 @@
 static uint32_t unicode_reverse_codepoint_utf32(uint32_t code_point, bool reverse)
 {
   if (reverse)
-    return 
-      ((code_point << 24) & 0xFF000000) | 
+    return
+      ((code_point << 24) & 0xFF000000) |
       ((code_point << 8) & 0x00FF0000) |
       ((code_point >> 8) & 0x0000FF00) |
       ((code_point >> 24) & 0x000000FF);
   else
     return code_point;
-    
+
 }
 
 static bool unicode_is_well_formed_utf32_imp(uint32_t * data, size_t data_length, bool reverse)
@@ -52,14 +53,14 @@ static bool unicode_is_well_formed_utf32_imp(uint32_t * data, size_t data_length
     if (!unicode_is_valid_code_point(unicode_reverse_codepoint_utf32(data[k], reverse)))
       return false;
   }
-  
+
   return true;
 }
 
 static bool unicode_is_well_formed_utf32_with_endianness(
-  char * string, 
-  size_t string_length, 
-  Endianness endianness, 
+  char * string,
+  size_t string_length,
+  Endianness endianness,
   bool * reverse_ptr,
   bool * remove_bom
   )
@@ -68,26 +69,26 @@ static bool unicode_is_well_formed_utf32_with_endianness(
     return true;
   if (string_length % 4 != 0)
     return false;
-  
+
   Endianness system_endianness = utilities_get_endianness();
   uint32_t * data = (uint32_t *) string;
 
   bool reverse = system_endianness != endianness;
-  
+
   if (unicode_reverse_codepoint_utf32(data[0], reverse) == 0x0000FEFF)
   {
     data = &data[1];
     string_length -= 4;
-  
+
     if (remove_bom)
       *remove_bom = true;
   }
   else if (remove_bom)
     *remove_bom = false;
-  
+
   if (reverse_ptr)
     *reverse_ptr = reverse;
-  
+
   return unicode_is_well_formed_utf32_imp(data, string_length / 4, reverse);
 }
 
@@ -95,7 +96,7 @@ static int unicode_read_utf32_imp(char * string, uint32_t * code_point, bool rev
 {
   assert(string);
   assert(code_point);
-  
+
   *code_point = unicode_reverse_codepoint_utf32(*(uint32_t *) string, reverse);
   if (unicode_is_valid_code_point(*code_point))
     return 4;
@@ -106,7 +107,7 @@ static int unicode_read_utf32_imp(char * string, uint32_t * code_point, bool rev
 static int unicode_write_utf32_imp(uint32_t code_point, char * string, bool reverse)
 {
   assert(string);
-  
+
   *((uint32_t *) string) = unicode_reverse_codepoint_utf32(code_point, reverse);
   return 4;
 }
@@ -129,7 +130,7 @@ static uint32_t * unicode_read_string_utf32_imp(char * string, size_t string_len
   if (remove_bom)
     ret_length--;
 
-  ret = (uint32_t *) malloc(sizeof(uint32_t) * (ret_length + 1));
+  ret = (uint32_t *) _malloc(sizeof(uint32_t) * (ret_length + 1));
   assert(ret);
 
   size_t ret_top = 0;
@@ -157,11 +158,11 @@ static char * unicode_write_string_utf32_imp(uint32_t * code_points, size_t code
     return NULL;
   }
 
-  size_t 
+  size_t
     ret_length = code_points_length * 4 + (add_bom ? 4 : 0),
     ret_top = 0;
-  char 
-    * ret = (char *) malloc(sizeof(char) * (ret_length + 1));
+  char
+    * ret = (char *) _malloc(sizeof(char) * (ret_length + 1));
   assert(ret);
 
   if (add_bom)
@@ -192,20 +193,20 @@ unsigned int unicode_code_point_byte_requirement_utf32(uint32_t code_point)
 bool unicode_is_well_formed_utf32(char * string, size_t string_length)
 {
   assert(string);
-  
+
   if (string_length == 0)
     return true;
   if (string_length % 4 != 0)
     return false;
-  
+
   uint32_t * data = (uint32_t *) string;
-  
+
   if (data[0] == 0x0000FEFF) /* BOM does not require reversal */
     return unicode_is_well_formed_utf32_imp(&data[1], string_length / 4 - 1, false);
   else if (data[0] == 0xFFFE0000) /* BOM requires reversal */
     return unicode_is_well_formed_utf32_imp(&data[1], string_length / 4 - 1, true);
   else /* NO BOM */
-    return 
+    return
       unicode_is_well_formed_utf32_imp(data, string_length / 4, true) ||
       unicode_is_well_formed_utf32_imp(data, string_length / 4, false);
 }
@@ -218,41 +219,41 @@ bool unicode_is_well_formed_utf32be(char * string, size_t string_length)
 bool unicode_is_well_formed_utf32le(char * string, size_t string_length)
 {
   assert(string);
-  
+
   return unicode_is_well_formed_utf32_with_endianness(string, string_length, ENDIANNESS_LITTLE, NULL, NULL);
 }
 
 unsigned int unicode_string_length_utf32(char * string, size_t string_length)
 {
   assert(string);
-  
+
   bool remove_bom;
   if (
     !unicode_is_well_formed_utf32_with_endianness(string, string_length, ENDIANNESS_LITTLE, NULL, &remove_bom) &&
     !unicode_is_well_formed_utf32_with_endianness(string, string_length, ENDIANNESS_BIG, NULL, &remove_bom)
     )
     assert(0); /* NOT WELL FORMED */
-    
+
   return string_length / 4 - (remove_bom ? 1 : 0);
 }
 unsigned int unicode_string_length_utf32be(char * string, size_t string_length)
 {
   assert(string);
-  
+
   bool remove_bom;
   if (!unicode_is_well_formed_utf32_with_endianness(string, string_length, ENDIANNESS_BIG, NULL, &remove_bom))
     assert(0); /* NOT WELL FORMED */
-    
+
   return string_length / 4 - (remove_bom ? 1 : 0);
 }
 unsigned int unicode_string_length_utf32le(char * string, size_t string_length)
 {
   assert(string);
-  
+
   bool remove_bom;
   if (!unicode_is_well_formed_utf32_with_endianness(string, string_length, ENDIANNESS_LITTLE, NULL, &remove_bom))
     assert(0); /* NOT WELL FORMED */
-    
+
   return string_length / 4 - (remove_bom ? 1 : 0);
 }
 
@@ -282,11 +283,11 @@ uint32_t * unicode_read_string_utf32(char * string, size_t string_length, size_t
 {
   bool reverse, remove_bom;
   if (
-      unicode_is_well_formed_utf32_with_endianness(string, string_length, ENDIANNESS_BIG, &reverse, &remove_bom) || 
+      unicode_is_well_formed_utf32_with_endianness(string, string_length, ENDIANNESS_BIG, &reverse, &remove_bom) ||
       unicode_is_well_formed_utf32_with_endianness(string, string_length, ENDIANNESS_LITTLE, &reverse, &remove_bom)
     )
     return unicode_read_string_utf32_imp(string, string_length, code_points_length_ptr, reverse, remove_bom);
-  
+
   return NULL;
 }
 uint32_t * unicode_read_string_utf32be(char * string, size_t string_length, size_t * code_points_length_ptr)
@@ -296,7 +297,7 @@ uint32_t * unicode_read_string_utf32be(char * string, size_t string_length, size
       unicode_is_well_formed_utf32_with_endianness(string, string_length, ENDIANNESS_BIG, &reverse, &remove_bom)
     )
     return unicode_read_string_utf32_imp(string, string_length, code_points_length_ptr, reverse, remove_bom);
-  
+
   return NULL;
 }
 uint32_t * unicode_read_string_utf32le(char * string, size_t string_length, size_t * code_points_length_ptr)
@@ -306,14 +307,14 @@ uint32_t * unicode_read_string_utf32le(char * string, size_t string_length, size
       unicode_is_well_formed_utf32_with_endianness(string, string_length, ENDIANNESS_LITTLE, &reverse, &remove_bom)
     )
     return unicode_read_string_utf32_imp(string, string_length, code_points_length_ptr, reverse, remove_bom);
-  
+
   return NULL;
 }
 
 
 char * unicode_write_string_utf32(uint32_t * code_points, size_t code_points_length, size_t * string_length_ptr)
 {
-  return unicode_write_string_utf32be(code_points, code_points_length, string_length_ptr); 
+  return unicode_write_string_utf32be(code_points, code_points_length, string_length_ptr);
 }
 char * unicode_write_string_utf32be(uint32_t * code_points, size_t code_points_length, size_t * string_length_ptr)
 {
@@ -326,7 +327,7 @@ char * unicode_write_string_utf32le(uint32_t * code_points, size_t code_points_l
 
 char * unicode_write_string_utf32_without_bom(uint32_t * code_points, size_t code_points_length, size_t * string_length_ptr)
 {
-  return unicode_write_string_utf32be_without_bom(code_points, code_points_length, string_length_ptr); 
+  return unicode_write_string_utf32be_without_bom(code_points, code_points_length, string_length_ptr);
 }
 char * unicode_write_string_utf32be_without_bom(uint32_t * code_points, size_t code_points_length, size_t * string_length_ptr)
 {
@@ -336,6 +337,3 @@ char * unicode_write_string_utf32le_without_bom(uint32_t * code_points, size_t c
 {
   return unicode_write_string_utf32_imp(code_points, code_points_length, string_length_ptr, utilities_get_endianness() != ENDIANNESS_LITTLE, false);
 }
-
-
-

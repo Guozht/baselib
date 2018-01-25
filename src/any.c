@@ -18,11 +18,13 @@
  *                                                                         *
 \* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#include "any.h"
-#include "strings.h"
-
 #include <assert.h>
 #include <stdio.h>
+
+#include "mtest.h"
+#include "strings.h"
+
+#include "any.h"
 
 
 Any char_to_any(char c)

@@ -24,8 +24,9 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-#include "strings.h"
 #include "endianness.h"
+#include "mtest.h"
+#include "strings.h"
 #include "unicode_encoding_type.h"
 #include "utilities.h"
 
@@ -208,7 +209,7 @@ uint32_t * unicode_read_string_utf8(char * string, size_t string_length, size_t 
   unsigned int
     utf8_length = unicode_string_length_utf8_imp(string, string_length),
     string_top;
-  uint32_t * ret = (uint32_t *) malloc(sizeof(uint32_t) * (utf8_length + 1));
+  uint32_t * ret = (uint32_t *) _malloc(sizeof(uint32_t) * (utf8_length + 1));
   assert(ret);
 
   string_top = 0;
@@ -231,7 +232,7 @@ char * unicode_write_string_utf8(uint32_t * code_points, size_t code_points_leng
   unsigned int
     string_size = unicode_code_point_string_size_requirement_utf8(code_points, code_points_length),
     string_top;
-  char * ret = (char *) malloc(sizeof(char) * (string_size + 1));
+  char * ret = (char *) _malloc(sizeof(char) * (string_size + 1));
   assert(ret);
 
   string_top = 0;

@@ -18,19 +18,20 @@
  *                                                                         *
 \* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-
-#include "linked_list.h"
-
-#include "list_struct.h"
-#include "list_type.h"
-#include "list.h"
-#include "any.h"
-#include "strings.h"
-#include "string_builder.h"
-
 #include <assert.h>
 #include <stdlib.h>
 #include <semaphore.h>
+
+#include "any.h"
+#include "list_struct.h"
+#include "list_type.h"
+#include "list.h"
+#include "mtest.h"
+#include "strings.h"
+#include "string_builder.h"
+
+#include "linked_list.h"
+
 
 
 struct LinkedListNode
@@ -66,7 +67,7 @@ struct LinkedListTraversal
 
 static struct LinkedListNode * linked_list_node_new(Any value, struct LinkedListNode * next)
 {
-  struct LinkedListNode * ret = (struct LinkedListNode *) malloc(sizeof(struct LinkedListNode));
+  struct LinkedListNode * ret = (struct LinkedListNode *) _malloc(sizeof(struct LinkedListNode));
   assert(ret);
 
   ret->value = value;
@@ -114,14 +115,14 @@ static unsigned int linked_list_remove_imp(LinkedList * linked_list, Any any, bo
     {
 
       if (free_on_remove)
-        free(any_to_ptr(current->value));
+        _free(any_to_ptr(current->value));
 
       ret++;
       *last_ptr = current->next;
       struct LinkedListNode * hold = current;
       current = current->next;
 
-      free(hold);
+      _free(hold);
     }
     else
     {
@@ -151,7 +152,7 @@ static unsigned int linked_list_remove_imp(LinkedList * linked_list, Any any, bo
 
 LinkedList * linked_list_new()
 {
-  LinkedList * ret = (LinkedList *) malloc(sizeof(LinkedList));
+  LinkedList * ret = (LinkedList *) _malloc(sizeof(LinkedList));
   assert(ret);
 
   ret->base.type = LIST_TYPE_LINKED_LIST;
@@ -199,7 +200,7 @@ void linked_list_destroy(LinkedList * linked_list)
   linked_list_clear(linked_list);
 
   sem_destroy(&linked_list->base.mutex);
-  free(linked_list);
+  _free(linked_list);
 }
 void linked_list_destroy_and_free(LinkedList * linked_list)
 {
@@ -209,7 +210,7 @@ void linked_list_destroy_and_free(LinkedList * linked_list)
   struct LinkedListNode * current = linked_list->start;
   while (current)
   {
-    free(any_to_ptr(current->value));
+    _free(any_to_ptr(current->value));
     current = current->next;
   }
 
@@ -400,7 +401,7 @@ Any linked_list_remove_at(LinkedList * linked_list, unsigned int index)
   if (linked_list->size == 1)
   {
     ret = linked_list->start->value;
-    free(linked_list->start);
+    _free(linked_list->start);
     linked_list->start = NULL;
     linked_list->end = NULL;
   }
@@ -420,12 +421,12 @@ Any linked_list_remove_at(LinkedList * linked_list, unsigned int index)
     {
       linked_list->start = current->next;
       ret = current->value;
-      free(current);
+      _free(current);
     }
     else if (current->next == NULL) /* ergo, is last */
     {
       ret = current->value;
-      free(current);
+      _free(current);
       linked_list->end = last;
       last->next = NULL;
     }
@@ -433,7 +434,7 @@ Any linked_list_remove_at(LinkedList * linked_list, unsigned int index)
     {
       last->next = current->next;
       ret = current->value;
-      free(current);
+      _free(current);
     }
   }
 
@@ -471,7 +472,7 @@ void linked_list_clear(LinkedList * linked_list)
   {
     hold = current;
     current = hold->next;
-    free(hold);
+    _free(hold);
   }
 
   linked_list->start = NULL;
@@ -500,8 +501,8 @@ void linked_list_clear_and_free(LinkedList * linked_list)
     hold = current;
     current = hold->next;
     ptr = any_to_ptr(hold->value);
-    free(ptr);
-    free(hold);
+    _free(ptr);
+    _free(hold);
   }
 
   linked_list->start = NULL;
@@ -529,7 +530,7 @@ void linked_list_clear_and(LinkedList * linked_list, void (*function)(Any))
     hold = current;
     current = hold->next;
     function(hold->value);
-    free(hold);
+    _free(hold);
   }
 
   linked_list->start = NULL;
@@ -550,7 +551,7 @@ Any * linked_list_to_array(LinkedList * linked_list)
   Any * ret;
 
   sem_wait(&linked_list->base.mutex);
-  ret = (Any *) malloc(sizeof(Any) * linked_list->size);
+  ret = (Any *) _malloc(sizeof(Any) * linked_list->size);
   assert(ret);
 
 
@@ -645,7 +646,7 @@ char * linked_list_to_string(LinkedList * linked_list)
 
   buffer = any_get_string_representation(node->value);
   string_builder_append(sb, buffer);
-  free(buffer);
+  _free(buffer);
 
   do
   {
@@ -656,7 +657,7 @@ char * linked_list_to_string(LinkedList * linked_list)
     buffer = any_get_string_representation(node->value);
     string_builder_append(sb, ", ");
     string_builder_append(sb, buffer);
-    free(buffer);
+    _free(buffer);
   }
   while (node);
 
@@ -699,7 +700,7 @@ LinkedListTraversal * linked_list_get_traversal(LinkedList * linked_list)
 {
   assert(linked_list);
 
-  LinkedListTraversal * ret = (LinkedListTraversal *) malloc(sizeof(LinkedListTraversal));
+  LinkedListTraversal * ret = (LinkedListTraversal *) _malloc(sizeof(LinkedListTraversal));
   assert(ret);
 
   ret->base.type = LIST_TYPE_LINKED_LIST;
@@ -728,7 +729,7 @@ void linked_list_traversal_destroy(LinkedListTraversal * linked_list_traversal)
 
   sem_post(&linked_list_traversal->base.list->mutex);
 
-  free(linked_list_traversal);
+  _free(linked_list_traversal);
 }
 
 
