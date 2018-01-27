@@ -56,6 +56,7 @@ struct List
 
   void (*list_clear)(struct List *);
   void (*list_clear_and_free)(struct List *);
+  void (*list_clear_and_user_free)(struct List *, void (*callback)(void *));
   void (*list_clear_and)(struct List *, void (*function)(Any));
 
   char * (*list_to_string)(struct List *);

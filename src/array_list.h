@@ -124,6 +124,8 @@ void array_list_clear(ArrayList * array_list);
 
 void array_list_clear_and_free(ArrayList * array_list);
 
+void array_list_clear_and_user_free(ArrayList * array_list, void (*callback)(void *));
+
 void array_list_clear_and(ArrayList * array, void (*function)(Any));
 
 

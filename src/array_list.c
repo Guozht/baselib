@@ -148,6 +148,7 @@ ArrayList * array_list_new()
   ret->base.list_remove_and_free = (unsigned int (*)(List *, Any)) array_list_remove_and_free;
   ret->base.list_clear = (void (*)(List *)) array_list_clear;
   ret->base.list_clear_and_free = (void (*)(List *)) array_list_clear_and_free;
+  ret->base.list_clear_and_user_free = (void (*)(List *, void (*)(void *))) array_list_clear_and_user_free;
   ret->base.list_clear_and = (void (*)(List *, void (*)(Any))) array_list_clear_and;
   ret->base.list_to_array = (Any * (*)(List *)) array_list_to_array;
   ret->base.list_sub_list = (List * (*)(List *, unsigned int, unsigned int)) array_list_sub_list;
@@ -397,6 +398,28 @@ void array_list_clear_and_free(ArrayList * array_list)
   {
     ptr = any_to_ptr(array_list->array[k]);
     _free(ptr);
+  }
+
+  array_list_resize(array_list, 0);
+  array_list->size = 0;
+
+  sem_post(&array_list->base.mutex);
+
+}
+
+
+void array_list_clear_and_user_free(ArrayList * array_list, void (*callback)(void *))
+{
+  assert(array_list);
+
+  sem_wait(&array_list->base.mutex);
+  assert(array_list->base.open_traversals == 0);
+
+  void * ptr;
+  for (unsigned int k = 0; k < array_list->size; k++)
+  {
+    ptr = any_to_ptr(array_list->array[k]);
+    callback(ptr);
   }
 
   array_list_resize(array_list, 0);

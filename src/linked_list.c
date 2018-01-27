@@ -173,6 +173,7 @@ LinkedList * linked_list_new()
   ret->base.list_remove_and_free = (unsigned int (*)(List *, Any)) linked_list_remove_and_free;
   ret->base.list_clear = (void (*)(List *)) linked_list_clear;
   ret->base.list_clear_and_free = (void (*)(List *)) linked_list_clear_and_free;
+  ret->base.list_clear_and_user_free = (void (*)(List *, void (*)(void *))) linked_list_clear_and_user_free;
   ret->base.list_clear_and = (void (*)(List *, void (*)(Any))) linked_list_clear_and;
   ret->base.list_to_array = (Any * (*)(List *)) linked_list_to_array;
   ret->base.list_sub_list = (List * (*)(List *, unsigned int, unsigned int)) linked_list_sub_list;
@@ -502,6 +503,35 @@ void linked_list_clear_and_free(LinkedList * linked_list)
     current = hold->next;
     ptr = any_to_ptr(hold->value);
     _free(ptr);
+    _free(hold);
+  }
+
+  linked_list->start = NULL;
+  linked_list->end = NULL;
+  linked_list->size = 0;
+
+  linked_list->cache = NULL;
+  linked_list->cache_index = 0;
+
+  sem_post(&linked_list->base.mutex);
+}
+
+void linked_list_clear_and_user_free(LinkedList * linked_list, void (*callback)(void *))
+{
+  assert(linked_list);
+
+  sem_wait(&linked_list->base.mutex);
+  assert(linked_list->base.open_traversals == 0);
+
+  struct LinkedListNode * current = linked_list->start, * hold;
+  void * ptr;
+
+  while (current)
+  {
+    hold = current;
+    current = hold->next;
+    ptr = any_to_ptr(hold->value);
+    callback(ptr);
     _free(hold);
   }
 

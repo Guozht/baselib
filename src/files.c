@@ -461,7 +461,7 @@ bool files_mkdir(char * path)
 {
   assert(path);
 
-  return mkdir(path, 0) == 0;
+  return mkdir(path, 0755) == 0;
 }
 
 bool files_rmdir(char * path)

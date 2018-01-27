@@ -57,6 +57,7 @@ unsigned int linked_list_remove_and_free(LinkedList * linked_list, Any any);
 
 void linked_list_clear(LinkedList * linked_list);
 void linked_list_clear_and_free(LinkedList * linked_list);
+void linked_list_clear_and_user_free(LinkedList * linked_list, void (*callback)(void *));
 void linked_list_clear_and(LinkedList * linked_list, void (*function)(Any));
 
 Any * linked_list_to_array(LinkedList * linked_list);

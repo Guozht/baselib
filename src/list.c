@@ -171,6 +171,13 @@ void list_clear_and_free(List * list)
   return list->list_clear_and_free(list);
 }
 
+void list_clear_and_user_free(List * list, void (*callback)(void *))
+{
+  assert(list);
+
+  return list->list_clear_and_user_free(list, callback);
+}
+
 void list_clear_and(List * list, void (*function)(Any))
 {
   assert(list);
