@@ -49,7 +49,7 @@ bool chars_is_alpha(char c)
 }
 bool chars_is_digit(char c)
 {
-  return '0' <= c && c < '9';
+  return '0' <= c && c <= '9';
 }
 bool chars_is_alpha_or_digit(char c)
 {
