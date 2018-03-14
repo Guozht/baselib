@@ -117,6 +117,21 @@ static unsigned int array_list_remove_imp(ArrayList * array_list, Any any, bool 
   return ret;
 }
 
+static void array_list_shuffle_up(ArrayList * array_list, unsigned int low, unsigned int high, unsigned int delta)
+{
+  for (unsigned int k = high; k > low; k--)
+  {
+    array_list->array[k] = array_list->array[k - delta]; 
+  }
+}
+static void array_list_shuffle_down(ArrayList * array_list, unsigned int low, unsigned int high)
+{
+  for (unsigned int k = low; k < high; k++)
+  {
+    array_list->array[k] = array_list->array[k + 1];
+  }
+}
+
 
 /* END OF INTERNAL METHODS */
 
@@ -140,12 +155,20 @@ ArrayList * array_list_new()
   ret->base.list_size = (unsigned int (*)(List *)) array_list_size;
   ret->base.list_contains = (bool (*)(List *, Any)) array_list_contains;
   ret->base.list_get = (Any (*)(List *, unsigned int)) array_list_get;
+  ret->base.list_get_char = (char (*)(List *, unsigned int)) array_list_get_char;
+  ret->base.list_get_int = (int (*)(List *, unsigned int)) array_list_get_int;
+  ret->base.list_get_str = (char * (*)(List *, unsigned int)) array_list_get_str;
+  ret->base.list_get_ptr = (void * (*)(List *, unsigned int)) array_list_get_ptr;
   ret->base.list_add = (void (*)(List *, Any)) array_list_add;
   ret->base.list_add_range = (void (*)(List *, List *)) array_list_add_range;
   ret->base.list_set = (void (*)(List *, unsigned int, Any)) array_list_set;
+  ret->base.list_insert = (void (*)(List *, unsigned int, Any)) array_list_insert;
+  ret->base.list_insert_range = (void (*)(List *, unsigned int, List *)) array_list_insert_range;
   ret->base.list_remove_at = (Any (*)(List *, unsigned int)) array_list_remove_at;
   ret->base.list_remove = (unsigned int (*)(List *, Any)) array_list_remove;
   ret->base.list_remove_and_free = (unsigned int (*)(List *, Any)) array_list_remove_and_free;
+  ret->base.list_swap = (void (*)(List *, unsigned int, unsigned int)) array_list_swap;
+  ret->base.list_reposition = (void (*)(List *, unsigned int, unsigned int)) array_list_reposition;
   ret->base.list_clear = (void (*)(List *)) array_list_clear;
   ret->base.list_clear_and_free = (void (*)(List *)) array_list_clear_and_free;
   ret->base.list_clear_and_user_free = (void (*)(List *, void (*)(void *))) array_list_clear_and_user_free;
@@ -265,6 +288,33 @@ Any array_list_get(ArrayList * array_list, unsigned int index)
   return ret;
 }
 
+char array_list_get_char(ArrayList * array_list, unsigned int index)
+{
+  assert(array_list);
+
+  return any_to_char(array_list_get(array_list, index));
+}
+int array_list_get_int(ArrayList * array_list, unsigned int index)
+{
+  assert(array_list);
+
+ return any_to_int(array_list_get(array_list, index));
+}
+char * array_list_get_str(ArrayList * array_list, unsigned int index)
+{
+  assert(array_list);
+
+  return any_to_str(array_list_get(array_list, index));
+}
+void * array_list_get_ptr(ArrayList * array_list, unsigned int index)
+{
+  assert(array_list);
+
+  return any_to_ptr(array_list_get(array_list, index));
+}
+
+
+
 void array_list_add(ArrayList * array_list, Any element)
 {
   assert(array_list);
@@ -283,6 +333,10 @@ void array_list_add(ArrayList * array_list, Any element)
 void array_list_add_range(ArrayList * array_list, List * range)
 {
   assert(array_list);
+  assert(range);
+
+  if (list_size(range) == 0)
+    return;
 
   sem_wait(&array_list->base.mutex);
   assert(array_list->base.open_traversals == 0);
@@ -338,6 +392,67 @@ void array_list_set(ArrayList * array_list, unsigned int index, Any element)
   sem_post(&array_list->base.mutex);
 }
 
+
+void array_list_insert(ArrayList * array_list, unsigned int index, Any element)
+{
+  assert(array_list);
+
+  sem_wait(&array_list->base.mutex);
+  assert(array_list->base.open_traversals == 0);
+  assert(index <= array_list->size);
+  
+  array_list_resize(array_list, array_list->size + 1);
+  array_list_shuffle_up(array_list, index, array_list->size, 1);
+  array_list->array[index] = element;
+  array_list->size++;
+
+  sem_post(&array_list->base.mutex);
+}
+
+void array_list_insert_range(ArrayList * array_list, unsigned int index, List * range)
+{
+  assert(array_list);
+  assert(range);
+
+  if (list_size(range) == 0)
+    return;
+
+  sem_wait(&array_list->base.mutex);
+  assert(array_list->base.open_traversals == 0);
+  assert(index <= array_list->size);
+
+  ListTraversal * trav;
+  Any value;
+  unsigned int insertion_index;
+
+  array_list_resize(array_list, array_list->size + list_size(range));
+  array_list_shuffle_up(array_list, index, array_list->size + list_size(range) - 1, list_size(range));
+
+  if (range->type == LIST_TYPE_ARRAY_LIST)
+  {
+    memcpy(
+      &array_list->array[index],
+      ((ArrayList *) range)->array,
+      sizeof(Any) * ((ArrayList *) range)->size
+      );
+  }
+  else
+  {
+    insertion_index = index;
+    trav = list_get_traversal(range);
+    while (!list_traversal_completed(trav))
+    {
+      value = list_traversal_next(trav);
+      array_list->array[insertion_index++] = value;
+    }
+  }
+
+  array_list->size += list_size(range);
+
+  sem_post(&array_list->base.mutex);
+}
+
+
 Any array_list_remove_at(ArrayList * array_list, unsigned int index)
 {
   assert(array_list);
@@ -371,6 +486,56 @@ unsigned int array_list_remove_and_free(ArrayList * array_list, Any any)
   return array_list_remove_imp(array_list, any, true);
 }
 
+
+
+void array_list_swap(ArrayList * array_list, unsigned int index_a, unsigned int index_b)
+{
+  assert(array_list);
+
+  sem_wait(&array_list->base.mutex);
+  assert(array_list->base.open_traversals == 0);
+  assert(index_a < array_list->size);
+  assert(index_b < array_list->size);
+
+  if (index_a == index_b)
+  {
+    sem_post(&array_list->base.mutex);
+    return;
+  }
+
+  Any temp = array_list->array[index_a];
+  array_list->array[index_a] = array_list->array[index_b];
+  array_list->array[index_b] = temp;
+
+  sem_post(&array_list->base.mutex);
+}
+
+void array_list_reposition(ArrayList * array_list, unsigned int from_index, unsigned int to_index)
+{
+  assert(array_list);
+
+  sem_wait(&array_list->base.mutex);
+  assert(array_list->base.open_traversals == 0);
+  assert(from_index < array_list->size);
+  assert(to_index < array_list->size);
+
+  if (from_index == to_index)
+  {
+    sem_post(&array_list->base.mutex);
+    return;
+  }
+
+  Any temp = array_list->array[from_index];
+
+  if (from_index < to_index)
+    array_list_shuffle_down(array_list, from_index, to_index);
+  else
+    array_list_shuffle_up(array_list, to_index, from_index, 1);
+
+  array_list->array[to_index] = temp;
+
+  sem_post(&array_list->base.mutex);
+}
 
 
 void array_list_clear(ArrayList * array_list)
@@ -600,6 +765,10 @@ ArrayListTraversal * array_list_get_traversal(ArrayList * array_list)
   ret->base.list = (List *) array_list;
   ret->base.list_traversal_destroy = (void (*)(ListTraversal *)) array_list_traversal_destroy;
   ret->base.list_traversal_next = (Any (*)(ListTraversal *)) array_list_traversal_next;
+  ret->base.list_traversal_next_char = (char (*)(ListTraversal *)) array_list_traversal_next_char;
+  ret->base.list_traversal_next_int = (int (*)(ListTraversal *)) array_list_traversal_next_int;
+  ret->base.list_traversal_next_str = (char * (*)(ListTraversal *)) array_list_traversal_next_str;
+  ret->base.list_traversal_next_ptr = (void * (*)(ListTraversal *)) array_list_traversal_next_ptr;
   ret->base.list_traversal_completed = (bool (*)(ListTraversal *)) array_list_traversal_completed;
 
   ret->position = 0;
@@ -630,6 +799,32 @@ Any array_list_traversal_next(ArrayListTraversal * array_list_traversal)
 
   return ((ArrayList *) array_list_traversal->base.list)->array[array_list_traversal->position++];
 }
+
+char array_list_traversal_next_char(ArrayListTraversal * array_list_traversal)
+{
+  assert(array_list_traversal);
+
+  return any_to_char(array_list_traversal_next(array_list_traversal));
+}
+int array_list_traversal_next_int(ArrayListTraversal * array_list_traversal)
+{
+  assert(array_list_traversal);
+
+  return any_to_int(array_list_traversal_next(array_list_traversal));
+}
+char * array_list_traversal_next_str(ArrayListTraversal * array_list_traversal)
+{
+  assert(array_list_traversal);
+
+  return any_to_str(array_list_traversal_next(array_list_traversal));
+}
+void * array_list_traversal_next_ptr(ArrayListTraversal * array_list_traversal)
+{
+  assert(array_list_traversal);
+
+  return any_to_ptr(array_list_traversal_next(array_list_traversal));
+}
+
 
 bool array_list_traversal_completed(ArrayListTraversal * array_list_traversal)
 {

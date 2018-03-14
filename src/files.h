@@ -28,9 +28,10 @@
 #include <stdint.h>
 #include <sys/types.h>
 
+#include "charset.h"
 #include "file_op.h"
+#include "file_type.h"
 #include "list.h"
-#include "unicode_encoding_type.h"
 
 
 char * files_resolve(char * base, char * path);
@@ -42,11 +43,11 @@ ssize_t files_size(char * path);
 char * files_read_all(char * path, ssize_t * read_ptr);
 List * files_read_all_lines(
     char * path,
-    UnicodeEncodingType type
+    Charset type
   );
 List * files_read_all_lines_with_lf(
     char * path,
-    UnicodeEncodingType type,
+    Charset type,
     char * line_feed_sequence
   );
 
@@ -59,13 +60,13 @@ bool files_write_all(
 bool files_write_all_lines(
     char * path,
     List * lines,
-    UnicodeEncodingType type,
+    Charset type,
     FileOp op_type
   );
 bool files_write_all_lines_with_lf(
     char * path,
     List * lines,
-    UnicodeEncodingType type,
+    Charset type,
     FileOp op_type,
     char * line_feed_sequence
   );
@@ -74,5 +75,9 @@ bool files_delete(char * path);
 
 bool files_mkdir(char * path);
 bool files_rmdir(char * path);
+
+List * files_list(char * path);
+List * files_list_with_extension(char * path, char * extension);
+List * files_list_of_type(char * path, FileType file_type);
 
 #endif

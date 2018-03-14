@@ -27,7 +27,6 @@
 #include "endianness.h"
 #include "mtest.h"
 #include "strings.h"
-#include "unicode_encoding_type.h"
 #include "utilities.h"
 
 #include "unicode.h"
@@ -272,11 +271,11 @@ int unicode_write_utf32(uint32_t code_point, char * string)
 }
 int unicode_write_utf32be(uint32_t code_point, char * string)
 {
-  return unicode_write_utf32_imp(code_point, string, ENDIANNESS_BIG);
+  return unicode_write_utf32_imp(code_point, string, utilities_get_endianness() != ENDIANNESS_BIG);
 }
 int unicode_write_utf32le(uint32_t code_point, char * string)
 {
-  return unicode_write_utf32_imp(code_point, string, ENDIANNESS_LITTLE);
+  return unicode_write_utf32_imp(code_point, string, utilities_get_endianness() != ENDIANNESS_LITTLE);
 }
 
 uint32_t * unicode_read_string_utf32(char * string, size_t string_length, size_t * code_points_length_ptr)

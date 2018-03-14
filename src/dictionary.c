@@ -83,6 +83,8 @@ List * dictionary_get_keys(Dictionary * dictionary)
 {
   assert(dictionary);
 
+  sem_wait(&dictionary->mutex);
+
   List * list = (List *) linked_list_new();
   ListTraversal * trav = list_get_traversal(dictionary->keys);
 
@@ -91,6 +93,8 @@ List * dictionary_get_keys(Dictionary * dictionary)
     char * value = any_to_str(list_traversal_next(trav));
     list_add(list, str_to_any(strings_clone(value)));
   }
+
+  sem_post(&dictionary->mutex);
 
   return list;
 }

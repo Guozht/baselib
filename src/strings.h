@@ -88,6 +88,11 @@ bool strings_contains_ignore_case(char * string, char c);
 bool strings_contains_string(char * string, char * substring);
 bool strings_contains_string_ignore_case(char * string, char * substring);
 
+int strings_index_of(char * string, char c);
+int strings_index_of_ignore_case(char * string, char c);
+int strings_index_of_string(char * string, char * substring);
+int strings_index_of_string_ignore_case(char * string, char * substring);
+
 bool strings_equals(char * string1, char * string2);
 bool strings_equals_ignore_case(char * string1, char * string2);
 

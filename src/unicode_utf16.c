@@ -26,7 +26,6 @@
 #include "endianness.h"
 #include "mtest.h"
 #include "strings.h"
-#include "unicode_encoding_type.h"
 #include "utilities.h"
 
 #include "unicode.h"

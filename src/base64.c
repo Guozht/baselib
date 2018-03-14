@@ -72,17 +72,6 @@ static uint8_t base64_char_to_value(char c)
     assert(0);
 }
 
-static bool base64_is_valid_char(char c)
-{
-  return
-    (c >= 'A' && c <= 'Z') ||
-    (c >= 'a' && c <= 'z') ||
-    (c >= '0' && c <= '9') ||
-    (c == '+') ||
-    (c == '/');
-}
-
-
 static void base64_encode_tuple(uint8_t * from, char * to, size_t remaining_size, bool padding)
 {
 
@@ -144,11 +133,10 @@ static void base64_decode_tuple(char * from, uint8_t * to, size_t remaining_size
     to[2] = (buffer[2] << 6) | buffer[3];
 }
 
-static unsigned int base64_is_well_formed_imp(char * string)
+static unsigned int base64_is_well_formed_imp(char * string, unsigned int string_length)
 {
 
   unsigned int
-    string_length = strings_length(string),
     string_length_mod,
     scan_length;
 
@@ -225,6 +213,18 @@ static size_t base64_find_decoded_data_size(unsigned int encoded_size)
     assert(0);
 }
 
+bool base64_is_valid_char(char c)
+{
+  return
+    (c >= 'A' && c <= 'Z') ||
+    (c >= 'a' && c <= 'z') ||
+    (c >= '0' && c <= '9') ||
+    (c == '+') ||
+    (c == '/');
+}
+
+
+
 char * base64_encode(uint8_t * data, size_t data_size)
 {
   return base64_encode_imp(data, data_size, true);
@@ -237,8 +237,19 @@ char * base64_encode_non_padded(uint8_t * data, size_t data_size)
 
 uint8_t * base64_decode(char * string, size_t * decoded_size_ptr)
 {
+  assert(string);
+
+  return base64_decode_up_to(string, strings_length(string), decoded_size_ptr);
+}
+
+uint8_t * base64_decode_up_to(char * string, size_t string_length, size_t * decoded_size_ptr)
+{
+  assert(string);
+  assert(decoded_size_ptr);
+  assert(string_length > 0);
+
   unsigned int
-    normalized_string_length = base64_is_well_formed_imp(string);
+    normalized_string_length = base64_is_well_formed_imp(string, string_length);
   assert(normalized_string_length > 0);
 
   size_t
@@ -250,7 +261,7 @@ uint8_t * base64_decode(char * string, size_t * decoded_size_ptr)
   ret_top = 0;
   for (size_t k = 0; k < normalized_string_length; k += 4)
   {
-    base64_decode_tuple(&string[k], &ret[ret_top], normalized_string_length  - k);
+    base64_decode_tuple(&string[k], &ret[ret_top], normalized_string_length - k);
     ret_top += 3;
   }
 
@@ -262,5 +273,12 @@ bool base64_is_well_formed(char * data)
 {
   assert(data);
 
-  return base64_is_well_formed_imp(data) > 0;
+  return base64_is_well_formed_imp(data, strings_length(data)) > 0;
+}
+
+bool base64_is_well_formed_up_to(char * data, size_t length)
+{
+  assert(data);
+
+  return base64_is_well_formed_imp(data, length);
 }

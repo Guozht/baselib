@@ -46,13 +46,23 @@ struct List
 
   Any (*list_get)(struct List *, unsigned int);
 
+  char (*list_get_char)(struct List *, unsigned int);
+  int (*list_get_int)(struct List *, unsigned int);
+  char * (*list_get_str)(struct List *, unsigned int);
+  void * (*list_get_ptr)(struct List *, unsigned int);
+
   void (*list_add)(struct List *, Any);
   void (*list_add_range)(struct List *, struct List *);
   void (*list_set)(struct List *, unsigned int, Any);
+  void (*list_insert)(struct List *, unsigned int, Any);
+  void (*list_insert_range)(struct List *, unsigned int, struct List *);
 
   Any (*list_remove_at)(struct List *, unsigned int);
   unsigned int (*list_remove)(struct List *, Any);
   unsigned int (*list_remove_and_free)(struct List *, Any);
+
+  void (*list_swap)(struct List *, unsigned int index_a, unsigned int index_b);
+  void (*list_reposition)(struct List *, unsigned int index_a, unsigned int index_b);
 
   void (*list_clear)(struct List *);
   void (*list_clear_and_free)(struct List *);
@@ -80,7 +90,14 @@ struct ListTraversal
   struct List * list;
 
   void (*list_traversal_destroy)(struct ListTraversal *);
+
   Any (*list_traversal_next)(struct ListTraversal *);
+
+  char (*list_traversal_next_char)(struct ListTraversal *);
+  int (*list_traversal_next_int)(struct ListTraversal *);
+  char * (*list_traversal_next_str)(struct ListTraversal *);
+  void * (*list_traversal_next_ptr)(struct ListTraversal *);
+
   bool (*list_traversal_completed)(struct ListTraversal *);
 
 };

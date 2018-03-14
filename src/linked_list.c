@@ -29,6 +29,7 @@
 #include "mtest.h"
 #include "strings.h"
 #include "string_builder.h"
+#include "utilities.h"
 
 #include "linked_list.h"
 
@@ -64,6 +65,26 @@ struct LinkedListTraversal
 
 
 /* INTERNAL METHODS */
+static void linked_list_get_cached_current(
+    LinkedList * linked_list,
+    unsigned int index,
+    struct LinkedListNode **  node_ptr,
+    unsigned int * node_index_ptr
+  )
+{
+
+  if (linked_list->cache && linked_list->cache_index <= index)
+  {
+    *node_ptr = linked_list->cache;
+    *node_index_ptr = linked_list->cache_index;
+  }
+  else
+  {
+    *node_ptr = linked_list->start;
+    *node_index_ptr = 0;
+  }
+
+}
 
 static struct LinkedListNode * linked_list_node_new(Any value, struct LinkedListNode * next)
 {
@@ -93,6 +114,42 @@ static void linked_list_add_imp(LinkedList * linked_list, Any value)
   }
 
   linked_list->size++;
+}
+
+static void linked_list_insert_imp(LinkedList * linked_list, unsigned int index, Any value)
+{
+  struct LinkedListNode * node, * previous_node, * new_node;
+  unsigned int node_index;
+
+  if (index == linked_list->size)
+  {
+    linked_list_add_imp(linked_list, value);
+    return;
+  }
+  else if (index == 0)
+  {
+    new_node = linked_list_node_new(value, linked_list->start);
+    linked_list->start = new_node;
+  }
+  else
+  {
+    linked_list_get_cached_current(linked_list, index - 1, &node, &node_index);
+
+    while (node_index != index)
+    {
+      previous_node = node;
+      node = node->next;
+      node_index++;
+    }
+
+    new_node = linked_list_node_new(value, node);
+    previous_node->next = new_node;
+  }
+
+  linked_list->size++;
+
+  linked_list->cache = new_node;
+  linked_list->cache_index = index;
 }
 
 static unsigned int linked_list_remove_imp(LinkedList * linked_list, Any any, bool free_on_remove)
@@ -143,6 +200,58 @@ static unsigned int linked_list_remove_imp(LinkedList * linked_list, Any any, bo
   return ret;
 }
 
+static Any linked_list_remove_at_imp(LinkedList * linked_list, unsigned int index)
+{
+  Any ret;
+
+  if (linked_list->size == 1)
+  {
+    ret = linked_list->start->value;
+    _free(linked_list->start);
+    linked_list->start = NULL;
+    linked_list->end = NULL;
+  }
+  else
+  {
+    struct LinkedListNode
+      * last = NULL,
+      * current = linked_list->start;
+
+    for (unsigned int k = 0; k < index; k++)
+    {
+      last = current;
+      current = current->next;
+    }
+
+    if (last == NULL) /* ergo, is first */
+    {
+      linked_list->start = current->next;
+      ret = current->value;
+      _free(current);
+    }
+    else if (current->next == NULL) /* ergo, is last */
+    {
+      ret = current->value;
+      _free(current);
+      linked_list->end = last;
+      last->next = NULL;
+    }
+    else
+    {
+      last->next = current->next;
+      ret = current->value;
+      _free(current);
+    }
+  }
+
+  linked_list->cache = NULL;
+  linked_list->cache_index = 0;
+
+  linked_list->size--;
+
+  return ret;
+}
+
 
 /* END OF INTERNAL METHODS */
 
@@ -168,9 +277,13 @@ LinkedList * linked_list_new()
   ret->base.list_add = (void (*)(List *, Any)) linked_list_add;
   ret->base.list_add_range = (void (*)(List *, List *)) linked_list_add_range;
   ret->base.list_set = (void (*)(List *, unsigned int, Any)) linked_list_set;
+  ret->base.list_insert = (void (*)(List *, unsigned int, Any)) linked_list_insert;
+  ret->base.list_insert_range = (void (*)(List *, unsigned int, List *)) linked_list_insert_range;
   ret->base.list_remove_at = (Any (*)(List *, unsigned int)) linked_list_remove_at;
   ret->base.list_remove = (unsigned int (*)(List *, Any)) linked_list_remove;
   ret->base.list_remove_and_free = (unsigned int (*)(List *, Any)) linked_list_remove_and_free;
+  ret->base.list_swap = (void (*)(List *, unsigned int, unsigned int)) linked_list_swap;
+  ret->base.list_reposition = (void (*)(List *, unsigned int, unsigned int)) linked_list_reposition;
   ret->base.list_clear = (void (*)(List *)) linked_list_clear;
   ret->base.list_clear_and_free = (void (*)(List *)) linked_list_clear_and_free;
   ret->base.list_clear_and_user_free = (void (*)(List *, void (*)(void *))) linked_list_clear_and_user_free;
@@ -303,16 +416,9 @@ Any linked_list_get(LinkedList * linked_list, unsigned int index)
 
   unsigned int start_index;
   struct LinkedListNode * current;
-  if (linked_list->cache && linked_list->cache_index <= index)
-  {
-    current = linked_list->cache;
-    start_index = linked_list->cache_index;
-  }
-  else
-  {
-    current = linked_list->start;
-    start_index = 0;
-  }
+  Any ret;
+
+  linked_list_get_cached_current(linked_list, index, &current, &start_index);
 
   for (unsigned int k = start_index; k < index; k++)
   {
@@ -322,12 +428,40 @@ Any linked_list_get(LinkedList * linked_list, unsigned int index)
   linked_list->cache = current;
   linked_list->cache_index = index;
 
-  Any ret = current->value;
+  ret = current->value;
 
   sem_post(&linked_list->base.mutex);
 
   return ret;
 }
+
+
+
+char linked_list_get_char(LinkedList * linked_list, unsigned int index)
+{
+  assert(linked_list);
+
+  return any_to_char(linked_list_get(linked_list, index));
+}
+int linked_list_get_int(LinkedList * linked_list, unsigned int index)
+{
+  assert(linked_list);
+
+  return any_to_int(linked_list_get(linked_list, index));
+}
+char * linked_list_get_str(LinkedList * linked_list, unsigned int index)
+{
+  assert(linked_list);
+
+  return any_to_str(linked_list_get(linked_list, index));
+}
+void * linked_list_get_ptr(LinkedList * linked_list, unsigned int index)
+{
+  assert(linked_list);
+
+  return any_to_ptr(linked_list_get(linked_list, index));
+}
+
 
 
 void linked_list_add(LinkedList * linked_list, Any element)
@@ -386,6 +520,42 @@ void linked_list_set(LinkedList * linked_list, unsigned int index, Any element)
   sem_post(&linked_list->base.mutex);
 }
 
+void linked_list_insert(LinkedList * linked_list, unsigned int index, Any element)
+{
+  assert(linked_list);
+
+  sem_wait(&linked_list->base.mutex);
+  assert(index <= linked_list->size);
+  assert(linked_list->base.open_traversals == 0);
+
+  linked_list_insert_imp(linked_list, index, element);
+
+  sem_post(&linked_list->base.mutex);
+}
+
+void linked_list_insert_range(LinkedList * linked_list, unsigned int index, List * range)
+{
+  assert(linked_list);
+  assert(range);
+
+  sem_wait(&linked_list->base.mutex);
+  assert(index <= linked_list->size);
+  assert(linked_list->base.open_traversals == 0);
+
+  ListTraversal * trav = list_get_traversal(range);
+  Any value;
+
+  while (!list_traversal_completed(trav))
+  {
+    value = list_traversal_next(trav);
+    linked_list_insert_imp(linked_list, index++, value);
+  }
+
+  sem_post(&linked_list->base.mutex);
+}
+
+
+
 
 Any linked_list_remove_at(LinkedList * linked_list, unsigned int index)
 {
@@ -396,53 +566,8 @@ Any linked_list_remove_at(LinkedList * linked_list, unsigned int index)
   assert(linked_list->base.open_traversals == 0);
   assert(index < linked_list->size);
 
-  Any ret;
-  ret = ptr_to_any(NULL);
+  Any ret =  linked_list_remove_at_imp(linked_list, index);
 
-  if (linked_list->size == 1)
-  {
-    ret = linked_list->start->value;
-    _free(linked_list->start);
-    linked_list->start = NULL;
-    linked_list->end = NULL;
-  }
-  else
-  {
-    struct LinkedListNode
-      * last = NULL,
-      * current = linked_list->start;
-
-    for (unsigned int k = 0; k < index; k++)
-    {
-      last = current;
-      current = current->next;
-    }
-
-    if (last == NULL) /* ergo, is first */
-    {
-      linked_list->start = current->next;
-      ret = current->value;
-      _free(current);
-    }
-    else if (current->next == NULL) /* ergo, is last */
-    {
-      ret = current->value;
-      _free(current);
-      linked_list->end = last;
-      last->next = NULL;
-    }
-    else
-    {
-      last->next = current->next;
-      ret = current->value;
-      _free(current);
-    }
-  }
-
-  linked_list->cache = NULL;
-  linked_list->cache_index = 0;
-
-  linked_list->size--;
   sem_post(&linked_list->base.mutex);
 
   return ret;
@@ -457,6 +582,81 @@ unsigned int linked_list_remove_and_free(LinkedList * linked_list, Any any)
 {
   return linked_list_remove_imp(linked_list, any, true);
 }
+
+
+void linked_list_swap(LinkedList * linked_list, unsigned int index_a, unsigned int index_b)
+{
+  assert(linked_list);
+
+  sem_wait(&linked_list->base.mutex);
+  assert(linked_list->base.open_traversals == 0);
+  assert(index_a < linked_list->size);
+  assert(index_b < linked_list->size);
+
+  if (index_a == index_b)
+  {
+    sem_post(&linked_list->base.mutex);
+    return;
+  }
+
+  struct LinkedListNode * a = NULL, * b = NULL, * current;
+  unsigned int current_index;
+  Any temp;
+
+  linked_list_get_cached_current(linked_list, utilities_uimin(index_a, index_b), &current, &current_index);
+
+  while (!a || !b)
+  {
+    if (current_index == index_a)
+      a = current;
+    else if (current_index == index_b)
+      b = current;
+
+    current = current->next;
+    current_index++;
+  } 
+
+  temp = a->value;
+  a->value = b->value;
+  b->value = temp;
+
+  if (index_a < index_b)
+  {
+    linked_list->cache = a;
+    linked_list->cache_index = index_a;
+  }
+  else
+  {
+    linked_list->cache = b;
+    linked_list->cache_index = index_b;
+  }
+
+  sem_post(&linked_list->base.mutex);
+}
+
+void linked_list_reposition(LinkedList * linked_list, unsigned int from_index, unsigned int to_index)
+{
+  assert(linked_list);
+
+  sem_wait(&linked_list->base.mutex);
+  assert(linked_list->base.open_traversals == 0);
+  assert(from_index < linked_list->size);
+  assert(to_index < linked_list->size);
+
+  Any value;
+
+  if (from_index == to_index)
+  {
+    sem_post(&linked_list->base.mutex);
+    return;
+  }
+
+  value = linked_list_remove_at_imp(linked_list, from_index);
+  linked_list_insert_imp(linked_list, to_index, value);
+
+  sem_post(&linked_list->base.mutex);
+}
+
 
 
 void linked_list_clear(LinkedList * linked_list)
@@ -774,6 +974,32 @@ Any linked_list_traversal_next(LinkedListTraversal * linked_list_traversal)
 
   return ret;
 }
+
+char linked_list_traversal_next_char(LinkedListTraversal * linked_list_traversal)
+{
+  assert(linked_list_traversal);
+
+  return any_to_char(linked_list_traversal_next(linked_list_traversal));
+}
+int linked_list_traversal_next_int(LinkedListTraversal * linked_list_traversal)
+{
+  assert(linked_list_traversal);
+
+  return any_to_int(linked_list_traversal_next(linked_list_traversal));
+}
+char * linked_list_traversal_next_str(LinkedListTraversal * linked_list_traversal)
+{
+  assert(linked_list_traversal);
+
+  return any_to_str(linked_list_traversal_next(linked_list_traversal));
+}
+void * linked_list_traversal_next_ptr(LinkedListTraversal * linked_list_traversal)
+{
+  assert(linked_list_traversal);
+
+  return any_to_ptr(linked_list_traversal_next(linked_list_traversal));
+}
+
 
 bool linked_list_traversal_completed(LinkedListTraversal * linked_list_traversal)
 {

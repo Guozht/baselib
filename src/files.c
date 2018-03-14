@@ -20,6 +20,7 @@
 
 
 #include <assert.h>
+#include <dirent.h>
 #include <fcntl.h>
 #include <stdbool.h>
 #include <stdint.h>
@@ -29,7 +30,9 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+#include "charset.h"
 #include "file_op.h"
+#include "file_type.h"
 #include "mtest.h"
 #include "strings.h"
 #include "string_builder.h"
@@ -40,8 +43,6 @@
 #include "files.h"
 
 #define BUFFER_SIZE 0x3FF
-
-
 #define DEFAULT_LINE_FEED_SEQUENCE "\n"
 
 
@@ -152,6 +153,57 @@ static char * files_path_list_to_string(List * list, bool base_rooted)
   return string_builder_to_string_destroy(sb);
 }
 
+static FileType files_get_file_type_from_dtype(unsigned char dtype)
+{
+  switch (dtype)
+  {
+    case DT_DIR:
+      return FILE_TYPE_DIRECTORY;
+    case DT_REG:
+      return FILE_TYPE_REGULAR;
+    case DT_LNK:
+      return FILE_TYPE_LINK;
+    default:
+      return FILE_TYPE_NONE;
+  }
+}
+
+static List * files_list_imp(char * path, char * extension, FileType type)
+{
+  List * ret;
+  DIR * directory;
+  struct dirent * entry;
+
+  directory = opendir(path);
+  if (!directory)
+    return NULL;
+
+  ret = list_new(LIST_TYPE_LINKED_LIST);
+
+  do
+  {
+    entry = readdir(directory);
+    if (!entry)
+      continue;
+
+    if (strings_equals(entry->d_name, ".") || strings_equals(entry->d_name, ".."))
+      continue;
+
+    if (extension)
+    {
+      if (!strings_ends_with(entry->d_name, extension))
+        continue;
+    }
+    if ((files_get_file_type_from_dtype(entry->d_type) & type) == 0)
+      continue;
+
+    list_add(ret, str_to_any(strings_clone(entry->d_name)));
+  }
+  while (entry != NULL);
+  closedir(directory);
+
+  return ret;
+}
 
 char * files_resolve(char * base, char * path)
 {
@@ -273,7 +325,7 @@ char * files_read_all(char * path, ssize_t * read_ptr)
 
 List * files_read_all_lines(
     char * path,
-    UnicodeEncodingType type
+    Charset type
   )
 {
   return files_read_all_lines_with_lf(path, type, NULL);
@@ -281,7 +333,7 @@ List * files_read_all_lines(
 
 List * files_read_all_lines_with_lf(
     char * path,
-    UnicodeEncodingType type,
+    Charset type,
     char * line_feed_sequence
   )
 {
@@ -355,7 +407,7 @@ bool files_write_all(char * path, char * data, size_t data_length, FileOp op_typ
   while (write_size < data_length)
   {
     write = fwrite(
-        data,
+        &data[write_size],
         sizeof(char),
         utilities_lmin(data_length - write_size, BUFFER_SIZE),
         file
@@ -377,7 +429,7 @@ bool files_write_all(char * path, char * data, size_t data_length, FileOp op_typ
 bool files_write_all_lines(
     char * path,
     List * lines,
-    UnicodeEncodingType type,
+    Charset type,
     FileOp op_type
   )
 {
@@ -394,7 +446,7 @@ bool files_write_all_lines(
 bool files_write_all_lines_with_lf(
     char * path,
     List * lines,
-    UnicodeEncodingType type,
+    Charset type,
     FileOp op_type,
     char * line_feed_sequence
   )
@@ -470,3 +522,41 @@ bool files_rmdir(char * path)
 
   return rmdir(path) == 0;
 }
+
+
+
+
+List * files_list(char * path)
+{
+  assert(path);
+
+  return files_list_imp(path, NULL, (FileType) -1);
+}
+
+
+List * files_list_with_extension(char * path, char * extension)
+{
+  assert(path);
+  assert(extension);
+
+  unsigned int extension_length = strings_length(extension);
+  char extension_mod [extension_length + 2];
+
+  if (!strings_is_empty(extension) && !strings_starts_with(extension, "."))
+    sprintf(extension_mod, ".%s", extension);
+  else
+    memcpy(extension_mod, extension, sizeof(char) * (extension_length + 1));
+
+  return files_list_imp(path, extension, (FileType) -1);
+}
+
+
+List * files_list_of_type(char * path, FileType file_type)
+{
+  assert(path);
+
+  return files_list_imp(path, NULL, file_type);
+}
+
+
+

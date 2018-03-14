@@ -53,9 +53,19 @@ bool list_contains(List * list, Any any);
 
 Any list_get(List * list, unsigned int index);
 
+char list_get_char(List * list, unsigned int index);
+int list_get_int(List * list, unsigned int index);
+
+char * list_get_str(List * list, unsigned int index);
+void * list_get_ptr(List * list, unsigned int index);
+
+
+
 void list_add(List * list, Any element);
 void list_add_range(List * list, List * range);
 void list_set(List * list, unsigned int index, Any element);
+void list_insert(List * list, unsigned int index, Any element);
+void list_insert_range(List * list, unsigned int index, List * range);
 
 Any list_remove_at(List * list, unsigned int index);
 unsigned int list_remove(List * list, Any any);
@@ -65,6 +75,9 @@ void list_clear(List * list);
 void list_clear_and_free(List * list);
 void list_clear_and_user_free(List * list, void (*callback)(void *));
 void list_clear_and(List * list, void (*function)(Any));
+
+void list_swap(List * list, unsigned int index_a, unsigned int index_b);
+void list_reposition(List * list, unsigned int from_index, unsigned int to_index);
 
 Any * list_to_array(List * list);
 List * list_sub_list(List * list, unsigned int start, unsigned int end);
@@ -80,6 +93,13 @@ ListTraversal * list_get_traversal(List * list);
 void list_traversal_destroy(ListTraversal * list_traversal);
 
 Any list_traversal_next(ListTraversal * list_traversal);
+
+char list_traversal_next_char(ListTraversal * list_traversal);
+int list_traversal_next_int(ListTraversal * list_traversal);
+char * list_traversal_next_str(ListTraversal * list_traversal);
+void * list_traversal_next_ptr(ListTraversal * list_traversal);
+
+#define list_traversal_has_next(t) !list_traversal_completed(t)
 bool list_traversal_completed(ListTraversal * list_traversal);
 
 

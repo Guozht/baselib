@@ -40,6 +40,8 @@
 long utilities_lmin(long l0, long l1);
 long utilities_lmax(long l0, long l1);
 
+unsigned int utilities_uimin(unsigned int i0, unsigned int i1);
+
 Endianness utilities_get_endianness();
 
 unsigned int utilities_null_terminated_length(void * array, size_t element_size);

@@ -25,7 +25,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-#include "unicode_encoding_type.h"
+#include "charset.h"
 
 /* UNICODE */
 
@@ -36,34 +36,34 @@ bool unicode_is_valid_code_point(uint32_t code_point);
 /* GENERIC */
 
 unsigned int unicode_code_point_byte_requirement(
-  UnicodeEncodingType encoding,
+  Charset encoding,
   uint32_t code_point);
 bool unicode_is_well_formed(
-  UnicodeEncodingType encoding,
+  Charset encoding,
   char * string,
   size_t string_length);
 
 unsigned int unicode_string_length(
-  UnicodeEncodingType encoding,
+  Charset encoding,
   char * string,
   size_t string_length);
 
 int unicode_read(
-  UnicodeEncodingType encoding,
+  Charset encoding,
   char * string,
   uint32_t * code_point);
 int unicode_write(
-  UnicodeEncodingType encoding,
+  Charset encoding,
   uint32_t code_point,
   char * string);
 
 uint32_t * unicode_read_string(
-  UnicodeEncodingType encoding,
+  Charset encoding,
   char * string,
   size_t string_length,
   size_t * code_points_length_ptr);
 char * unicode_write_string(
-  UnicodeEncodingType encoding,
+  Charset encoding,
   uint32_t * code_points,
   size_t code_points_length,
   size_t * string_length_ptr);

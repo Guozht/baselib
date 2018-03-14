@@ -345,6 +345,41 @@ static bool strings_contains_string_imp(char * string, char * substring, bool (*
   return false;
 }
 
+static int strings_index_of_imp(char * string, char c, bool (*equals_function)(char, char))
+{
+  assert(string);
+  assert(c); /* char may not be null */
+
+  unsigned int
+    string_length = strings_length(string);
+
+  for (unsigned int k = 0; k < string_length; k++)
+  {
+    if (equals_function(string[k], c))
+      return (int) k;
+  }
+
+  return -1;
+}
+
+static int strings_index_of_string_imp(char * string, char * substring, bool (*equals_function)(char *, char *, unsigned int))
+{
+  assert(string);
+  assert(substring);
+
+  unsigned int
+    string_length = strings_length(string),
+    substring_length = strings_length(substring);
+
+  for (unsigned int k = 0; k < string_length - substring_length + 1; k++)
+  {
+    if (equals_function(&string[k], substring, substring_length))
+      return (int) k;
+  }
+
+  return -1;
+}
+
 static char * strings_trim_imp(char * string, int control)
 {
   assert(string);
@@ -714,6 +749,25 @@ bool strings_contains_string_ignore_case(char * string, char * substring)
 {
   return strings_contains_string_imp(string, substring, strings_bounded_equals_ignore_case);
 }
+
+
+int strings_index_of(char * string, char c)
+{
+  return strings_index_of_imp(string, c, chars_equals);
+}
+int strings_index_of_ignore_case(char * string, char c)
+{
+  return strings_index_of_imp(string, c, chars_equals_ignore_case);
+}
+int strings_index_of_string(char * string, char * substring)
+{
+  return strings_index_of_string_imp(string, substring, strings_bounded_equals);
+}
+int strings_index_of_string_ignore_case(char * string, char * substring)
+{
+  return strings_index_of_string_imp(string, substring, strings_bounded_equals_ignore_case);
+}
+
 
 
 bool strings_equals(char * string1, char * string2)

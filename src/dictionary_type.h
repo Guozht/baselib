@@ -23,7 +23,7 @@
 
 typedef enum DictionaryType
 {
-  DICTIONARY_TYPE_HASH_TABLE
+  DICTIONARY_TYPE_HASH_TABLE,
 }
 DictionaryType;
 

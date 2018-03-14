@@ -30,7 +30,7 @@ if [[ $EUID != 0 ]] ; then
 fi
 
 if [[ !(-e bin/$LIBRARY_FILE_NAME) ]] ; then
-  echo "No binary file found. Run 'build.sh' before installing"
+  echo "No binary file found. Run 'make' before installing"
   exit 4
 fi
 
@@ -39,6 +39,7 @@ if [[ !(-d /usr/include/$HEADER_DIRECTORY_NAME) ]] ; then
 else
   rm -f /usr/include/$HEADER_DIRECTORY_NAME/*
 fi
+
 
 cp "bin/$LIBRARY_FILE_NAME" "/usr/lib/$LIBRARY_PATH_NAME"
 

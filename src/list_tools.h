@@ -19,26 +19,54 @@
 \* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 
-#define BASELIB_VERSION "0.7.0"
+#ifndef __BASELIB_LIST_TOOLS_H
+#define __BASELIB_LIST_TOOLS_H
+
+#include <sys/types.h>
+
+enum SortMethod
+{
+  SORT_METHOD_MERGE,     /* TODO: IMPLEMENT ALL (OR MOST) OF THESE */
+  SORT_METHOD_QUICK,
+  SORT_METHOD_HEAP,
+  SORT_METHOD_INSERTION,
+  SORT_METHOD_INTRO,
+  SORT_METHOD_SELECTION,
+  SORT_METHOD_TIM,
+  SORT_METHOD_CUBE,
+  SORT_METHOD_SHELL,
+  SORT_METHOD_SMOOTH,
+  SORT_METHOD_BLOCK,
+};
+typedef enum SortMethod SortMethod;
+
+enum HeapQuality
+{
+  HEAP_QUALITY_MAX,
+  HEAP_QUALITY_MIN,
+};
+typedef enum HeapQuality HeapQuality;
 
 
-#include "any.h"
-#include "array_list.h"
-#include "base64.h"
-#include "chars.h"
-#include "charset.h"
-#include "dictionary.h"
-#include "dictionary_type.h"
-#include "files.h"
-#include "file_op.h"
-#include "hash_table.h"
-#include "iso_8859.h"
-#include "linked_list.h"
-#include "list.h"
-#include "list_tools.h"
-#include "list_type.h"
-#include "strings.h"
-#include "string_builder.h"
-#include "task.h"
-#include "task_arguments.h"
-#include "unicode.h"
+void list_tools_reverse(List * list);
+
+void list_tools_sort(List * list, int (*comparator)(Any, Any));
+void list_tools_sort_with_method(List * list, int (*comparator)(Any, Any), SortMethod method);
+
+void list_tools_shuffle(List * list);
+void list_tools_shuffle_with_seed(List * list, long seed);
+
+
+List * list_tools_from_array(
+    void * array, unsigned int array_length,
+    size_t element_size
+  );
+List * list_tools_from_any_array(
+    Any * array, unsigned int array_length
+  );
+
+void list_heapify(List * list, HeapQuality quality);
+
+
+#endif
+

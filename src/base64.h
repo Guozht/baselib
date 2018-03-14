@@ -26,12 +26,17 @@
 #include <stdint.h>
 #include <stdio.h>
 
+
+bool base64_is_valid_char(char c);
+
 char * base64_encode(uint8_t * data, size_t data_size);
 char * base64_encode_non_padded(uint8_t * data, size_t data_size);
 
 uint8_t * base64_decode(char * data, size_t * decoded_size_ptr);
+uint8_t * base64_decode_up_to(char * data, size_t data_length, size_t * decoded_size_ptr);
 
 bool base64_is_well_formed(char * data);
+bool base64_is_well_formed_up_to(char * data, size_t length);
 
 
 #endif

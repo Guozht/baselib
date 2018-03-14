@@ -19,26 +19,20 @@
 \* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 
-#define BASELIB_VERSION "0.7.0"
+#ifndef __FILE_TYPE_H
+#define __FILE_TYPE_H
 
 
-#include "any.h"
-#include "array_list.h"
-#include "base64.h"
-#include "chars.h"
-#include "charset.h"
-#include "dictionary.h"
-#include "dictionary_type.h"
-#include "files.h"
-#include "file_op.h"
-#include "hash_table.h"
-#include "iso_8859.h"
-#include "linked_list.h"
-#include "list.h"
-#include "list_tools.h"
-#include "list_type.h"
-#include "strings.h"
-#include "string_builder.h"
-#include "task.h"
-#include "task_arguments.h"
-#include "unicode.h"
+enum FileType
+{
+  FILE_TYPE_NONE       = 0,
+  FILE_TYPE_DIRECTORY  = 1,
+  FILE_TYPE_LINK       = 2,
+  FILE_TYPE_REGULAR    = 4,
+};
+typedef enum FileType FileType;
+
+
+#endif
+
+

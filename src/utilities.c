@@ -54,6 +54,15 @@ long utilities_lmax(long l0, long l1)
 }
 
 
+unsigned int utilities_uimin(unsigned int i0, unsigned int i1)
+{
+  if (i0 < i1)
+    return i0;
+  else
+    return i1;
+}
+
+
 Endianness utilities_get_endianness()
 {
   uint16_t a = 0xFF;

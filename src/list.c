@@ -114,6 +114,35 @@ Any list_get(List * list, unsigned int index)
   return list->list_get(list, index);
 }
 
+char list_get_char(List * list, unsigned int index)
+{
+  assert(list);
+
+  return list->list_get_char(list, index);
+}
+
+int list_get_int(List * list, unsigned int index)
+{
+  assert(list);
+
+  return list->list_get_int(list, index);
+}
+
+char * list_get_str(List * list, unsigned int index)
+{
+  assert(list);
+
+  return list->list_get_str(list, index);
+}
+
+void * list_get_ptr(List * list, unsigned int index)
+{
+  assert(list);
+
+  return list->list_get_ptr(list, index);
+}
+
+
 void list_add(List * list, Any element)
 {
   assert(list);
@@ -135,6 +164,23 @@ void list_set(List * list, unsigned int index, Any element)
   list->list_set(list, index, element);
 }
 
+void list_insert(List * list, unsigned int index, Any element)
+{
+  assert(list);
+
+  list->list_insert(list, index, element);
+}
+
+void list_insert_range(List * list, unsigned int index, List * range)
+{
+  assert(list);
+
+  list->list_insert_range(list, index, range);
+}
+
+
+
+
 Any list_remove_at(List * list, unsigned int index)
 {
   assert(list);
@@ -154,6 +200,22 @@ unsigned int list_remove_and_free(List * list, Any any)
   assert(list);
 
   return list->list_remove_and_free(list, any);
+}
+
+
+
+void list_swap(List * list, unsigned int index_a, unsigned int index_b)
+{
+  assert(list);
+
+  return list->list_swap(list, index_a, index_b);
+}
+
+void list_reposition(List * list, unsigned int from_index, unsigned int to_index)
+{
+  assert(list);
+
+  return list->list_reposition(list, from_index, to_index);
 }
 
 
@@ -185,6 +247,7 @@ void list_clear_and(List * list, void (*function)(Any))
 
   return list->list_clear_and(list, function);
 }
+
 
 Any * list_to_array(List * list)
 {
@@ -246,6 +309,32 @@ Any list_traversal_next(ListTraversal * list_traversal)
 
   return list_traversal->list_traversal_next(list_traversal);
 }
+
+char list_traversal_next_char(ListTraversal * list_traversal)
+{
+  assert(list_traversal);
+
+  return list_traversal->list_traversal_next_char(list_traversal);
+}
+int list_traversal_next_int(ListTraversal * list_traversal)
+{
+  assert(list_traversal);
+
+  return list_traversal->list_traversal_next_int(list_traversal);
+}
+char * list_traversal_next_str(ListTraversal * list_traversal)
+{
+  assert(list_traversal);
+
+  return list_traversal->list_traversal_next_str(list_traversal);
+}
+void * list_traversal_next_ptr(ListTraversal * list_traversal)
+{
+  assert(list_traversal);
+
+  return list_traversal->list_traversal_next_ptr(list_traversal);
+}
+
 bool list_traversal_completed(ListTraversal * list_traversal)
 {
   assert(list_traversal);

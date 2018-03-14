@@ -6,18 +6,19 @@ This library (at the moment) implements:
 
 - linked lists
 - array lists
+- some list sorting methods
 - basic string manipulation
+- hash tables / dictionaries
 - string building functions
 - basic file tools
-- unicode encoding (UTF-8, UTF16 (BE/LE), AND UTF-32 (BE/LE))
+- unicode encoding (UTF-8, UTF-7, UTF16 (BE/LE), AND UTF-32 (BE/LE))
+- ISO/IEC-8859 encoding (1 through 16)
 - task / thread management (still unstable)
 
 This library will implement in the future:
 
-- UTF-7 unicode encoding
 - advanced string manipulation
-- hash tables / dictionaries
-- Doubly linked lists
+- doubly linked lists
 
 
 # To compile the library

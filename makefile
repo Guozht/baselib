@@ -31,6 +31,7 @@ CC=gcc
 all : $(object_files)
 	$(CC) $(CFLAGS) -shared $^ -o $(bin_dir)/libbaselib.so
 
+.PHONY : debug
 debug : DEBUG_FLAGS=-DMTEST_DEBUG
 debug : all
 

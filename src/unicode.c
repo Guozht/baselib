@@ -23,9 +23,9 @@
 #include <stdint.h>
 #include <stdlib.h>
 
+#include "charset.h"
 #include "strings.h"
 #include "endianness.h"
-#include "unicode_encoding_type.h"
 
 #include "unicode.h"
 
@@ -612,28 +612,28 @@ bool unicode_is_valid_code_point(uint32_t code_point)
 /** GENERIC **/
 
 
-unsigned int unicode_code_point_byte_requirement(UnicodeEncodingType encoding, uint32_t code_point)
+unsigned int unicode_code_point_byte_requirement(Charset encoding, uint32_t code_point)
 {
   switch (encoding)
   {
-    case UNICODE_ENCODING_TYPE_UTF7:
+    case CHARSET_UTF7:
       return unicode_code_point_byte_requirement_utf7(code_point);
-    case UNICODE_ENCODING_TYPE_UTF8:
+    case CHARSET_UTF8:
       return unicode_code_point_byte_requirement_utf8(code_point);
-    case UNICODE_ENCODING_TYPE_UTF16:
-    case UNICODE_ENCODING_TYPE_UTF16BE:
-    case UNICODE_ENCODING_TYPE_UTF16LE:
+    case CHARSET_UTF16:
+    case CHARSET_UTF16BE:
+    case CHARSET_UTF16LE:
       return unicode_code_point_byte_requirement_utf16(code_point);
-    case UNICODE_ENCODING_TYPE_UTF32:
-    case UNICODE_ENCODING_TYPE_UTF32BE:
-    case UNICODE_ENCODING_TYPE_UTF32LE:
+    case CHARSET_UTF32:
+    case CHARSET_UTF32BE:
+    case CHARSET_UTF32LE:
       return unicode_code_point_byte_requirement_utf32(code_point);
       
-    case UNICODE_ENCODING_TYPE_UTF1:
-    case UNICODE_ENCODING_TYPE_UTF9:
-    case UNICODE_ENCODING_TYPE_UTF18:
-    case UNICODE_ENCODING_TYPE_UTF18BE:
-    case UNICODE_ENCODING_TYPE_UTF18LE:
+    case CHARSET_UTF1:
+    case CHARSET_UTF9:
+    case CHARSET_UTF18:
+    case CHARSET_UTF18BE:
+    case CHARSET_UTF18LE:
       assert(0); /* NOT YET IMPLEMENTED */
       
     default:
@@ -641,32 +641,32 @@ unsigned int unicode_code_point_byte_requirement(UnicodeEncodingType encoding, u
   }
 }
 
-bool unicode_is_well_formed(UnicodeEncodingType encoding, char * string, size_t string_length)
+bool unicode_is_well_formed(Charset encoding, char * string, size_t string_length)
 {
   switch (encoding)
   {
-    case UNICODE_ENCODING_TYPE_UTF7:
+    case CHARSET_UTF7:
       return unicode_is_well_formed_utf7(string, string_length);
-    case UNICODE_ENCODING_TYPE_UTF8:
+    case CHARSET_UTF8:
       return unicode_is_well_formed_utf8(string, string_length);
-    case UNICODE_ENCODING_TYPE_UTF16:
+    case CHARSET_UTF16:
       return unicode_is_well_formed_utf16(string, string_length);
-    case UNICODE_ENCODING_TYPE_UTF16BE:
+    case CHARSET_UTF16BE:
       return unicode_is_well_formed_utf16be(string, string_length);
-    case UNICODE_ENCODING_TYPE_UTF16LE:
+    case CHARSET_UTF16LE:
       return unicode_is_well_formed_utf16le(string, string_length);
-    case UNICODE_ENCODING_TYPE_UTF32:
+    case CHARSET_UTF32:
       return unicode_is_well_formed_utf32(string, string_length);
-    case UNICODE_ENCODING_TYPE_UTF32BE:
+    case CHARSET_UTF32BE:
       return unicode_is_well_formed_utf32be(string, string_length);
-    case UNICODE_ENCODING_TYPE_UTF32LE:
+    case CHARSET_UTF32LE:
       return unicode_is_well_formed_utf32le(string, string_length);
       
-    case UNICODE_ENCODING_TYPE_UTF1:
-    case UNICODE_ENCODING_TYPE_UTF9:
-    case UNICODE_ENCODING_TYPE_UTF18:
-    case UNICODE_ENCODING_TYPE_UTF18BE:
-    case UNICODE_ENCODING_TYPE_UTF18LE:
+    case CHARSET_UTF1:
+    case CHARSET_UTF9:
+    case CHARSET_UTF18:
+    case CHARSET_UTF18BE:
+    case CHARSET_UTF18LE:
       assert(0); /* NOT YET IMPLEMENTED */
       
     default:
@@ -674,32 +674,32 @@ bool unicode_is_well_formed(UnicodeEncodingType encoding, char * string, size_t 
   }
 }
 
-unsigned int unicode_string_length(UnicodeEncodingType encoding, char * string, size_t string_length)
+unsigned int unicode_string_length(Charset encoding, char * string, size_t string_length)
 {
   switch (encoding)
   {
-    case UNICODE_ENCODING_TYPE_UTF7:
+    case CHARSET_UTF7:
       return unicode_string_length_utf7(string, string_length);
-    case UNICODE_ENCODING_TYPE_UTF8:
+    case CHARSET_UTF8:
       return unicode_string_length_utf8(string, string_length);
-    case UNICODE_ENCODING_TYPE_UTF16:
+    case CHARSET_UTF16:
       return unicode_string_length_utf16(string, string_length);
-    case UNICODE_ENCODING_TYPE_UTF16BE:
+    case CHARSET_UTF16BE:
       return unicode_string_length_utf16be(string, string_length);
-    case UNICODE_ENCODING_TYPE_UTF16LE:
+    case CHARSET_UTF16LE:
       return unicode_string_length_utf16le(string, string_length);
-    case UNICODE_ENCODING_TYPE_UTF32:
+    case CHARSET_UTF32:
       return unicode_string_length_utf32(string, string_length);
-    case UNICODE_ENCODING_TYPE_UTF32BE:
+    case CHARSET_UTF32BE:
       return unicode_string_length_utf32be(string, string_length);
-    case UNICODE_ENCODING_TYPE_UTF32LE:
+    case CHARSET_UTF32LE:
       return unicode_string_length_utf32le(string, string_length);
       
-    case UNICODE_ENCODING_TYPE_UTF1:
-    case UNICODE_ENCODING_TYPE_UTF9:
-    case UNICODE_ENCODING_TYPE_UTF18:
-    case UNICODE_ENCODING_TYPE_UTF18BE:
-    case UNICODE_ENCODING_TYPE_UTF18LE:
+    case CHARSET_UTF1:
+    case CHARSET_UTF9:
+    case CHARSET_UTF18:
+    case CHARSET_UTF18BE:
+    case CHARSET_UTF18LE:
       assert(0); /* NOT YET IMPLEMENTED */
       
     default:
@@ -707,32 +707,32 @@ unsigned int unicode_string_length(UnicodeEncodingType encoding, char * string, 
   }
 }
 
-int unicode_read(UnicodeEncodingType encoding, char * string, uint32_t * code_point)
+int unicode_read(Charset encoding, char * string, uint32_t * code_point)
 {
   switch (encoding)
   {
-    case UNICODE_ENCODING_TYPE_UTF7:
+    case CHARSET_UTF7:
       return unicode_read_utf7(string, code_point);
-    case UNICODE_ENCODING_TYPE_UTF8:
+    case CHARSET_UTF8:
       return unicode_read_utf8(string, code_point);
-    case UNICODE_ENCODING_TYPE_UTF16:
+    case CHARSET_UTF16:
       assert(0); /* CANNOT READ WITHOUT BYTE ORDER */
-    case UNICODE_ENCODING_TYPE_UTF16BE:
+    case CHARSET_UTF16BE:
       return unicode_read_utf16be(string, code_point);
-    case UNICODE_ENCODING_TYPE_UTF16LE:
+    case CHARSET_UTF16LE:
       return unicode_read_utf16le(string, code_point);
-    case UNICODE_ENCODING_TYPE_UTF32:
+    case CHARSET_UTF32:
       assert(0); /* CANNOT READ WITHOUT BYTE ORDER */
-    case UNICODE_ENCODING_TYPE_UTF32BE:
+    case CHARSET_UTF32BE:
       return unicode_read_utf32be(string, code_point);
-    case UNICODE_ENCODING_TYPE_UTF32LE:
+    case CHARSET_UTF32LE:
       return unicode_read_utf32le(string, code_point);
       
-    case UNICODE_ENCODING_TYPE_UTF1:
-    case UNICODE_ENCODING_TYPE_UTF9:
-    case UNICODE_ENCODING_TYPE_UTF18:
-    case UNICODE_ENCODING_TYPE_UTF18BE:
-    case UNICODE_ENCODING_TYPE_UTF18LE:
+    case CHARSET_UTF1:
+    case CHARSET_UTF9:
+    case CHARSET_UTF18:
+    case CHARSET_UTF18BE:
+    case CHARSET_UTF18LE:
       assert(0); /* NOT YET IMPLEMENTED */
       
     default:
@@ -740,32 +740,32 @@ int unicode_read(UnicodeEncodingType encoding, char * string, uint32_t * code_po
   }
 }
 
-int unicode_write(UnicodeEncodingType encoding, uint32_t code_point, char * string)
+int unicode_write(Charset encoding, uint32_t code_point, char * string)
 {
   switch (encoding)
   {
-    case UNICODE_ENCODING_TYPE_UTF7:
+    case CHARSET_UTF7:
       return unicode_write_utf7(code_point, string);
-    case UNICODE_ENCODING_TYPE_UTF8:
+    case CHARSET_UTF8:
       return unicode_write_utf8(code_point, string);
-    case UNICODE_ENCODING_TYPE_UTF16:
+    case CHARSET_UTF16:
       return unicode_write_utf16(code_point, string);
-    case UNICODE_ENCODING_TYPE_UTF16BE:
+    case CHARSET_UTF16BE:
       return unicode_write_utf16be(code_point, string);
-    case UNICODE_ENCODING_TYPE_UTF16LE:
+    case CHARSET_UTF16LE:
       return unicode_write_utf16le(code_point, string);
-    case UNICODE_ENCODING_TYPE_UTF32:
+    case CHARSET_UTF32:
       return unicode_write_utf32(code_point, string);
-    case UNICODE_ENCODING_TYPE_UTF32BE:
+    case CHARSET_UTF32BE:
       return unicode_write_utf32be(code_point, string);
-    case UNICODE_ENCODING_TYPE_UTF32LE:
+    case CHARSET_UTF32LE:
       return unicode_write_utf32le(code_point, string);
       
-    case UNICODE_ENCODING_TYPE_UTF1:
-    case UNICODE_ENCODING_TYPE_UTF9:
-    case UNICODE_ENCODING_TYPE_UTF18:
-    case UNICODE_ENCODING_TYPE_UTF18BE:
-    case UNICODE_ENCODING_TYPE_UTF18LE:
+    case CHARSET_UTF1:
+    case CHARSET_UTF9:
+    case CHARSET_UTF18:
+    case CHARSET_UTF18BE:
+    case CHARSET_UTF18LE:
       assert(0); /* NOT YET IMPLEMENTED */
       
     default:
@@ -773,32 +773,32 @@ int unicode_write(UnicodeEncodingType encoding, uint32_t code_point, char * stri
   }
 }
 
-uint32_t * unicode_read_string(UnicodeEncodingType encoding, char * string, size_t string_length, size_t * code_points_length_ptr)
+uint32_t * unicode_read_string(Charset encoding, char * string, size_t string_length, size_t * code_points_length_ptr)
 {
   switch (encoding)
   {
-    case UNICODE_ENCODING_TYPE_UTF7:
+    case CHARSET_UTF7:
       return unicode_read_string_utf7(string, string_length, code_points_length_ptr);
-    case UNICODE_ENCODING_TYPE_UTF8:
+    case CHARSET_UTF8:
       return unicode_read_string_utf8(string, string_length, code_points_length_ptr);
-    case UNICODE_ENCODING_TYPE_UTF16:
+    case CHARSET_UTF16:
       return unicode_read_string_utf16(string, string_length, code_points_length_ptr);
-    case UNICODE_ENCODING_TYPE_UTF16BE:
+    case CHARSET_UTF16BE:
       return unicode_read_string_utf16be(string, string_length, code_points_length_ptr);
-    case UNICODE_ENCODING_TYPE_UTF16LE:
+    case CHARSET_UTF16LE:
       return unicode_read_string_utf16le(string, string_length, code_points_length_ptr);
-    case UNICODE_ENCODING_TYPE_UTF32:
+    case CHARSET_UTF32:
       return unicode_read_string_utf32(string, string_length, code_points_length_ptr);
-    case UNICODE_ENCODING_TYPE_UTF32BE:
+    case CHARSET_UTF32BE:
       return unicode_read_string_utf32be(string, string_length, code_points_length_ptr);
-    case UNICODE_ENCODING_TYPE_UTF32LE:
+    case CHARSET_UTF32LE:
       return unicode_read_string_utf32le(string, string_length, code_points_length_ptr);
       
-    case UNICODE_ENCODING_TYPE_UTF1:
-    case UNICODE_ENCODING_TYPE_UTF9:
-    case UNICODE_ENCODING_TYPE_UTF18:
-    case UNICODE_ENCODING_TYPE_UTF18BE:
-    case UNICODE_ENCODING_TYPE_UTF18LE:
+    case CHARSET_UTF1:
+    case CHARSET_UTF9:
+    case CHARSET_UTF18:
+    case CHARSET_UTF18BE:
+    case CHARSET_UTF18LE:
       assert(0); /* NOT YET IMPLEMENTED */
       
     default:
@@ -806,32 +806,32 @@ uint32_t * unicode_read_string(UnicodeEncodingType encoding, char * string, size
   }
 }
 
-char * unicode_write_string(UnicodeEncodingType encoding, uint32_t * code_points, size_t code_points_length, size_t * string_length_ptr)
+char * unicode_write_string(Charset encoding, uint32_t * code_points, size_t code_points_length, size_t * string_length_ptr)
 {
   switch (encoding)
   {
-    case UNICODE_ENCODING_TYPE_UTF7:
+    case CHARSET_UTF7:
       return unicode_write_string_utf7(code_points, code_points_length, string_length_ptr);
-    case UNICODE_ENCODING_TYPE_UTF8:
+    case CHARSET_UTF8:
       return unicode_write_string_utf8(code_points, code_points_length, string_length_ptr);
-    case UNICODE_ENCODING_TYPE_UTF16:
+    case CHARSET_UTF16:
       return unicode_write_string_utf16(code_points, code_points_length, string_length_ptr);
-    case UNICODE_ENCODING_TYPE_UTF16BE:
+    case CHARSET_UTF16BE:
       return unicode_write_string_utf16be(code_points, code_points_length, string_length_ptr);
-    case UNICODE_ENCODING_TYPE_UTF16LE:
+    case CHARSET_UTF16LE:
       return unicode_write_string_utf16le(code_points, code_points_length, string_length_ptr);
-    case UNICODE_ENCODING_TYPE_UTF32:
+    case CHARSET_UTF32:
       return unicode_write_string_utf32(code_points, code_points_length, string_length_ptr);
-    case UNICODE_ENCODING_TYPE_UTF32BE:
+    case CHARSET_UTF32BE:
       return unicode_write_string_utf32be(code_points, code_points_length, string_length_ptr);
-    case UNICODE_ENCODING_TYPE_UTF32LE:
+    case CHARSET_UTF32LE:
       return unicode_write_string_utf32le(code_points, code_points_length, string_length_ptr);
       
-    case UNICODE_ENCODING_TYPE_UTF1:
-    case UNICODE_ENCODING_TYPE_UTF9:
-    case UNICODE_ENCODING_TYPE_UTF18:
-    case UNICODE_ENCODING_TYPE_UTF18BE:
-    case UNICODE_ENCODING_TYPE_UTF18LE:
+    case CHARSET_UTF1:
+    case CHARSET_UTF9:
+    case CHARSET_UTF18:
+    case CHARSET_UTF18BE:
+    case CHARSET_UTF18LE:
       assert(0); /* NOT YET IMPLEMENTED */
       
     default:
