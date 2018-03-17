@@ -274,6 +274,10 @@ LinkedList * linked_list_new()
   ret->base.list_size = (unsigned int (*)(List *)) linked_list_size;
   ret->base.list_contains = (bool (*)(List *, Any)) linked_list_contains;
   ret->base.list_get = (Any (*)(List *, unsigned int)) linked_list_get;
+  ret->base.list_get_char = (char (*)(List *, unsigned int)) linked_list_get_char;
+  ret->base.list_get_int = (int (*)(List *, unsigned int)) linked_list_get_int;
+  ret->base.list_get_str = (char * (*)(List *, unsigned int)) linked_list_get_str;
+  ret->base.list_get_ptr = (void * (*)(List *, unsigned int)) linked_list_get_ptr;
   ret->base.list_add = (void (*)(List *, Any)) linked_list_add;
   ret->base.list_add_range = (void (*)(List *, List *)) linked_list_add_range;
   ret->base.list_set = (void (*)(List *, unsigned int, Any)) linked_list_set;
