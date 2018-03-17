@@ -937,6 +937,10 @@ LinkedListTraversal * linked_list_get_traversal(LinkedList * linked_list)
   ret->base.list = (List *) linked_list;
   ret->base.list_traversal_destroy = (void (*)(ListTraversal *)) linked_list_traversal_destroy;
   ret->base.list_traversal_next = (Any (*)(ListTraversal *)) linked_list_traversal_next;
+  ret->base.list_traversal_next_char = (char (*)(ListTraversal *)) linked_list_traversal_next_char;
+  ret->base.list_traversal_next_int = (int (*)(ListTraversal *)) linked_list_traversal_next_int;
+  ret->base.list_traversal_next_str = (char * (*)(ListTraversal *)) linked_list_traversal_next_str;
+  ret->base.list_traversal_next_ptr = (void * (*)(ListTraversal *)) linked_list_traversal_next_ptr;
   ret->base.list_traversal_completed = (bool (*)(ListTraversal *)) linked_list_traversal_completed;
 
   sem_wait(&linked_list->base.mutex);
