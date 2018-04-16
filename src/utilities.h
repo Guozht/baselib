@@ -32,6 +32,7 @@
 #define __BASELIB_UTILITIES_H
 
 #include <stdbool.h>
+#include <stdint.h>
 #include <string.h>
 
 #include "endianness.h"
@@ -49,6 +50,9 @@ unsigned int utilities_null_terminated_length(void * array, size_t element_size)
 
 size_t utilities_round_size_upward(size_t s, size_t mod);
 size_t utilities_multiply_round_up(size_t s, double ratio);
+
+uint64_t utilities_unix_millisecond();
+int utilities_random_integer(int from, int to, unsigned int * seed_ptr);
 
 
 #endif

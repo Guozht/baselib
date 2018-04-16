@@ -28,9 +28,11 @@
  */
 
 
-
+#include <assert.h>
 #include <stdbool.h>
 #include <stdint.h>
+#include <stdlib.h>
+#include <sys/time.h>
 
 
 #include "utilities.h"
@@ -104,4 +106,27 @@ size_t utilities_multiply_round_up(size_t s, double ratio)
   else
     return (int) d;
 }
+
+uint64_t utilities_unix_millisecond()
+{
+  struct timeval tv;
+  uint64_t ret;
+
+  if (gettimeofday(&tv, NULL))
+    return 0;
+
+  ret = tv.tv_usec / 1000;
+  ret += tv.tv_sec * 1000;
+
+  return ret;
+}
+int utilities_random_integer(int from, int to, unsigned int * seed_ptr)
+{
+  assert(to > from);
+  assert(seed_ptr);
+
+  return rand_r(seed_ptr) % (to - from) + from;
+}
+
+
 

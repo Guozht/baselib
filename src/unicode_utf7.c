@@ -50,7 +50,7 @@ static bool unicode_utf7_base64_represents_valid_codepoints(char * base64)
     return false;
 
   size_t data_length, utf16_data_length;
-  uint8_t * data;
+  char * data;
   uint32_t * utf16_data;
   bool valid = true;
 
@@ -79,7 +79,7 @@ static void unicode_parse_base64_to_code_points(char * string, uint32_t * code_p
 {
   size_t data_length, utf16_code_points_length;
   uint32_t * utf16_code_points;
-  uint8_t * data;
+  char * data;
 
   data = base64_decode(string, &data_length);
 
@@ -95,7 +95,7 @@ static void unicode_parse_base64_to_code_points(char * string, uint32_t * code_p
 static size_t unicode_get_string_length_of_base64(char * string)
 {
   size_t data_length, ret;
-  uint8_t * data;
+  char * data;
 
   data = base64_decode(string, &data_length);
   ret = unicode_string_length_utf16be((char *) data, data_length);
@@ -257,7 +257,7 @@ int unicode_read_utf7(char * string, uint32_t * code_point)
   assert(code_point);
 
   size_t k, data_length, utf16_data_length;
-  uint8_t * data;
+  char * data;
   uint32_t * utf16_data;
 
   if ((string[0] < 0x20 && string[0] != '\n' && string[0] != '\r') || string[0] > 0x7F)
@@ -282,7 +282,7 @@ int unicode_read_utf7(char * string, uint32_t * code_point)
     if (!base64_is_well_formed_up_to(&string[1], (unsigned int) k - 1))
       return 0;
 
-    data = (uint8_t *) base64_decode_up_to(&string[1], k - 1, &data_length);
+    data = (char *) base64_decode_up_to(&string[1], k - 1, &data_length);
     if (!unicode_is_well_formed_utf16be((char *) data, data_length))
     {
       _free(data);
@@ -417,7 +417,7 @@ char * unicode_write_string_utf7(uint32_t * code_points, size_t code_points_leng
       if (unicode_utf7_is_direct_char(c))
       {
         utf16_data = unicode_write_string_utf16be_without_bom(&code_points[base64_start], k - base64_start, &utf16_data_length);
-        base64_str = base64_encode_non_padded((uint8_t *) utf16_data, utf16_data_length); 
+        base64_str = base64_encode_non_padded((char *) utf16_data, utf16_data_length); 
 
         string_builder_appendf(sb, "+%s", base64_str);
         if (!base64_is_valid_char((char) c) && (char) c != '-')
@@ -437,7 +437,7 @@ char * unicode_write_string_utf7(uint32_t * code_points, size_t code_points_leng
   if (base64_start != -1)
   {
     utf16_data = unicode_write_string_utf16be(&code_points[base64_start], code_points_length - base64_start, &utf16_data_length);
-    base64_str = base64_encode_non_padded((uint8_t *) utf16_data, utf16_data_length); 
+    base64_str = base64_encode_non_padded((char *) utf16_data, utf16_data_length); 
 
     string_builder_appendf(sb, "+%s-", base64_str);
 

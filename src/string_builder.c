@@ -207,6 +207,12 @@ void string_builder_appendf(StringBuilder * sb, char * format, ...)
   _free(string);
 }
 
+void string_builder_append_free(StringBuilder * sb, char * string)
+{
+  string_builder_append(sb, string);
+  free(string);
+}
+
 void string_builder_append_code_point(StringBuilder * sb, uint32_t code_point)
 {
   assert(sb);

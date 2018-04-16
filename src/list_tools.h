@@ -54,18 +54,22 @@ void list_tools_sort(List * list, int (*comparator)(Any, Any));
 void list_tools_sort_with_method(List * list, int (*comparator)(Any, Any), SortMethod method);
 
 void list_tools_shuffle(List * list);
-void list_tools_shuffle_with_seed(List * list, long seed);
+void list_tools_shuffle_with_seed(List * list, unsigned int seed);
 
 
 List * list_tools_from_array(
     void * array, unsigned int array_length,
-    size_t element_size
+    enum AnyType element_type 
   );
 List * list_tools_from_any_array(
     Any * array, unsigned int array_length
   );
 
-void list_heapify(List * list, HeapQuality quality);
+void list_tools_heapify(
+    List * list,
+    int (*comparator)(Any, Any),
+    HeapQuality quality
+  );
 
 
 #endif

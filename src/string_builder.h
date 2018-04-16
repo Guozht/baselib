@@ -47,6 +47,7 @@ void string_builder_append_int(StringBuilder * sb, long long l);
 void string_builder_append_float(StringBuilder * sb, double d);
 
 void string_builder_appendf(StringBuilder * sb, char * format, ...);
+void string_builder_append_free(StringBuilder * sb, char * string);
 
 void string_builder_append_code_point(StringBuilder * sb, uint32_t code_point);
 

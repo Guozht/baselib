@@ -50,20 +50,20 @@ const char __BASE64_VALUE_TO_CHAR_TABLE[] = {
 };
 
 
-static char base64_value_to_char(uint8_t value)
+static char base64_value_to_char(char value)
 {
   value &= 0x3F;
-  return __BASE64_VALUE_TO_CHAR_TABLE[value];
+  return __BASE64_VALUE_TO_CHAR_TABLE[(int) value];
 }
 
-static uint8_t base64_char_to_value(char c)
+static char base64_char_to_value(char c)
 {
   if (c >= 'A' && c <= 'Z')
-    return (uint8_t) (c - 'A');
+    return (c - 'A');
   else if (c >= 'a' && c <= 'z')
-    return (uint8_t) (c - 'a') + 26;
+    return (c - 'a') + 26;
   else if (c >= '0' && c <= '9')
-    return (uint8_t) (c - '0') + 52;
+    return (c - '0') + 52;
   else if (c == '+')
     return 62;
   else if (c == '/')
@@ -72,10 +72,10 @@ static uint8_t base64_char_to_value(char c)
     assert(0);
 }
 
-static void base64_encode_tuple(uint8_t * from, char * to, size_t remaining_size, bool padding)
+static void base64_encode_tuple(char * from, char * to, size_t remaining_size, bool padding)
 {
 
-  uint8_t buffer [4];
+  char buffer [4];
   bool set_2 = false, set_3 = false;
 
   buffer[0] = (from[0] >> 2) & 0x3F;
@@ -116,9 +116,9 @@ static void base64_encode_tuple(uint8_t * from, char * to, size_t remaining_size
 
 }
 
-static void base64_decode_tuple(char * from, uint8_t * to, size_t remaining_size)
+static void base64_decode_tuple(char * from, char * to, size_t remaining_size)
 {
-  uint8_t buffer [4];
+  char buffer [4];
 
   for (unsigned int k = 0; k < remaining_size && k < 4; k++)
   {
@@ -170,7 +170,7 @@ static unsigned int base64_is_well_formed_imp(char * string, unsigned int string
   return scan_length;
 }
 
-static char * base64_encode_imp(uint8_t * data, size_t data_size, bool padding)
+static char * base64_encode_imp(char * data, size_t data_size, bool padding)
 {
   assert(data);
   assert(data_size > 0);
@@ -225,24 +225,24 @@ bool base64_is_valid_char(char c)
 
 
 
-char * base64_encode(uint8_t * data, size_t data_size)
+char * base64_encode(char * data, size_t data_size)
 {
   return base64_encode_imp(data, data_size, true);
 }
 
-char * base64_encode_non_padded(uint8_t * data, size_t data_size)
+char * base64_encode_non_padded(char * data, size_t data_size)
 {
   return base64_encode_imp(data, data_size, false);
 }
 
-uint8_t * base64_decode(char * string, size_t * decoded_size_ptr)
+char * base64_decode(char * string, size_t * decoded_size_ptr)
 {
   assert(string);
 
   return base64_decode_up_to(string, strings_length(string), decoded_size_ptr);
 }
 
-uint8_t * base64_decode_up_to(char * string, size_t string_length, size_t * decoded_size_ptr)
+char * base64_decode_up_to(char * string, size_t string_length, size_t * decoded_size_ptr)
 {
   assert(string);
   assert(decoded_size_ptr);
@@ -255,7 +255,7 @@ uint8_t * base64_decode_up_to(char * string, size_t string_length, size_t * deco
   size_t
     ret_size = base64_find_decoded_data_size(normalized_string_length),
     ret_top;
-  uint8_t * ret = (uint8_t *) _malloc(sizeof(uint8_t) * ret_size);
+  char * ret = (char *) _malloc(sizeof(char) * ret_size);
   assert(ret);
 
   ret_top = 0;

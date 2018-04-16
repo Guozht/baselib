@@ -27,6 +27,7 @@
 #include "any.h"
 #include "list.h"
 #include "mtest.h"
+#include "utilities.h"
 
 #include "list_tools.h"
 
@@ -329,17 +330,26 @@ void list_tools_sort_with_method(
 
 void list_tools_shuffle(List * list)
 {
-  assert(0); /* NOT YET IMPLEMENTED */
+  list_tools_shuffle_with_seed(list, (unsigned int) utilities_unix_millisecond());
 }
-void list_tools_shuffle_with_seed(List * list, long seed)
+/* implements Fisher-Yates shuffle */
+void list_tools_shuffle_with_seed(List * list, unsigned int seed)
 {
-  assert(0); /* NOT YET IMPLEMENTED */
+  assert(list);
+
+  unsigned int k, random_index;
+  for (k = list_size(list) - 1; k > 0; k--)
+  {
+    random_index = utilities_random_integer(0, k + 1, &seed);
+    list_swap(list, k, random_index);
+  }
+
 }
 
 
 List * list_tools_from_array(
     void * array, unsigned int array_length,
-    size_t element_size
+    enum AnyType element_type
   )
 {
   assert(0); /* NOT YET IMPLEMENTED */
@@ -352,17 +362,21 @@ List * list_tools_from_any_array(
 }
 
 
-static void list_max_heapify(List * list)
+static void list_tools_max_heapify(List * list, int (*comparator)(Any, Any))
 {
   assert(0);
 }
 
-static void list_min_heapify(List * list)
+static void list_tools_min_heapify(List * list, int (*comparator)(Any, Any))
 {
   assert(0);
 }
 
-void list_heapify(List * list, HeapQuality quality)
+void list_tools_heapify(
+    List * list,
+    int (*comparator)(Any, Any),
+    HeapQuality quality
+  )
 {
   assert(list);
 
@@ -370,10 +384,10 @@ void list_heapify(List * list, HeapQuality quality)
   {
 
     case HEAP_QUALITY_MAX:
-      list_max_heapify(list);
+      list_tools_max_heapify(list, comparator);
       break;
     case HEAP_QUALITY_MIN:
-      list_min_heapify(list);
+      list_tools_min_heapify(list, comparator);
       break;
 
     default:
