@@ -48,6 +48,13 @@ Charset charset_parse_name(char * string)
   assert(string);
 
   if (
+    strings_equals_ignore_case(string, "ASCII") ||
+    strings_equals_ignore_case(string, "US-ASCII") ||
+    strings_equals_ignore_case(string, "ASCII7") ||
+    strings_equals_ignore_case(string, "US-ASCII7")
+    )
+    return CHARSET_ASCII;
+  else if (
     strings_equals_ignore_case(string, "UTF-1") ||
     strings_equals_ignore_case(string, "UTF1")
     )
@@ -275,6 +282,8 @@ char * charset_to_string(Charset type)
 
   switch (type)
   {
+    case CHARSET_ASCII:
+      return "US-ASCII";
     case CHARSET_UTF1:
       return "UTF-1";
     case CHARSET_UTF7:

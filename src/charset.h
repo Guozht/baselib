@@ -26,13 +26,16 @@
 
 enum Charset
 {
-  CHARSET_NONE            = 0x0,
+  CHARSET_NONE            =  0x0,
 
   /* modifiers */
-  CHARSET_BIG_ENDIAN      = 0x8000,
-  CHARSET_LITTLE_ENDIAN   = 0x4000,
+  CHARSET_BIG_ENDIAN      =  0x8000,
+  CHARSET_LITTLE_ENDIAN   =  0x4000,
 
-  CHARSET_ENDIANNESS_MASK = ~0XC00,
+  CHARSET_ENDIANNESS_MASK = ~0xC000,
+
+  /* charset of the gods */
+  CHARSET_ASCII           = 0xFFF,
 
 
   /* unicode */
