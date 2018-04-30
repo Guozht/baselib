@@ -19,7 +19,7 @@
 \* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 
-#define BASELIB_VERSION "0.7.3"
+#define BASELIB_VERSION "0.8.0"
 
 
 #include "any.h"
@@ -27,6 +27,7 @@
 #include "base64.h"
 #include "chars.h"
 #include "charset.h"
+#include "codec.h"
 #include "dictionary.h"
 #include "dictionary_type.h"
 #include "files.h"

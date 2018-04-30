@@ -301,19 +301,18 @@ uint32_t * iso_8859_read_string(
   assert(string);
   assert(string_length > 0);
 
-  uint32_t code_points [string_length], * ret;
+  uint32_t * ret;
   int read;
-
-  for (size_t k = 0; k < string_length; k++)
-  {
-    read = iso_8859_read(encoding, &string[k], &code_points[k]);
-    assert(read == 1); /* asserts well-formedness */
-  }
-
+  
   ret = _malloc(string_length * sizeof(uint32_t));
   assert(ret);
 
-  memcpy(ret, code_points, string_length * sizeof(uint32_t));
+  for (size_t k = 0; k < string_length; k++)
+  {
+    read = iso_8859_read(encoding, &string[k], &ret[k]);
+    assert(read == 1); /* asserts well-formedness */
+  }
+
   if (code_points_length_ptr)
     *code_points_length_ptr = string_length;
 
@@ -329,21 +328,20 @@ char * iso_8859_write_string(
   assert(code_points);
   assert(code_points_length > 0);
 
-  char string [code_points_length], * ret;
+  char * ret;
   int read;
+  
+  ret = _malloc(code_points_length * sizeof(char));
+  assert(ret);
 
   /* TODO: re-write function. Horribly inefficient */
 
   for (size_t k = 0; k < code_points_length; k++)
   {
-    read = iso_8859_write(encoding, code_points[k], &string[k]);
+    read = iso_8859_write(encoding, code_points[k], &ret[k]);
     assert(read == 1); /* asserts representability */
   }
 
-  ret = _malloc(code_points_length * sizeof(char));
-  assert(ret);
-
-  memcpy(ret, string, code_points_length * sizeof(char));
   if (string_length_ptr)
     *string_length_ptr = code_points_length;
 

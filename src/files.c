@@ -42,10 +42,36 @@
 
 #include "files.h"
 
-#define BUFFER_SIZE 0x3FF
+#define BUFFER_SIZE 0x400
 #define DEFAULT_LINE_FEED_SEQUENCE "\n"
 
 
+
+static void files_accumulate_data(
+    char ** data,
+    char * buffer,
+    size_t * current,
+    size_t buffer_size
+  )
+{
+
+  if (*data)
+  {
+    *data = (char *) _realloc(*data, sizeof(char) * (*current + buffer_size));
+    assert(*data);
+
+    memcpy(&(*data)[*current], buffer, sizeof(char) * buffer_size);
+  }
+  else
+  {
+    *data = (char *) _malloc(sizeof(char) * buffer_size);
+    assert(*data);
+
+    memcpy(*data, buffer, sizeof(char) * buffer_size);
+  }
+  
+  *current += buffer_size;
+}
 
 static bool files_open_write_stream(char * path, FileOp op_type, FILE ** file)
 {
@@ -269,9 +295,10 @@ char * files_read_all(char * path, ssize_t * read_ptr)
   assert(path);
   assert(read_ptr);
 
-  size_t file_size, read_size, read;
+  bool continue_read;
+  size_t read_size, read;
   FILE * file;
-  char * data;
+  char * data, buffer [BUFFER_SIZE];
 
   file = fopen(path, "r");
   if (!file)
@@ -281,45 +308,50 @@ char * files_read_all(char * path, ssize_t * read_ptr)
     return NULL;
   }
 
-  file_size = files_size(path);
-  if (file_size == -1)
-  {
-    /* failed to determine file size */
-    *read_ptr = -1;
-    return NULL;
-  }
-  if (file_size == 0)
-  {
-    /* file is empty, but exists */
-    *read_ptr = 0;
-    return NULL;
-  }
-
-  data = (char *) _malloc(sizeof(char) * file_size);
   read_size = 0;
+  data = NULL;
+  continue_read = true;
   do
   {
     read = fread(
-        &data[read_size],
+        buffer,
         sizeof(char),
-        utilities_lmin(BUFFER_SIZE, file_size - read_size),
+        BUFFER_SIZE,
         file
       );
-
-    if (read <= 0)
+   
+    if (read > 0)
     {
-      /* read failed before end of file */
-      *read_ptr = -1;
-      _free(data);
-      return NULL;
+      files_accumulate_data(
+          &data,
+          buffer,
+          &read_size,
+          read
+        );
     }
 
-    read_size += read;
+    /* read reached EOF or encountered an error */
+    if (read < BUFFER_SIZE)
+    {
+      continue_read = false;
+
+      if (feof(file)) /* encountered EOF */
+      {
+        fclose(file);
+        *read_ptr = read_size;
+      }
+      else /* stream errored */
+      {
+        fclose(file);
+        *read_ptr = -1;
+        free(data);
+        data = NULL;
+      }
+    }
+
   }
-  while (read_size < file_size);
+  while (continue_read);
 
-
-  *read_ptr = file_size;
   return data;
 }
 

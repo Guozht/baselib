@@ -22,6 +22,7 @@
 #include <assert.h>
 
 #include "charset.h"
+#include "list.h"
 #include "strings.h"
 
 
@@ -41,6 +42,46 @@ Charset charset_get_without_endianness(Charset charset)
 {
   return charset & CHARSET_ENDIANNESS_MASK;
 }
+
+
+List * charset_list()
+{
+  List * ret = list_new(LIST_TYPE_ARRAY_LIST);
+
+  list_add(ret, int_to_any(CHARSET_ASCII));
+  list_add(ret, int_to_any(CHARSET_UTF1));
+  list_add(ret, int_to_any(CHARSET_UTF7));
+  list_add(ret, int_to_any(CHARSET_UTF8));
+  list_add(ret, int_to_any(CHARSET_UTF16));
+  list_add(ret, int_to_any(CHARSET_UTF16BE));
+  list_add(ret, int_to_any(CHARSET_UTF16LE));
+  list_add(ret, int_to_any(CHARSET_UTF32));
+  list_add(ret, int_to_any(CHARSET_UTF32BE));
+  list_add(ret, int_to_any(CHARSET_UTF32LE));
+  list_add(ret, int_to_any(CHARSET_ISO_8859_1));
+  list_add(ret, int_to_any(CHARSET_ISO_8859_2));
+  list_add(ret, int_to_any(CHARSET_ISO_8859_3));
+  list_add(ret, int_to_any(CHARSET_ISO_8859_4));
+  list_add(ret, int_to_any(CHARSET_ISO_8859_5));
+  list_add(ret, int_to_any(CHARSET_ISO_8859_6));
+  list_add(ret, int_to_any(CHARSET_ISO_8859_7));
+  list_add(ret, int_to_any(CHARSET_ISO_8859_8));
+  list_add(ret, int_to_any(CHARSET_ISO_8859_9));
+  list_add(ret, int_to_any(CHARSET_ISO_8859_10));
+  list_add(ret, int_to_any(CHARSET_ISO_8859_11));
+  list_add(ret, int_to_any(CHARSET_ISO_8859_12));
+  list_add(ret, int_to_any(CHARSET_ISO_8859_13));
+  list_add(ret, int_to_any(CHARSET_ISO_8859_14));
+  list_add(ret, int_to_any(CHARSET_ISO_8859_15));
+  list_add(ret, int_to_any(CHARSET_ISO_8859_16));
+  list_add(ret, int_to_any(CHARSET_UTF9));
+  list_add(ret, int_to_any(CHARSET_UTF18));
+  list_add(ret, int_to_any(CHARSET_UTF18BE));
+  list_add(ret, int_to_any(CHARSET_UTF18LE));
+
+  return ret;
+}
+
 
 
 Charset charset_parse_name(char * string)

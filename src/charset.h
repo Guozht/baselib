@@ -24,6 +24,8 @@
 
 #include <stdbool.h>
 
+#include "list.h"
+
 enum Charset
 {
   CHARSET_NONE            =  0x0,
@@ -85,6 +87,8 @@ bool charset_specifies_endianness(Charset charset);
 bool charset_is_big_endian(Charset charset);
 bool charset_is_little_endian(Charset charset);
 Charset charset_get_without_endianness(Charset charset);
+
+List * charset_list();
 
 Charset charset_parse_name(char * string);
 char * charset_to_string(Charset charset);
