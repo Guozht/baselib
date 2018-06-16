@@ -25,10 +25,15 @@
 
 enum FileType
 {
-  FILE_TYPE_NONE       = 0,
-  FILE_TYPE_DIRECTORY  = 1,
-  FILE_TYPE_LINK       = 2,
-  FILE_TYPE_REGULAR    = 4,
+  FILE_TYPE_NONE       = 0x00,
+  FILE_TYPE_DIRECTORY  = 0x01,
+  FILE_TYPE_LINK       = 0x02,
+  FILE_TYPE_REGULAR    = 0x04,
+  FILE_TYPE_BLOCK      = 0x08,
+  FILE_TYPE_CHAR       = 0x10,
+  FILE_TYPE_FIFO       = 0x20,
+  FILE_TYPE_SOCKET     = 0x40,
+  FILE_TYPE_UNKNOWN    = 0x80,
 };
 typedef enum FileType FileType;
 

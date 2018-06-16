@@ -166,7 +166,7 @@ static void list_tools_quick_sort(
 }
 static void list_tools_heap_sort(List * list, int (*comparator)(Any, Any))
 {
-  assert(0); /* NOT YET IMPLEMENTED */
+  assert(0); /* TODO: IMPLEMENT */
 }
 static void list_tools_insertion_sort(List * list, int (*comparator)(Any, Any))
 {
@@ -202,7 +202,7 @@ static void list_tools_insertion_sort(List * list, int (*comparator)(Any, Any))
 }
 static void list_tools_intro_sort(List * list, int (*comparator)(Any, Any))
 {
-  assert(0); /* NOT YET IMPLEMENTED */
+  assert(0); /* TODO: IMPLEMENT */
 }
 static void list_tools_selection_sort(List * list, int (*comparator)(Any, Any))
 {
@@ -236,23 +236,23 @@ static void list_tools_selection_sort(List * list, int (*comparator)(Any, Any))
 }
 static void list_tools_tim_sort(List * list, int (*comparator)(Any, Any))
 {
-  assert(0); /* NOT YET IMPLEMENTED */
+  assert(0); /* TODO: IMPLEMENT */
 }
 static void list_tools_cube_sort(List * list, int (*comparator)(Any, Any))
 {
-  assert(0); /* NOT YET IMPLEMENTED */
+  assert(0); /* TODO: IMPLEMENT */
 }
 static void list_tools_shell_sort(List * list, int (*comparator)(Any, Any))
 {
-  assert(0); /* NOT YET IMPLEMENTED */
+  assert(0); /* TODO: IMPLEMENT */
 }
 static void list_tools_smooth_sort(List * list, int (*comparator)(Any, Any))
 {
-  assert(0); /* NOT YET IMPLEMENTED */
+  assert(0); /* TODO: IMPLEMENT */
 }
 static void list_tools_block_sort(List * list, int (*comparator)(Any, Any))
 {
-  assert(0); /* NOT YET IMPLEMENTED */
+  assert(0); /* TODO: IMPLEMENT */
 }
 
 
@@ -352,24 +352,24 @@ List * list_tools_from_array(
     enum AnyType element_type
   )
 {
-  assert(0); /* NOT YET IMPLEMENTED */
+  assert(0); /* TODO: IMPLEMENT */
 }
 List * list_tools_from_any_array(
     Any * array, unsigned int array_length
   )
 {
-  assert(0); /* NOT YET IMPLEMENTED */
+  assert(0); /* TODO: IMPLEMENT */
 }
 
 
 static void list_tools_max_heapify(List * list, int (*comparator)(Any, Any))
 {
-  assert(0);
+  assert(0); /* TODO: IMPLEMENT */
 }
 
 static void list_tools_min_heapify(List * list, int (*comparator)(Any, Any))
 {
-  assert(0);
+  assert(0); /* TODO: IMPLEMENT */
 }
 
 void list_tools_heapify(

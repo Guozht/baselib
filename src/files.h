@@ -34,10 +34,11 @@
 #include "list.h"
 
 
-char * files_resolve(char * base, char * path);
-
-
 bool files_exists(char * path);
+bool files_exists_as(char * path, FileType file_type);
+FileType files_get_type(char * path);
+short files_get_permissions(char * path);
+
 ssize_t files_size(char * path);
 
 char * files_read_all(char * path, ssize_t * read_ptr);

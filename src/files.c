@@ -31,6 +31,7 @@
 #include <unistd.h>
 
 #include "charset.h"
+#include "codec.h"
 #include "file_op.h"
 #include "file_type.h"
 #include "mtest.h"
@@ -42,7 +43,7 @@
 
 #include "files.h"
 
-#define BUFFER_SIZE 0x400
+#define BUFFER_SIZE 0xFF
 #define DEFAULT_LINE_FEED_SEQUENCE "\n"
 
 
@@ -98,97 +99,50 @@ static bool files_open_write_stream(char * path, FileOp op_type, FILE ** file)
     return false;
 }
 
-static List * files_path_to_list(char * path, bool * rooted_ptr)
-{
-  if (strings_equals(path, "/"))
-  {
-    if (rooted_ptr)
-      *rooted_ptr = true;
-    return list_new(LIST_TYPE_ARRAY_LIST);
-  }
-
-  bool
-    starts_with_slash = strings_starts_with(path, "/"),
-    ends_with_slash = strings_ends_with(path, "/");
-
-  path = strings_substring(
-      path,
-      starts_with_slash ? 1 : 0,
-      strings_length(path) - (ends_with_slash ? 1 : 0)
-    );
-  if (rooted_ptr)
-    *rooted_ptr = starts_with_slash;
-
-  List * list = strings_split(path, '/');
-  _free(path);
-
-
-  if (list_contains(list, str_to_any("")))
-  {
-    list_destroy_and_free(list);
-    return NULL;
-  }
-
-  return list;
-}
-
-static void files_normalize_path_list(List * list)
-{
-  list_remove_and_free(list, str_to_any("."));
-  char * current, * last;
-
-  for (unsigned int k = 0; k < list_size(list); k++)
-  {
-    current = any_to_str(list_get(list, k));
-    if (k != 0 && strings_equals(current, ".."))
-    {
-      last = any_to_string(list_get(list, k - 1));
-      if (!strings_equals(last, ".."))
-      {
-        list_remove_at(list, k);
-        list_remove_at(list, k - 1);
-        _free(current);
-        _free(last);
-        k -= 2;
-      }
-    }
-  }
-}
-
-static char * files_path_list_to_string(List * list, bool base_rooted)
-{
-  StringBuilder * sb = string_builder_new();
-
-  if (base_rooted)
-    string_builder_append_char(sb, '/');
-
-  if (list_size(list) == 0)
-  {
-    if (!base_rooted)
-      string_builder_append_char(sb, '.');
-    return string_builder_to_string_destroy(sb);
-  }
-
-  string_builder_append(sb, any_to_str(list_get(list, 0)));
-  for (unsigned int k = 1; k < list_size(list); k++)
-  {
-    string_builder_append_char(sb, '/');
-    string_builder_append(sb, any_to_str(list_get(list, k)));
-  }
-
-  return string_builder_to_string_destroy(sb);
-}
 
 static FileType files_get_file_type_from_dtype(unsigned char dtype)
 {
   switch (dtype)
   {
+    case DT_BLK:
+      return FILE_TYPE_BLOCK;
+    case DT_CHR:
+      return FILE_TYPE_CHAR;
     case DT_DIR:
       return FILE_TYPE_DIRECTORY;
-    case DT_REG:
-      return FILE_TYPE_REGULAR;
+    case DT_FIFO:
+      return FILE_TYPE_FIFO;
     case DT_LNK:
       return FILE_TYPE_LINK;
+    case DT_REG:
+      return FILE_TYPE_REGULAR;
+    case DT_SOCK:
+      return FILE_TYPE_SOCKET;
+    case DT_UNKNOWN:
+      return FILE_TYPE_UNKNOWN;
+    default:
+      return FILE_TYPE_NONE;
+  }
+}
+
+static FileType files_get_file_type_from_stat_mode(mode_t mode)
+{
+  switch (mode & S_IFMT)
+  {
+    case S_IFSOCK:
+      return FILE_TYPE_SOCKET;
+    case S_IFLNK:
+      return FILE_TYPE_LINK;
+    case S_IFREG:
+      return FILE_TYPE_REGULAR;
+    case S_IFBLK:
+      return FILE_TYPE_BLOCK;
+    case S_IFDIR:
+      return FILE_TYPE_DIRECTORY;
+    case S_IFCHR:
+      return FILE_TYPE_CHAR;
+    case S_IFIFO:
+      return FILE_TYPE_FIFO;
     default:
       return FILE_TYPE_NONE;
   }
@@ -212,7 +166,8 @@ static List * files_list_imp(char * path, char * extension, FileType type)
     if (!entry)
       continue;
 
-    if (strings_equals(entry->d_name, ".") || strings_equals(entry->d_name, ".."))
+    if (strings_equals(entry->d_name, ".") ||
+        strings_equals(entry->d_name, ".."))
       continue;
 
     if (extension)
@@ -231,37 +186,6 @@ static List * files_list_imp(char * path, char * extension, FileType type)
   return ret;
 }
 
-char * files_resolve(char * base, char * path)
-{
-  assert(!strings_is_null_or_empty(base));
-  assert(!strings_is_null_or_empty(path));
-
-  List * base_list, * path_list;
-  bool base_rooted;
-  char * ret;
-
-  base_list = files_path_to_list(base, &base_rooted);
-  if (!base_list)
-    return NULL;
-
-  path_list = files_path_to_list(path, NULL);
-  if (!path_list)
-  {
-    list_destroy_and_free(base_list);
-    return NULL;
-  }
-
-  list_add_range(base_list, path_list);
-  files_normalize_path_list(base_list);
-
-  ret = files_path_list_to_string(base_list, base_rooted);
-
-  list_destroy_and_free(base_list);
-  list_destroy(path_list);
-
-  return ret;
-}
-
 
 bool files_exists(char * path)
 {
@@ -269,6 +193,39 @@ bool files_exists(char * path)
 
   return access(path, F_OK) != -1;
 }
+
+bool files_exists_as(char * path, FileType file_type)
+{
+  struct stat buffer;
+  FileType read_type;
+
+  if (stat(path, &buffer))
+    return false;
+
+  read_type = files_get_file_type_from_stat_mode(buffer.st_mode);
+  return (read_type & file_type) != 0;
+}
+
+FileType files_get_type(char * path)
+{
+  struct stat buffer;
+  
+  if (stat(path, &buffer))
+    return FILE_TYPE_NONE;
+  else
+    return files_get_file_type_from_stat_mode(buffer.st_mode);
+}
+
+short files_get_permissions(char * path)
+{
+  struct stat buffer;
+
+  if (stat(path, &buffer))
+    return -1;
+  else
+    return (short) (buffer.st_mode & 0777);
+}
+
 
 ssize_t files_size(char * path)
 {
@@ -370,6 +327,7 @@ List * files_read_all_lines_with_lf(
   )
 {
   List * ret;
+  Codec * codec;
   unsigned int ret_length;
   uint32_t * code_points;
   char * data;
@@ -377,6 +335,8 @@ List * files_read_all_lines_with_lf(
   ssize_t read_length;
 
   assert(path);
+
+  codec = codec_new(type);
 
   if (!line_feed_sequence)
     line_feed_sequence = DEFAULT_LINE_FEED_SEQUENCE;
@@ -387,13 +347,14 @@ List * files_read_all_lines_with_lf(
   else if (read_length == 0)
     return list_new(LIST_TYPE_LINKED_LIST);
 
-  if (!unicode_is_well_formed(type, data, (size_t) read_length))
+  if (!codec_is_well_formed(codec, data, (size_t) read_length))
   {
     _free(data);
+    codec_destroy(codec);
     return NULL;
   }
 
-  code_points = unicode_read_string(type, data, (size_t) read_length, &code_points_length);
+  code_points = codec_read_string(codec, data, (size_t) read_length, &code_points_length);
   _free(data);
   data = unicode_write_string_utf8(code_points, code_points_length, &data_length);
   _free(code_points);
@@ -401,6 +362,7 @@ List * files_read_all_lines_with_lf(
   if (data_length != strings_length(data)) /* must contain null terminator */
   {
     _free(data);
+    codec_destroy(codec);
     return NULL;
   }
 
@@ -420,6 +382,7 @@ List * files_read_all_lines_with_lf(
   }
 
   _free(data);
+  codec_destroy(codec);
   return ret;
 }
 
@@ -483,6 +446,14 @@ bool files_write_all_lines_with_lf(
     char * line_feed_sequence
   )
 {
+  Codec * codec;
+  bool ret;
+  ListTraversal * trav;
+  StringBuilder * sb;
+  char * line, * data;
+  uint32_t * code_points;
+  size_t code_points_length, data_length;
+
   assert(path);
   assert(lines);
   assert(list_size(lines) > 0);
@@ -493,12 +464,7 @@ bool files_write_all_lines_with_lf(
   else
     assert(!strings_is_empty(line_feed_sequence));
 
-  bool ret;
-  ListTraversal * trav;
-  StringBuilder * sb;
-  char * line, * data;
-  uint32_t * code_points;
-  size_t code_points_length, data_length;
+  codec = codec_new(type);
 
   sb = string_builder_new();
   trav = list_get_traversal(lines);
@@ -517,14 +483,17 @@ bool files_write_all_lines_with_lf(
       &code_points_length
     );
 
+  /* TODO: SHOULD ASSERT REPRESENTABILITY */
+
   _free(data);
-  data = unicode_write_string(
-      type,
+  data = codec_write_string(
+      codec,
       code_points,
       code_points_length,
       &data_length
     );
   _free(code_points);
+  codec_destroy(codec);
 
   ret = files_write_all(path, data, data_length, op_type);
   _free(data);

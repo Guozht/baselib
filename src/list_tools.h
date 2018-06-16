@@ -26,17 +26,17 @@
 
 enum SortMethod
 {
-  SORT_METHOD_MERGE,     /* TODO: IMPLEMENT ALL (OR MOST) OF THESE */
-  SORT_METHOD_QUICK,
-  SORT_METHOD_HEAP,
-  SORT_METHOD_INSERTION,
-  SORT_METHOD_INTRO,
-  SORT_METHOD_SELECTION,
-  SORT_METHOD_TIM,
-  SORT_METHOD_CUBE,
-  SORT_METHOD_SHELL,
-  SORT_METHOD_SMOOTH,
-  SORT_METHOD_BLOCK,
+  SORT_METHOD_MERGE = 0,     /* TODO: IMPLEMENT ALL (OR MOST) OF THESE */
+  SORT_METHOD_QUICK = 1,
+  SORT_METHOD_HEAP = 2,
+  SORT_METHOD_INSERTION = 3,
+  SORT_METHOD_INTRO = 4,
+  SORT_METHOD_SELECTION = 5,
+  SORT_METHOD_TIM = 6,
+  SORT_METHOD_CUBE = 7,
+  SORT_METHOD_SHELL = 8,
+  SORT_METHOD_SMOOTH = 9,
+  SORT_METHOD_BLOCK = 10,
 };
 typedef enum SortMethod SortMethod;
 
@@ -51,7 +51,11 @@ typedef enum HeapQuality HeapQuality;
 void list_tools_reverse(List * list);
 
 void list_tools_sort(List * list, int (*comparator)(Any, Any));
-void list_tools_sort_with_method(List * list, int (*comparator)(Any, Any), SortMethod method);
+void list_tools_sort_with_method(
+    List * list,
+    int (*comparator)(Any, Any),
+    SortMethod method
+  );
 
 void list_tools_shuffle(List * list);
 void list_tools_shuffle_with_seed(List * list, unsigned int seed);

@@ -151,6 +151,8 @@ bool task_wait_for_millis(Task * task, unsigned long long millis)
 }
 bool task_wait_for_nanos(Task * task, unsigned long long nanos)
 {
+  struct timespec terminate_join_time;
+
   assert(task);
 
   sem_wait(&task->mutex);
@@ -160,7 +162,6 @@ bool task_wait_for_nanos(Task * task, unsigned long long nanos)
   {
     sem_post(&task->mutex);
 
-    struct timespec terminate_join_time;
     clock_gettime(CLOCK_REALTIME, &terminate_join_time);
     task_add_nanos_to_timespec(&terminate_join_time, nanos);
 

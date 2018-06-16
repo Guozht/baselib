@@ -19,7 +19,7 @@
 \* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 
-#define BASELIB_VERSION "0.8.0"
+#define BASELIB_VERSION "0.9.2"
 
 
 #include "any.h"
@@ -30,6 +30,7 @@
 #include "codec.h"
 #include "dictionary.h"
 #include "dictionary_type.h"
+#include "errors.h"
 #include "files.h"
 #include "file_op.h"
 #include "hash_table.h"
@@ -38,6 +39,7 @@
 #include "list.h"
 #include "list_tools.h"
 #include "list_type.h"
+#include "paths.h"
 #include "strings.h"
 #include "string_builder.h"
 #include "task.h"
