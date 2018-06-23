@@ -41,15 +41,31 @@ short files_get_permissions(char * path);
 
 ssize_t files_size(char * path);
 
+char * files_read_all_with_options(
+    char * path,
+    ssize_t * read_ptr,
+    FileOp options
+    );
 char * files_read_all(char * path, ssize_t * read_ptr);
 List * files_read_all_lines(
     char * path,
     Charset type
   );
+List * files_read_all_lines_with_options(
+    char * path,
+    Charset type,
+    FileOp options
+  );
 List * files_read_all_lines_with_lf(
     char * path,
     Charset type,
     char * line_feed_sequence
+  );
+List * files_read_all_lines_with_lf_options(
+    char * path,
+    Charset type,
+    char * lf,
+    FileOp options
   );
 
 bool files_write_all(

@@ -74,21 +74,39 @@ static void files_accumulate_data(
   *current += buffer_size;
 }
 
+static char * files_form_options(char * buffer, char * base, FileOp ops)
+{
+  strcpy(buffer, base);
+  if (ops & FILE_OP_CLOEXEC)
+    strcat(buffer, "e");
+  if (ops & FILE_OP_MMAP)
+    strcat(buffer, "m");
+  if (ops & FILE_OP_EXCLUSIVE)
+    strcat(buffer, "x");
+  if (ops & FILE_OP_NO_CANCEL_POINTS)
+    strcat(buffer, "c");
+  return buffer;
+}
+ 
 static bool files_open_write_stream(char * path, FileOp op_type, FILE ** file)
 {
+  char buffer [0xF];
+
   if (files_exists(path))
   {
     if (op_type & FILE_OP_OVERWRITE)
-      *file = fopen(path, "wb");
+    {
+      *file = fopen(path, files_form_options(buffer, "wb", op_type));
+    }
     else if (op_type & FILE_OP_APPEND)
-      *file = fopen(path, "ab");
+      *file = fopen(path, files_form_options(buffer, "ab", op_type));
     else
       *file = NULL;
   }
   else
   {
     if (op_type & FILE_OP_CREATE)
-      *file = fopen(path, "wb");
+      *file = fopen(path, files_form_options(buffer, "wb", op_type));
     else
       *file = NULL;
   }
@@ -247,7 +265,10 @@ ssize_t files_size(char * path)
   return ret;
 }
 
-char * files_read_all(char * path, ssize_t * read_ptr)
+char * files_read_all_with_options(
+    char * path,
+    ssize_t * read_ptr,
+    FileOp options)
 {
   assert(path);
   assert(read_ptr);
@@ -255,12 +276,12 @@ char * files_read_all(char * path, ssize_t * read_ptr)
   bool continue_read;
   size_t read_size, read;
   FILE * file;
-  char * data, buffer [BUFFER_SIZE];
+  char * data, buffer [BUFFER_SIZE], options_buffer[0xF];
 
-  file = fopen(path, "r");
+  file = fopen(path, files_form_options(options_buffer, "r", options));
   if (!file)
   {
-    /* file does not exist */
+    /* file does not exist or could not be opened in the specified way */
     *read_ptr = -1;
     return NULL;
   }
@@ -310,6 +331,12 @@ char * files_read_all(char * path, ssize_t * read_ptr)
   while (continue_read);
 
   return data;
+
+}
+
+char * files_read_all(char * path, ssize_t * read_ptr)
+{
+  return files_read_all_with_options(path, read_ptr, 0); 
 }
 
 List * files_read_all_lines(
@@ -320,10 +347,29 @@ List * files_read_all_lines(
   return files_read_all_lines_with_lf(path, type, NULL);
 }
 
+List * files_read_all_lines_with_options(
+    char * path,
+    Charset type,
+    FileOp options
+  )
+{
+  return files_read_all_lines_with_lf_options(path, type, NULL, options);
+}
+
 List * files_read_all_lines_with_lf(
     char * path,
     Charset type,
     char * line_feed_sequence
+  )
+{
+  return files_read_all_lines_with_lf_options(path, type, NULL, 0);
+}
+
+List * files_read_all_lines_with_lf_options(
+    char * path,
+    Charset type,
+    char * line_feed_sequence,
+    FileOp options
   )
 {
   List * ret;
@@ -341,7 +387,7 @@ List * files_read_all_lines_with_lf(
   if (!line_feed_sequence)
     line_feed_sequence = DEFAULT_LINE_FEED_SEQUENCE;
 
-  data = files_read_all(path, &read_length);
+  data = files_read_all_with_options(path, &read_length, options);
   if (read_length == -1)
     return NULL;
   else if (read_length == 0)
