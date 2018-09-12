@@ -19,30 +19,32 @@
 \* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 
-#define BASELIB_VERSION "0.9.5"
+#ifndef __BASELIB_PARSING
+#define __BASELIB_PARSING
+
+#include <stdbool.h>
+
+bool try_parse_short(char * str, short * value_ptr);
+bool try_parse_int(char * str, int * value_ptr);
+bool try_parse_long(char * str, long * value_ptr);
+bool try_parse_long_long(char * str, long long * value_ptr);
+
+bool try_parse_ushort(char * str, unsigned short * value_ptr);
+bool try_parse_uint(char * str, unsigned int * value_ptr);
+bool try_parse_ulong(char * str, unsigned long * value_ptr);
+bool try_parse_ulong_long(char * str, unsigned long long * value_ptr);
+
+bool try_parse_int8(char * str, int8_t * value_ptr);
+bool try_parse_uint8(char * str, uint8_t * value_ptr);
+bool try_parse_int16(char * str, int16_t * value_ptr);
+bool try_parse_uint16(char * str, uint16_t * value_ptr);
+bool try_parse_int32(char * str, int32_t * value_ptr);
+bool try_parse_uint32(char * str, uint32_t * value_ptr);
+bool try_parse_int64(char * str, int64_t * value_ptr);
+bool try_parse_uint64(char * str, uint64_t * value_ptr);
 
 
-#include "any.h"
-#include "array_list.h"
-#include "base64.h"
-#include "chars.h"
-#include "charset.h"
-#include "codec.h"
-#include "dictionary.h"
-#include "dictionary_type.h"
-#include "errors.h"
-#include "files.h"
-#include "file_op.h"
-#include "hash_table.h"
-#include "iso_8859.h"
-#include "linked_list.h"
-#include "list.h"
-#include "list_tools.h"
-#include "list_type.h"
-#include "paths.h"
-#include "parsing.h"
-#include "strings.h"
-#include "string_builder.h"
-#include "task.h"
-#include "task_arguments.h"
-#include "unicode.h"
+#endif
+
+
+
