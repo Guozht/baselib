@@ -14,6 +14,7 @@ This library (at the moment) implements:
 - unicode encoding (UTF-8, UTF-7, UTF16 (BE/LE), AND UTF-32 (BE/LE))
 - ISO/IEC-8859 encoding (1 through 16)
 - task / thread management (still unstable)
+- integer parsing
 
 This library will implement in the future:
 
