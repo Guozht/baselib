@@ -146,6 +146,9 @@ static bool try_parse_small_int_imp(
     return false;
   if (parsing_long_out_of_range(value, size, is_signed))
     return false;
+
+  if (!ptr)
+    return true;
   
   switch (endianness_system())
   {
@@ -189,7 +192,10 @@ static bool try_parse_big_int_imp(
     return false;
   if (parsing_long_long_out_of_range(value, size, is_signed))
     return false;
-  
+ 
+  if (!ptr)
+    return true; 
+
   switch (endianness_system())
   {
     case ENDIANNESS_BIG:

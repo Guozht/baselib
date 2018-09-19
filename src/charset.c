@@ -26,6 +26,7 @@
 #include "strings.h"
 
 
+/*
 bool charset_specifies_endianness(Charset charset)
 {
   return charset_is_big_endian(charset) || charset_is_little_endian(charset);
@@ -42,11 +43,14 @@ Charset charset_get_without_endianness(Charset charset)
 {
   return charset & CHARSET_ENDIANNESS_MASK;
 }
+*/
 
 
 List * charset_list()
 {
-  List * ret = list_new(LIST_TYPE_ARRAY_LIST);
+  List * ret;
+
+  ret = list_new(LIST_TYPE_ARRAY_LIST);
 
   list_add(ret, int_to_any(CHARSET_ASCII));
   list_add(ret, int_to_any(CHARSET_UTF1));

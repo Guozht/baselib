@@ -27,6 +27,56 @@
 #include "any.h"
 
 
+size_t any_sizeof(enum AnyType type)
+{
+  switch (type)
+  {
+    case ANY_TYPE_CHAR:
+      return sizeof(char);
+    case ANY_TYPE_SCHAR:
+      return sizeof(signed char);
+    case ANY_TYPE_UCHAR:
+      return sizeof(unsigned char);
+
+    case ANY_TYPE_SHORT:
+      return sizeof(short);
+    case ANY_TYPE_USHORT:
+      return sizeof(unsigned short);
+
+    case ANY_TYPE_INT:
+      return sizeof(int);
+    case ANY_TYPE_UINT:
+      return sizeof(unsigned int);
+
+    case ANY_TYPE_LONG:
+      return sizeof(long);
+    case ANY_TYPE_ULONG:
+      return sizeof(unsigned long);
+
+    case ANY_TYPE_LONGLONG:
+      return sizeof(long long);
+    case ANY_TYPE_ULONGLONG:
+      return sizeof(unsigned long long);
+
+
+    case ANY_TYPE_FLOAT:
+      return sizeof(float);
+    case ANY_TYPE_DOUBLE:
+      return sizeof(double);
+
+    case ANY_TYPE_BOOL:
+      return sizeof(bool);
+
+    case ANY_TYPE_POINTER:
+      return sizeof(void *);
+    case ANY_TYPE_STRING:
+      return sizeof(char *);
+
+    default:
+      assert(0);
+  }
+}
+
 Any char_to_any(char c)
 {
   return (Any) {

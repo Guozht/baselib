@@ -82,11 +82,22 @@ enum Charset
 };
 typedef enum Charset Charset;
 
-
+/*
 bool charset_specifies_endianness(Charset charset);
 bool charset_is_big_endian(Charset charset);
 bool charset_is_little_endian(Charset charset);
 Charset charset_get_without_endianness(Charset charset);
+*/
+
+#define charset_is_big_endian(c) \
+  ((c & CHARSET_BIG_ENDIAN) != 0)
+#define charset_is_little_endian(c) \
+  ((c & CHARSET_LITTLE_ENDIAN) != 0)
+#define charset_get_without_endianness(c) \
+  (c & CHARSET_ENDIANNESS_MASK)
+#define charset_specifies_endianness(c) \
+  (charset_is_big_endian(c) || charset_is_little_endian(c))
+
 
 List * charset_list();
 

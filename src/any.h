@@ -23,6 +23,7 @@
 #define __BASELIB_ANY_H
 
 #include <stdbool.h>
+#include <sys/types.h>
 
 enum AnyType
 {
@@ -88,6 +89,7 @@ struct Any
 typedef struct Any Any;
 
 
+size_t any_sizeof(enum AnyType type);
 
 Any char_to_any(char c);
 Any schar_to_any(signed char c);

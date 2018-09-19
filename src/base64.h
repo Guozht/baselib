@@ -33,7 +33,9 @@ char * base64_encode(char * data, size_t data_size);
 char * base64_encode_non_padded(char * data, size_t data_size);
 
 char * base64_decode(char * data, size_t * decoded_size_ptr);
-char * base64_decode_up_to(char * data, size_t data_length, size_t * decoded_size_ptr);
+char * base64_decode_up_to(
+  char * data, size_t data_length, size_t * decoded_size_ptr
+  );
 
 bool base64_is_well_formed(char * data);
 bool base64_is_well_formed_up_to(char * data, size_t length);
